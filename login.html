@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two Elephant Fireworks: Login</title>
+    <link rel='stylesheet' href="./lib/fontawesome/css/fontawesome.min.css">
+    <link rel='stylesheet' href='./lib/fontawesome/typicons/typicons.min.css'>
+    <link rel='stylesheet' href="./lib/css/animate.css">
+    <link rel="stylesheet" href="./lib/css/login.css">
+</head>
+
+<body>
+
+    <body id="particles-js"></body>
+    <div class="animated bounceInDown">
+        <div class="container">
+            <span class="error animated tada" id="msg"></span>
+            <form name="form1" class="box" onsubmit="return false">
+                <h4>Two Elephant Fireworks <span>Dashboard</span></h4>
+                <h5>Sign in to your account.</h5>
+                <input type="text" name="email" placeholder="Email" autocomplete="off">
+                <i class="typcn typcn-eye" id="eye"></i>
+                <input type="password" name="password" placeholder="Passsword" id="pwd" autocomplete="off">
+                <label>
+                    <input type="checkbox">
+                    <span></span>
+                    <small class="rmb">Remember me</small>
+                </label>
+                <a href="#" class="forgetpass">Forget Password?</a>
+                <input type="submit" value="Sign in" class="btn1">
+            </form>
+        </div>
+    </div>
+
+    <script src="./lib/js/particles.min.js"></script>
+    <script src="./lib/js/jquery-3.4.1.min.js"></script>
+    <script src="./lib/js/login.js"></script>
+
+    <script>
+        $(document).ready(() => {
+            $("form").on("submit", (e) => {
+                e.preventDefault();
+                console.log(checkStuff());
+            });
+        })
+
+    </script>
+
+</body>
+
+</html>
+
+
+</html>

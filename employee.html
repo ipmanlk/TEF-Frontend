@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>TwoElephantFireworks - Employee</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Sans">
+  <link rel="stylesheet" href="./lib/css/theme.css">
+  <link rel="stylesheet" type="text/css" href="./lib/DataTables/datatables.min.css" />
+
+</head>
+
+<body>
+  <!-- partial:index.partial.html -->
+  <aside class="side-nav" id="show-side-navigation1">
+    <i class="fa fa-bars close-aside hidden-sm hidden-md hidden-lg" data-close="show-side-navigation1"></i>
+    <div class="heading">
+      <img
+        src="https://uniim1.shutterfly.com/ng/services/mediarender/THISLIFE/021036514417/media/23148907008/medium/1501685726/enhance"
+        alt="">
+      <div class="info">
+        <h3><a href="#">Kasun Chandima</a></h3>
+        <p>Administrator</p>
+      </div>
+    </div>
+    <!-- <div class="search">
+      <input type="text" placeholder="Type here"><i class="fa fa-search"></i>
+    </div> -->
+    <ul class="categories">
+      <li><i class="fa fa-home fa-fw" aria-hidden="true"></i><a href="#">Home</a>
+        <!-- <ul class="side-nav-dropdown">
+          <li><a href="#">Lorem ipsum</a></li>
+          <li><a href="#">ipsum dolor</a></li>
+          <li><a href="#">dolor ipsum</a></li>
+          <li><a href="#">amet consectetur</a></li>
+          <li><a href="#">ipsum dolor sit</a></li>
+        </ul> -->
+      </li>
+      <li><i class="fa fa-user fa-fw"></i><a href="#">Admin</a>
+        <ul class="side-nav-dropdown">
+          <li><a href="#">Employee</a></li>
+          <li><a href="#">User</a></li>
+          <li><a href="#">Privilages</a></li>
+          <li><a href="#">Designation</a></li>
+          <li><a href="#">Gender</a></li>
+          <li><a href="#">Civil Status</a></li>
+          <li><a href="#">Employee Status</a></li>
+        </ul>
+      </li>
+      <li><i class="fa fa-archive fa-fw"></i><a href="#">Product</a>
+        <ul class="side-nav-dropdown">
+          <li><a href="#">Product</a></li>
+          <li><a href="#">Item Package</a></li>
+        </ul>
+      </li>
+      <li><i class="fa fa-shopping-cart fa-fw"></i><a href="#">Purchase</a>
+        <ul class="side-nav-dropdown">
+          <li><a href="#">Purchase Order</a></li>
+          <li><a href="#">GRN</a></li>
+          <li><a href="#">Supplier</a></li>
+          <li><a href="#">Meterial</a></li>
+          <li><a href="#">Invoice</a></li>
+        </ul>
+      </li>
+    </ul>
+  </aside>
+  <section id="contents">
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+            data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <i class="fa fa-align-right"></i>
+          </button>
+          <a class="navbar-brand" href="#">Two Elephants Fireworks | <span class="main-color">Employee
+              Management</span></a>
+        </div>
+        <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                aria-expanded="false">My profile <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#"><i class="fa fa-user-o fw"></i> My account</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#"><i class="fa fa-sign-out"></i> Log out</a></li>
+              </ul>
+            </li>
+            <li><a href="#"><i data-show="show-side-navigation1" class="fa fa-bars show-side-btn"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- test begins -->
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12 special">
+          <div class="content" style="background-color: aliceblue; color: black;">
+            <table id="example" class="display" style="width:100%">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>First Nmae</th>
+                  <th>Last Name</th>
+                  <th>Email</th>
+                  <th>Edit</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-md-12 special">
+
+          <form class="content">
+            <div class="form-group">
+              <label for="txtEmpNumber">Employee Number: <span class="required">*</span></label>
+              <input type="text" class="form-control" id="txtEmpNumber" placeholder="Enter Number" name="txtEmpNumber">
+            </div>
+            <div class="form-group">
+              <label for="txtFullName">Full Name: <span class="required">*</span></label>
+              <input type="text" class="form-control" id="txtFullName" placeholder="Enter Full Name" name="txtFullName">
+            </div>
+            <div class="form-group">
+              <label for="txtCallingName">Calling Name: <span class="required">*</span></label>
+              <input type="text" class="form-control" id="txtCallingName" placeholder="Enter Calling Name"
+                name="txtCallingName">
+            </div>
+            <div class="form-group">
+              <label for="cmbGender">Gender: <span class="required">*</span></label>
+              <select name="cmbGender" id="cmbGender" class="form-control">
+                <option value="">Male</option>
+                <option value="">Female</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="cmbCivilStatus">Civil Status: <span class="required">*</span></label>
+              <select name="cmbCivilStatus" id="cmbCivilStatus" class="form-control">
+                <option value="">Married</option>
+                <option value="">Not Married</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="txtNIC">NIC: <span class="required">*</span></label>
+              <input type="text" class="form-control" id="txtNIC" placeholder="Enter NIC" name="txtNIC">
+            </div>
+            <div class="form-group">
+              <label for="txtDOB">Date of Birth:</label>
+              <input type="date" class="form-control" id="txtDOB" name="txtDOB" disabled>
+            </div>
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-1">
+                  <img id="filePhotoPreview" src="" style="height: 100px; width: 100px; background-color: black;">
+                </div>
+                <div class="col-md-11">
+                  <label for="filePhoto">Photo: <span class="required">*</span></label>
+                  <input type="file" class="form-control" id="filePhoto" name="filePhoto">
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="txtAddress">Address: <span class="required">*</span></label>
+              <textarea class="form-control" name="txtAddress" id="txtAddress" cols="30" rows="3"
+                placeholder="Enter your address here"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="txtMobile">Mobile: <span class="required">*</span></label>
+              <input type="text" class="form-control" id="txtMobile" placeholder="Enter Mobile Number" name="txtMobile">
+            </div>
+            <div class="form-group">
+              <label for="txtLand">Land:</label>
+              <input type="text" class="form-control" id="txtLand" placeholder="Enter Land Here" name="txtLand">
+            </div>
+            <div class="form-group">
+              <label for="cmbDesignation">Designation: <span class="required">*</span></label>
+              <select name="cmbDesignation" id="cmbDesignation" class="form-control">
+                <option value="">Manager</option>
+                <option value="">Staff</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="txtAissgnmentDate">Assignment Date: <span class="required">*</span></label>
+              <input type="date" class="form-control" id="txtAissgnmentDate" name="txtAissgnmentDate">
+            </div>
+            <div class="form-group">
+              <label for="txtDescription">Description: <span class="required">*</span></label>
+              <textarea class="form-control" name="txtDescription" id="txtDescription" cols="30" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="cmbEmployeeStatus">Employee Status: <span class="required">*</span></label>
+              <select name="cmbEmployeeStatus" id="cmbEmployeeStatus" class="form-control">
+                <option value="">Active</option>
+                <option value="">Terminated</option>
+              </select>
+            </div>
+            <button class="btn btn-success">Add</button>
+            <button class="btn btn-warning">Update</button>
+            <button class="btn btn-primary" style="float: right; margin-left: 10px;">Reset</button>
+            <button class="btn btn-danger" style="float: right;">Delete</button>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- partial -->
+  <script src="./lib/js/jquery-3.4.1.min.js"></script>
+  <script src="./lib/js/bootstrap.min.js"></script>
+  <script src="./lib/js/theme.js"></script>
+  <script type="text/javascript" src="./lib/DataTables/datatables.min.js"></script>
+
+
+  <script>
+    $(document).ready(async function () {
+      let users = await $.getJSON("https://reqres.in/api/users");
+      let data = users.data.map(user => {
+        return {
+          id: user.id,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          email: user.email,
+          edit: `<button class="btn btn-warning btn-sm">Edit</button>`,
+          delete: `<button class="btn btn-danger btn-sm">Delete</button>`
+        }
+      });
+
+      console.log(data);
+
+
+      $('#example').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+          'copy', 'csv', 'excel', 'pdf', 'print'
+        ],
+        data: data,
+        "columns": [
+          { "data": "id" },
+          { "data": "first_name" },
+          { "data": "last_name" },
+          { "data": "email" },
+          { "data": "edit" },
+          { "data": "delete" }
+        ]
+      });
+    });
+
+    $("#filePhoto").on("change", (event) => {
+      if (filePhoto.files && filePhoto.files[0]) {
+        filePhotoPreview.src = URL.createObjectURL(event.target.files[0]);
+      }
+    })
+  </script>
+</body>
+
+</html>
