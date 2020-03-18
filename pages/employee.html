@@ -7,118 +7,45 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Sans">
-  <link rel="stylesheet" href="./lib/css/theme.css">
-  <link rel="stylesheet" type="text/css" href="./lib/DataTables/datatables.min.css" />
-
+  <link rel="stylesheet" type="text/css" href="../lib/DataTables/datatables.min.css" />
+  <link rel="stylesheet" type="text/css" href="../css/common.css" />
 </head>
 
 <body>
-  <!-- partial:index.partial.html -->
-  <aside class="side-nav" id="show-side-navigation1">
-    <i class="fa fa-bars close-aside hidden-sm hidden-md hidden-lg" data-close="show-side-navigation1"></i>
-    <div class="heading">
-      <img
-        src="https://uniim1.shutterfly.com/ng/services/mediarender/THISLIFE/021036514417/media/23148907008/medium/1501685726/enhance"
-        alt="">
-      <div class="info">
-        <h3><a href="#">Kasun Chandima</a></h3>
-        <p>Administrator</p>
-      </div>
-    </div>
-    <!-- <div class="search">
-      <input type="text" placeholder="Type here"><i class="fa fa-search"></i>
-    </div> -->
-    <ul class="categories">
-      <li><i class="fa fa-home fa-fw" aria-hidden="true"></i><a href="#">Home</a>
-        <!-- <ul class="side-nav-dropdown">
-          <li><a href="#">Lorem ipsum</a></li>
-          <li><a href="#">ipsum dolor</a></li>
-          <li><a href="#">dolor ipsum</a></li>
-          <li><a href="#">amet consectetur</a></li>
-          <li><a href="#">ipsum dolor sit</a></li>
-        </ul> -->
-      </li>
-      <li><i class="fa fa-user fa-fw"></i><a href="#">Admin</a>
-        <ul class="side-nav-dropdown">
-          <li><a href="#">Employee</a></li>
-          <li><a href="#">User</a></li>
-          <li><a href="#">Privilages</a></li>
-          <li><a href="#">Designation</a></li>
-          <li><a href="#">Gender</a></li>
-          <li><a href="#">Civil Status</a></li>
-          <li><a href="#">Employee Status</a></li>
-        </ul>
-      </li>
-      <li><i class="fa fa-archive fa-fw"></i><a href="#">Product</a>
-        <ul class="side-nav-dropdown">
-          <li><a href="#">Product</a></li>
-          <li><a href="#">Item Package</a></li>
-        </ul>
-      </li>
-      <li><i class="fa fa-shopping-cart fa-fw"></i><a href="#">Purchase</a>
-        <ul class="side-nav-dropdown">
-          <li><a href="#">Purchase Order</a></li>
-          <li><a href="#">GRN</a></li>
-          <li><a href="#">Supplier</a></li>
-          <li><a href="#">Meterial</a></li>
-          <li><a href="#">Invoice</a></li>
-        </ul>
-      </li>
+  <div class="container-fluid" style="margin-top: 20px; margin-bottom: 20px;">
+
+
+    <ul class="nav nav-tabs">
+      <li class="active"><a data-toggle="tab" href="#table">Table</a></li>
+      <li><a data-toggle="tab" href="#form">Form</a></li>
     </ul>
-  </aside>
-  <section id="contents">
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-            data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-            <i class="fa fa-align-right"></i>
-          </button>
-          <a class="navbar-brand" href="#">Two Elephants Fireworks | <span class="main-color">Employee
-              Management</span></a>
+
+    <div class="tab-content">
+      <div id="table" class="tab-pane fade in active">
+
+        <div class="container-fluid" style="margin-top:30px">
+          <table id="example" class="display" style="width:100%">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>First Nmae</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Edit</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+          </table>
         </div>
-        <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav">
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                aria-expanded="false">My profile <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><i class="fa fa-user-o fw"></i> My account</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="#"><i class="fa fa-sign-out"></i> Log out</a></li>
-              </ul>
-            </li>
-            <li><a href="#"><i data-show="show-side-navigation1" class="fa fa-bars show-side-btn"></i></a></li>
-          </ul>
-        </div>
+
       </div>
-    </nav>
+      <div id="form" class="tab-pane fade">
 
-    <!-- test begins -->
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-md-12 special">
-          <div class="content" style="background-color: aliceblue; color: black;">
-            <table id="example" class="display" style="width:100%">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>First Nmae</th>
-                  <th>Last Name</th>
-                  <th>Email</th>
-                  <th>Edit</th>
-                  <th>Delete</th>
-                </tr>
-              </thead>
-              <tbody>
-
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="col-md-12 special">
-
-          <form class="content">
+        <div class="container-fluid" style="margin-top:30px">
+          <form>
             <div class="form-group">
               <label for="txtEmpNumber">Employee Number: <span class="required">*</span></label>
               <input type="text" class="form-control" id="txtEmpNumber" placeholder="Enter Number" name="txtEmpNumber">
@@ -205,16 +132,17 @@
             <button class="btn btn-primary" style="float: right; margin-left: 10px;">Reset</button>
             <button class="btn btn-danger" style="float: right;">Delete</button>
           </form>
-
         </div>
+
       </div>
     </div>
+  </div>
   </section>
   <!-- partial -->
-  <script src="./lib/js/jquery-3.4.1.min.js"></script>
-  <script src="./lib/js/bootstrap.min.js"></script>
-  <script src="./lib/js/theme.js"></script>
-  <script type="text/javascript" src="./lib/DataTables/datatables.min.js"></script>
+  <script src="../lib/js/jquery-3.4.1.min.js"></script>
+  <script src="../lib/js/bootstrap.min.js"></script>
+  <script src="../lib/js/theme.js"></script>
+  <script type="text/javascript" src="../lib/DataTables/datatables.min.js"></script>
 
 
   <script>
