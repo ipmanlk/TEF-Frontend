@@ -142,7 +142,7 @@
   <script src="../lib/js/bootstrap.min.js"></script>
   <script src="../lib/js/theme.js"></script>
   <script type="text/javascript" src="../lib/DataTables/datatables.min.js"></script>
-
+  <script type="text/javascript" src="../lib/js/lknic.moment.min.js"></script>
 
   <script>
     $(document).ready(async function () {
@@ -158,7 +158,7 @@
         }
       });
 
-      console.log(data);
+      console.log(getNICinfo("98044453"));
 
 
       $('#example').DataTable({
@@ -183,6 +183,8 @@
         filePhotoPreview.src = URL.createObjectURL(event.target.files[0]);
       }
     })
+
+
   </script>
 </body>
 
