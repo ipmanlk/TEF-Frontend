@@ -28,7 +28,11 @@
       <input type="text" placeholder="Type here"><i class="fa fa-search"></i>
     </div> -->
     <ul class="categories">
-      <li><i class="fa fa-home fa-fw" aria-hidden="true"></i><a href="#">Home</a>
+      <li>
+        <i class="fa fa-home fa-fw" aria-hidden="true">
+          
+        </i>
+        <span onclick="loadRoute('dashboard')">Home</span>
         <!-- <ul class="side-nav-dropdown">
           <li><a href="#">Lorem ipsum</a></li>
           <li><a href="#">ipsum dolor</a></li>
@@ -39,7 +43,9 @@
       </li>
       <li><i class="fa fa-user fa-fw"></i><a href="#">Admin</a>
         <ul class="side-nav-dropdown">
-          <li><a href="#">Employee</a></li>
+          <li>
+            <span onclick="loadRoute('employee')">Employee</span>
+          </li>
           <li><a href="#">User</a></li>
           <li><a href="#">Privilages</a></li>
           <li><a href="#">Designation</a></li>
@@ -73,7 +79,7 @@
             data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
             <i class="fa fa-align-right"></i>
           </button>
-          <a class="navbar-brand" href="#">Two Elephants Fireworks | <span class="main-color">Dashboard</span></a>
+          <a class="navbar-brand" href="#">Two Elephants Fireworks | <span id="txtNavbarTitle" class="main-color">Dashboard</span></a>
         </div>
         <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
@@ -92,16 +98,19 @@
       </div>
     </nav>
 
-    <!-- test begins -->
+    <!-- iframe content -->
     <div class="container-fluid" style="background-color: white; padding-right: 0;">
-      <iframe class="fill" src="./pages/employee.html" frameborder="0"></iframe>
+      <iframe id="iframeContent" class="fill" src="./pages/employee.html" frameborder="0"></iframe>
     </div>
   </section>
-  <!-- partial -->
+
+
   <script src="./lib/js/jquery-3.4.1.min.js"></script>
   <script src="./lib/js/bootstrap.min.js"></script>
   <script src="./lib/js/theme.js"></script>
-
+  <script src="./js/common.js"></script>
 </body>
+
+
 
 </html>
