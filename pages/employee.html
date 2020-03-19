@@ -20,8 +20,9 @@
     </ul>
 
     <div class="tab-content">
-      <div id="table" class="tab-pane fade in active">
 
+      <!-- <div id="table" class="tab-pane fade in active"> -->
+      <div id="table" class="tab-pane fade">
         <div class="container-fluid" style="margin-top:30px">
           <table id="example" class="display" style="width:100%">
             <thead>
@@ -39,10 +40,10 @@
             </tbody>
           </table>
         </div>
-
       </div>
-      <div id="form" class="tab-pane fade">
 
+      <!-- <div id="form" class="tab-pane fade"> -->
+      <div id="form" class="tab-pane fade in active">
         <div class="container-fluid" style="margin-top:30px">
           <form>
             <div class="form-group">
@@ -61,15 +62,16 @@
             <div class="form-group">
               <label for="cmbGender">Gender: <span class="required">*</span></label>
               <select name="cmbGender" id="cmbGender" class="form-control">
-                <option value="">Male</option>
-                <option value="">Female</option>
+                <option value="1">Male</option>
+                <option value="2">Female</option>
+                <option value="3">Other</option>
               </select>
             </div>
             <div class="form-group">
               <label for="cmbCivilStatus">Civil Status: <span class="required">*</span></label>
               <select name="cmbCivilStatus" id="cmbCivilStatus" class="form-control">
-                <option value="">Married</option>
-                <option value="">Not Married</option>
+                <option value="1">Married</option>
+                <option value="2">Not Married</option>
               </select>
             </div>
             <div class="form-group">
@@ -107,8 +109,8 @@
             <div class="form-group">
               <label for="cmbDesignation">Designation: <span class="required">*</span></label>
               <select name="cmbDesignation" id="cmbDesignation" class="form-control">
-                <option value="">Manager</option>
-                <option value="">Staff</option>
+                <option value="1">Manager</option>
+                <option value="2">Staff</option>
               </select>
             </div>
             <div class="form-group">
@@ -122,8 +124,8 @@
             <div class="form-group">
               <label for="cmbEmployeeStatus">Employee Status: <span class="required">*</span></label>
               <select name="cmbEmployeeStatus" id="cmbEmployeeStatus" class="form-control">
-                <option value="">Active</option>
-                <option value="">Terminated</option>
+                <option value="1">Active</option>
+                <option value="2">Terminated</option>
               </select>
             </div>
             <button class="btn btn-success">Add</button>
@@ -143,9 +145,99 @@
   <script src="../lib/js/theme.js"></script>
   <script type="text/javascript" src="../lib/DataTables/datatables.min.js"></script>
   <script type="text/javascript" src="../lib/js/lknic.moment.min.js"></script>
-  <script src="../js/common.js"></script>
-  
+
   <script>
+
+
+    // validation info for each form element
+    let validationInfo = {
+      "txtEmpNumber": {
+        "regex": /^[\d]{4}$/,
+        "mapping": "number",
+        "errorNull": "",
+        "errorInvalid": "It deosnt work"
+      },
+      "txtFullName": {
+        "regex": /^[\w\s]{5,150}$/,
+        "mapping": "fullname",
+        "errorNull": "",
+        "errorInvalid": ""
+      },
+      "txtCallingName": {
+        "regex": /^[\w\s]{2,45}$/,
+        "mapping": "callingname",
+        "errorNull": "",
+        "errorInvalid": ""
+      },
+      "txtNIC": {
+        "regex": /^([\d]{9}(\V|\X))|([\d]{12})$/,
+        "mapping": "nic",
+        "errorNull": "",
+        "errorInvalid": ""
+      },
+      "filePhoto": {
+        "regex": /^.+(jpg|png|gif)$/,
+        "mapping": "photo",
+        "errorNull": "",
+        "errorInvalid": ""
+      },
+      "txtAddress": {
+        "regex": /^[\w\s\d\,\\\.\n\/]{10,200}$/,
+        "mapping": "address",
+        "errorNull": "",
+        "errorInvalid": ""
+      },
+      "txtMobile": {
+        "regex": /^[\d]{10}$/,
+        "mapping": "mobile",
+        "errorNull": "",
+        "errorInvalid": ""
+      },
+      "txtLand": {
+        "regex": /^[\d]{10}$/,
+        "mapping": "land",
+        "errorNull": "",
+        "errorInvalid": ""
+      },
+      "txtAissgnmentDate": {
+        "regex": /^(\d{4})-(\d{2})-(\d{2})$/,
+        "mapping": "doassignment",
+        "errorNull": "",
+        "errorInvalid": ""
+      },
+      "txtDescription": {
+        "regex": /^[\w\s\d\,\\\.\n\/]{10,100}$/,
+        "mapping": "description",
+        "errorNull": "",
+        "errorInvalid": ""
+      },
+      "cmbGender": {
+        "regex": /^[\d]+$/,
+        "mapping": "genderId",
+        "errorNull": "",
+        "errorInvalid": ""
+      },
+      "cmbCivilStatus": {
+        "regex": /^\d+$/,
+        "mapping": "civilstatusId",
+        "errorNull": "",
+        "errorInvalid": ""
+      },
+      "cmbDesignation": {
+        "regex": /\d+$/,
+        "mapping": "designationId",
+        "errorNull": "",
+        "errorInvalid": ""
+      },
+      "cmbEmployeeStatus": {
+        "regex": /^\d+$/,
+        "mapping": "employeestatusId",
+        "errorNull": "",
+        "errorInvalid": ""
+      }
+    }
+
+    // when dom is ready
     $(document).ready(async function () {
       let users = await $.getJSON("https://reqres.in/api/users");
       let data = users.data.map(user => {
@@ -159,9 +251,7 @@
         }
       });
 
-      console.log(getNICinfo("98044453"));
-
-
+      // init data table
       $('#example').DataTable({
         dom: 'Bfrtip',
         buttons: [
@@ -177,15 +267,67 @@
           { "data": "delete" }
         ]
       });
+
+      // add event listener for each element
+      Object.keys(validationInfo).forEach(elementId => {
+        let selector = `#${elementId}`;
+        let regex = validationInfo[elementId].regex;
+        $(selector).on("keyup change", () => {
+
+          // handle empty values
+          let value = $(selector).val();
+          if (value.trim() == "") {
+            $(selector).parent().removeClass("has-success has-feedback");
+            $(selector).parent().removeClass("has-error has-feedback");
+            $(selector).parent().children("span").remove();
+            return;
+          }
+
+          // check form values with each regex
+          if (!regex.test(value)) {
+            $(selector).parent().removeClass("has-success has-feedback");
+            $(selector).parent().addClass("has-error has-feedback");
+            $(selector).parent().children("span").remove();
+            $(selector).parent().append(`<span class="glyphicon glyphicon-remove form-control-feedback"></span>`);
+          } else {
+            $(selector).parent().removeClass("has-error has-feedback");
+            $(selector).parent().addClass("has-success has-feedback");
+            $(selector).parent().children("span").remove();
+            $(selector).parent().append(`<span class="glyphicon glyphicon-ok form-control-feedback"></span>`);
+          }
+        });
+      })
     });
 
+    // handle image upload preview
     $("#filePhoto").on("change", (event) => {
       if (filePhoto.files && filePhoto.files[0]) {
         filePhotoPreview.src = URL.createObjectURL(event.target.files[0]);
       }
     })
 
+    // handle form submissions
+    $("form").on("submit", (e) => {
+      e.preventDefault();
+      Object.keys(validationInfo).forEach(elementId => {
+        let selector = `#${elementId}`;
+        let value = $(selector).val();
+        let regex = validationInfo[elementId].regex;
 
+        // handle errors
+        if (!regex.test(value)) {
+
+        } else {
+
+        }
+      })
+    })
+
+    // fill date of birth
+    $("#txtNIC").on("change keyup", (e) => {
+      let { dateOfBirth } = getNICinfo(e.target.value);
+      $("#txtDOB").val(dateOfBirth);
+    });
   </script>
 </body>
 
