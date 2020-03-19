@@ -85,7 +85,8 @@
             <div class="form-group">
               <div class="row">
                 <div class="col-md-1">
-                  <img id="filePhotoPreview" src="" style="height: 100px; width: 100px; background-color: black;">
+                  <img id="filePhotoPreview" src="../img/avatar.png"
+                    style="height: 100px; width: 100px; background-color: black; border-radius: 100px;">
                 </div>
                 <div class="col-md-11">
                   <label for="filePhoto">Photo: <span class="required">*</span></label>
@@ -118,7 +119,7 @@
               <input type="date" class="form-control" id="txtAissgnmentDate" name="txtAissgnmentDate">
             </div>
             <div class="form-group">
-              <label for="txtDescription">Description: <span class="required">*</span></label>
+              <label for="txtDescription">Description: </label>
               <textarea class="form-control" name="txtDescription" id="txtDescription" cols="30" rows="3"></textarea>
             </div>
             <div class="form-group">
@@ -136,6 +137,25 @@
         </div>
 
       </div>
+
+      <!-- modal for showing outputs -->
+      <div class="modal fade" id="modalOutput" role="dialog">
+        <div class="modal-dialog modal-sm">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title" id="modalOutputTitle">Modal Header</h4>
+            </div>
+            <div class="modal-body" id="modalOutputBody">
+              
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
   </section>
@@ -154,86 +174,74 @@
       "txtEmpNumber": {
         "regex": /^[\d]{4}$/,
         "mapping": "number",
-        "errorNull": "",
-        "errorInvalid": "It deosnt work"
+        "error": "Please provide a valid employee number!."
       },
       "txtFullName": {
         "regex": /^[\w\s]{5,150}$/,
         "mapping": "fullname",
-        "errorNull": "",
-        "errorInvalid": ""
+        "error": "Please provide a valid full name!."
       },
       "txtCallingName": {
         "regex": /^[\w\s]{2,45}$/,
         "mapping": "callingname",
-        "errorNull": "",
-        "errorInvalid": ""
+        "error": "Please provide a valid calling name!."
       },
       "txtNIC": {
         "regex": /^([\d]{9}(\V|\X))|([\d]{12})$/,
         "mapping": "nic",
-        "errorNull": "",
-        "errorInvalid": ""
+        "error": "Please provide a valid NIC!."
       },
       "filePhoto": {
         "regex": /^.+(jpg|png|gif)$/,
         "mapping": "photo",
-        "errorNull": "",
-        "errorInvalid": ""
+        "error": "Please select a valid profile picture!."
       },
       "txtAddress": {
         "regex": /^[\w\s\d\,\\\.\n\/]{10,200}$/,
         "mapping": "address",
-        "errorNull": "",
-        "errorInvalid": ""
+        "error": "Please provide a valid address!."
       },
       "txtMobile": {
         "regex": /^[\d]{10}$/,
         "mapping": "mobile",
-        "errorNull": "",
-        "errorInvalid": ""
+        "error": "Please provide a valid mobile number!."
       },
       "txtLand": {
         "regex": /^[\d]{10}$/,
         "mapping": "land",
-        "errorNull": "",
-        "errorInvalid": ""
+        "error": "Please provide a valid landphone number!.",
+        "optional": true
       },
       "txtAissgnmentDate": {
         "regex": /^(\d{4})-(\d{2})-(\d{2})$/,
         "mapping": "doassignment",
-        "errorNull": "",
-        "errorInvalid": ""
+        "error": "Please select a valid date of assignment!."
       },
       "txtDescription": {
         "regex": /^[\w\s\d\,\\\.\n\/]{10,100}$/,
         "mapping": "description",
-        "errorNull": "",
-        "errorInvalid": ""
+        "error": "Please provide a valid description!.",
+        "optional": true
       },
       "cmbGender": {
         "regex": /^[\d]+$/,
         "mapping": "genderId",
-        "errorNull": "",
-        "errorInvalid": ""
+        "error": "Please select a valid gender!."
       },
       "cmbCivilStatus": {
         "regex": /^\d+$/,
         "mapping": "civilstatusId",
-        "errorNull": "",
-        "errorInvalid": ""
+        "error": "Please select a valid civil status!."
       },
       "cmbDesignation": {
         "regex": /\d+$/,
         "mapping": "designationId",
-        "errorNull": "",
-        "errorInvalid": ""
+        "error": "Please select a valid designation!."
       },
       "cmbEmployeeStatus": {
         "regex": /^\d+$/,
         "mapping": "employeestatusId",
-        "errorNull": "",
-        "errorInvalid": ""
+        "error": "Please select a valid employee status!."
       }
     }
 
@@ -270,31 +278,8 @@
 
       // add event listener for each element
       Object.keys(validationInfo).forEach(elementId => {
-        let selector = `#${elementId}`;
-        let regex = validationInfo[elementId].regex;
-        $(selector).on("keyup change", () => {
-
-          // handle empty values
-          let value = $(selector).val();
-          if (value.trim() == "") {
-            $(selector).parent().removeClass("has-success has-feedback");
-            $(selector).parent().removeClass("has-error has-feedback");
-            $(selector).parent().children("span").remove();
-            return;
-          }
-
-          // check form values with each regex
-          if (!regex.test(value)) {
-            $(selector).parent().removeClass("has-success has-feedback");
-            $(selector).parent().addClass("has-error has-feedback");
-            $(selector).parent().children("span").remove();
-            $(selector).parent().append(`<span class="glyphicon glyphicon-remove form-control-feedback"></span>`);
-          } else {
-            $(selector).parent().removeClass("has-error has-feedback");
-            $(selector).parent().addClass("has-success has-feedback");
-            $(selector).parent().children("span").remove();
-            $(selector).parent().append(`<span class="glyphicon glyphicon-ok form-control-feedback"></span>`);
-          }
+        $(`#${elementId}`).on("keyup change", () => {
+          validateElementValue(elementId);
         });
       })
     });
@@ -309,25 +294,63 @@
     // handle form submissions
     $("form").on("submit", (e) => {
       e.preventDefault();
+
+      let errors = "";
       Object.keys(validationInfo).forEach(elementId => {
-        let selector = `#${elementId}`;
-        let value = $(selector).val();
-        let regex = validationInfo[elementId].regex;
+        let isValid = validateElementValue(elementId);
 
-        // handle errors
-        if (!regex.test(value)) {
-
-        } else {
-
+        // get errors
+        if (!isValid) {
+          errors += `${validationInfo[elementId].error}<br/>`
         }
-      })
+      });
+
+      // if there are errors
+      if (errors !== "") {
+        $("#modalOutputTitle").text("Sorry!. Please fix these errors.");
+        $("#modalOutputBody").html(errors);
+        $("#modalOutput").modal();
+        return;
+      }
+
+      // or submit the form
     })
 
-    // fill date of birth
+    // fill date of birth from nic
     $("#txtNIC").on("change keyup", (e) => {
       let { dateOfBirth } = getNICinfo(e.target.value);
       $("#txtDOB").val(dateOfBirth);
     });
+
+    // validate
+    const validateElementValue = (elementId) => {
+      // get values need for validation
+      let selector = `#${elementId}`;
+      let value = $(selector).val();
+      let regex = validationInfo[elementId].regex;
+
+      // for optional values
+      if (validationInfo[elementId].optional && value.trim() == "") {
+        $(selector).parent().removeClass("has-error has-feedback");
+        $(selector).parent().children("span").remove();
+        return true;
+      }
+
+      // check form values with each regex
+      if (!regex.test(value)) {
+        $(selector).parent().removeClass("has-success has-feedback");
+        $(selector).parent().addClass("has-error has-feedback");
+        $(selector).parent().children("span").remove();
+        $(selector).parent().append(`<span class="glyphicon glyphicon-remove form-control-feedback"></span>`);
+        return false;
+      } else {
+        $(selector).parent().removeClass("has-error has-feedback");
+        $(selector).parent().addClass("has-success has-feedback");
+        $(selector).parent().children("span").remove();
+        $(selector).parent().append(`<span class="glyphicon glyphicon-ok form-control-feedback"></span>`);
+        return true;
+      }
+    }
   </script>
 </body>
 
