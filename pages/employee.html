@@ -46,20 +46,20 @@
       <div id="form" class="tab-pane fade in active">
         <div class="container-fluid" style="margin-top:30px">
           <form>
-            <div class="form-group">
+            <div class="form-group has-feedback">
               <label for="txtEmpNumber">Employee Number: <span class="required">*</span></label>
               <input type="text" class="form-control" id="txtEmpNumber" placeholder="Enter Number" name="txtEmpNumber">
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
               <label for="txtFullName">Full Name: <span class="required">*</span></label>
               <input type="text" class="form-control" id="txtFullName" placeholder="Enter Full Name" name="txtFullName">
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
               <label for="txtCallingName">Calling Name: <span class="required">*</span></label>
               <input type="text" class="form-control" id="txtCallingName" placeholder="Enter Calling Name"
                 name="txtCallingName">
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
               <label for="cmbGender">Gender: <span class="required">*</span></label>
               <select name="cmbGender" id="cmbGender" class="form-control">
                 <option value="1">Male</option>
@@ -67,22 +67,22 @@
                 <option value="3">Other</option>
               </select>
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
               <label for="cmbCivilStatus">Civil Status: <span class="required">*</span></label>
               <select name="cmbCivilStatus" id="cmbCivilStatus" class="form-control">
                 <option value="1">Married</option>
                 <option value="2">Not Married</option>
               </select>
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
               <label for="txtNIC">NIC: <span class="required">*</span></label>
               <input type="text" class="form-control" id="txtNIC" placeholder="Enter NIC" name="txtNIC">
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
               <label for="txtDOB">Date of Birth:</label>
               <input type="date" class="form-control" id="txtDOB" name="txtDOB" disabled>
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
               <div class="row">
                 <div class="col-md-1">
                   <img id="filePhotoPreview" src="../img/avatar.png"
@@ -94,35 +94,35 @@
                 </div>
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
               <label for="txtAddress">Address: <span class="required">*</span></label>
               <textarea class="form-control" name="txtAddress" id="txtAddress" cols="30" rows="3"
                 placeholder="Enter your address here"></textarea>
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
               <label for="txtMobile">Mobile: <span class="required">*</span></label>
               <input type="text" class="form-control" id="txtMobile" placeholder="Enter Mobile Number" name="txtMobile">
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
               <label for="txtLand">Land:</label>
               <input type="text" class="form-control" id="txtLand" placeholder="Enter Land Here" name="txtLand">
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
               <label for="cmbDesignation">Designation: <span class="required">*</span></label>
               <select name="cmbDesignation" id="cmbDesignation" class="form-control">
                 <option value="1">Manager</option>
                 <option value="2">Staff</option>
               </select>
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
               <label for="txtAissgnmentDate">Assignment Date: <span class="required">*</span></label>
               <input type="date" class="form-control" id="txtAissgnmentDate" name="txtAissgnmentDate">
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
               <label for="txtDescription">Description: </label>
               <textarea class="form-control" name="txtDescription" id="txtDescription" cols="30" rows="3"></textarea>
             </div>
-            <div class="form-group">
+            <div class="form-group has-feedback">
               <label for="cmbEmployeeStatus">Employee Status: <span class="required">*</span></label>
               <select name="cmbEmployeeStatus" id="cmbEmployeeStatus" class="form-control">
                 <option value="1">Active</option>
@@ -331,21 +331,22 @@
 
       // for optional values
       if (validationInfo[elementId].optional && value.trim() == "") {
-        $(selector).parent().removeClass("has-error has-feedback");
+        $(selector).parent().removeClass("has-error");
+        $(selector).parent().removeClass("has-success");
         $(selector).parent().children("span").remove();
         return true;
       }
 
       // check form values with each regex
       if (!regex.test(value)) {
-        $(selector).parent().removeClass("has-success has-feedback");
-        $(selector).parent().addClass("has-error has-feedback");
+        $(selector).parent().removeClass("has-success");
+        $(selector).parent().addClass("has-error");
         $(selector).parent().children("span").remove();
         $(selector).parent().append(`<span class="glyphicon glyphicon-remove form-control-feedback"></span>`);
         return false;
       } else {
-        $(selector).parent().removeClass("has-error has-feedback");
-        $(selector).parent().addClass("has-success has-feedback");
+        $(selector).parent().removeClass("has-error");
+        $(selector).parent().addClass("has-success");
         $(selector).parent().children("span").remove();
         $(selector).parent().append(`<span class="glyphicon glyphicon-ok form-control-feedback"></span>`);
         return true;
