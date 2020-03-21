@@ -19,16 +19,24 @@
 
     <div class="tab-content">
 
-      <!-- <div id="table" class="tab-pane fade in active"> -->
-      <div id="table" class="tab-pane fade">
+      <div id="table" class="tab-pane fade in active">
+        <!-- <div id="table" class="tab-pane fade"> -->
         <div class="container-fluid" style="margin-top:30px">
           <table id="example" class="display" style="width:100%">
             <thead>
               <tr>
                 <th>ID</th>
-                <th>First Nmae</th>
-                <th>Last Name</th>
-                <th>Email</th>
+                <th>Number</th>
+                <th>NIC</th>
+                <th>Full Name</th>
+                <th>Calling Name</th>
+                <th>DOB</th>
+                <th>Mobile</th>
+                <th>Land</th>
+                <th>Address</th>
+                <th>Designation</th>
+                <th>Date of Assignment</th>
+                <th>Status</th>
                 <th>Edit</th>
                 <th>Delete</th>
               </tr>
@@ -40,8 +48,8 @@
         </div>
       </div>
 
-      <!-- <div id="form" class="tab-pane fade"> -->
-      <div id="form" class="tab-pane fade in active">
+      <div id="form" class="tab-pane fade">
+        <!-- <div id="form" class="tab-pane fade in active"> -->
         <div class="container-fluid" style="margin-top:30px">
           <form>
             <div class="form-group has-feedback">
@@ -145,7 +153,7 @@
               <h4 class="modal-title" id="modalOutputTitle">Modal Header</h4>
             </div>
             <div class="modal-body" id="modalOutputBody">
-              
+
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -165,8 +173,6 @@
   <script type="text/javascript" src="../lib/js/lknic.moment.min.js"></script>
 
   <script>
-
-
     // validation info for each form element
     let validationInfo = {
       "txtEmpNumber": {
@@ -245,13 +251,29 @@
 
     // when dom is ready
     $(document).ready(async function () {
-      let users = await $.getJSON("https://reqres.in/api/users");
-      let data = users.data.map(user => {
+      let employeeData = await $.getJSON("http://localhost:3000/api/employees");
+
+      if (!employeeData.status) {
+        window.alert(employeeData.msg);
+        return;
+      }
+
+      let data = employeeData.data.map(employee => {
         return {
-          id: user.id,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          email: user.email,
+          id: employee.id,
+          number: employee.number,
+          fullName: employee.fullName,
+          callingName: employee.callingName,
+          dobirth: employee.dobirth,
+          nic: employee.nic,
+          address: employee.address,
+          mobile: employee.mobile,
+          land: employee.land,
+          doassignment: employee.doassignment,
+          gender: employee.gender.name,
+          designation: employee.designation.name,
+          civilStatus: employee.civilStatus.name,
+          employeeStatus: employee.employeeStatus.name,
           edit: `<button class="btn btn-warning btn-sm">Edit</button>`,
           delete: `<button class="btn btn-danger btn-sm">Delete</button>`
         }
@@ -266,12 +288,21 @@
         data: data,
         "columns": [
           { "data": "id" },
-          { "data": "first_name" },
-          { "data": "last_name" },
-          { "data": "email" },
+          { "data": "number" },
+          { "data": "nic" },
+          { "data": "fullName" },
+          { "data": "callingName" },
+          { "data": "dobirth" },
+          { "data": "mobile" },
+          { "data": "land" },
+          { "data": "address" },
+          { "data": "designation" },
+          { "data": "doassignment" },
+          { "data": "employeeStatus" },
           { "data": "edit" },
           { "data": "delete" }
-        ]
+        ],
+        responsive: true
       });
 
       // add event listener for each element
