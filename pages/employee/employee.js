@@ -47,7 +47,7 @@ const loadEmployeeTable = async () => {
     });
 
     // init data table
-    $("#mainTable").DataTable({
+    mainTable = $("#mainTable").DataTable({
         dom: "Bfrtip",
         buttons: [
             "copy", "csv", "excel", "pdf", "print"

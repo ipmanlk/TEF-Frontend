@@ -39,6 +39,22 @@ const showOutputModal = (title, body) => {
     $("#modalOutput").modal();
 }
 
+// show confirmation modal
+const showConfirmModal = (title, body) => {
+    return new Promise((resolve, reject) => {
+        $("#modalConfirmTitle").text(title);
+        $("#modalConfirmBody").html(body);
+        $("#modalConfirm").modal();
+        $("#btnModalYes").on("click", () => {
+            resolve(true);
+            $("#modalConfirm").modal("hide");
+        });
+        $("#btnModalNo").on("click", () => {
+            resolve(false);
+        });
+    });
+}
+
 // get regexes from module names
 const getValidationInfo = async (moduleName) => {
     try {
