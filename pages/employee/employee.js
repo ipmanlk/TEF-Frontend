@@ -122,7 +122,7 @@ const addEmployee = () => {
 
     // if there are errors
     if (errors) {
-        showOutputModal("Sorry!. Please fix these errors.", errors);
+        mainWindow.showOutputModal("Sorry!. Please fix these errors.", errors);
         return;
     }
 

@@ -15,9 +15,7 @@
   <aside class="side-nav" id="show-side-navigation1">
     <i class="fa fa-bars close-aside hidden-sm hidden-md hidden-lg" data-close="show-side-navigation1"></i>
     <div class="heading">
-      <img
-        src="./img/avatar.png"
-        alt="">
+      <img src="./img/avatar.png" alt="">
       <div class="info">
         <h3><a href="#">Kasun Chandima</a></h3>
         <p>Administrator</p>
@@ -29,7 +27,7 @@
     <ul class="categories">
       <li>
         <i class="fa fa-home fa-fw" aria-hidden="true">
-          
+
         </i>
         <span onclick="loadRoute('dashboard')">Home</span>
         <!-- <ul class="side-nav-dropdown">
@@ -78,7 +76,8 @@
             data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
             <i class="fa fa-align-right"></i>
           </button>
-          <a class="navbar-brand" href="#">Two Elephants Fireworks | <span id="txtNavbarTitle" class="main-color">Dashboard</span></a>
+          <a class="navbar-brand" href="#">Two Elephants Fireworks | <span id="txtNavbarTitle"
+              class="main-color">Dashboard</span></a>
         </div>
         <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
@@ -99,22 +98,86 @@
 
     <!-- iframe content -->
     <div class="container-fluid" style="background-color: white; padding-right: 0; padding-left: 0;">
-      <iframe id="iframeContent" class="fill" src="./pages/employee/employee.html" frameborder="0"></iframe>
+      <iframe id="iframeMain" class="fill" src="./pages/employee/employee.html" frameborder="0"></iframe>
     </div>
+
   </section>
 
 
+  <!-- modal for showing outputs -->
+  <div class="modal fade" id="modalOutput" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" id="modalOutputTitle">Modal Header</h4>
+        </div>
+        <div class="modal-body" id="modalOutputBody">
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- modal for confirming -->
+  <div class="modal fade" id="modalConfirm" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" id="modalConfirmTitle">Modal Header</h4>
+        </div>
+        <div class="modal-body" id="modalConfirmBody">
+
+        </div>
+        <div class="modal-footer">
+          <button id="btnModalYes" type="button" class="btn btn-danger" style="float:left">Yes</button>
+          <button id="btnModalNo" type="button" class="btn btn-default" data-dismiss="modal">No</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- libraries -->
   <script src="./lib/js/jquery-3.4.1.min.js"></script>
   <script src="./lib/js/bootstrap.min.js"></script>
   <script src="./lib/js/theme.js"></script>
   <script src="./js/router.js"></script>
 
-
   <script>
-    $("#iframeContent").on("load", () => {
+    $("#iframeMain").on("load", () => {
       // check logged in
-      updateNavbarTitle();
+      updateRouteInfo();
     });
+
+
+    // controls modal for showing various outputs
+    const showOutputModal = (title, body) => {
+      $("#modalOutputTitle").text(title);
+      $("#modalOutputBody").html(body);
+      $("#modalOutput").modal();
+    }
+
+    // show confirmation modal
+    const showConfirmModal = (title, body) => {
+      return new Promise((resolve, reject) => {
+        $("#modalConfirmTitle").text(title);
+        $("#modalConfirmBody").html(body);
+        $("#modalConfirm").modal();
+        $("#btnModalYes").on("click", () => {
+          resolve(true);
+          $("#modalConfirm").modal("hide");
+        });
+        $("#btnModalNo").on("click", () => {
+          resolve(false);
+        });
+      });
+    }
   </script>
 
 </body>

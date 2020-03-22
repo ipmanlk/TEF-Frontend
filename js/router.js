@@ -1,15 +1,21 @@
 // load routes
 const loadRoute = (route) => {
     let routes = getRoutes();
-    $("#iframeContent").attr("src", routes[route].path);
+    $("#iframeMain").attr("src", routes[route].path);
+
+    // hide open modals
+    $(".modal").modal("hide");
+
+    // scroll to top
+    $("html, body").animate({ scrollTop: 0 }, "slow");
 }
 
-// handle navbar title changing
-const updateNavbarTitle = () => {
-    let path = document.getElementById("iframeContent").contentWindow.location.href;
+// handle iframe src changing
+const updateRouteInfo = () => {
+    let path = document.getElementById("iframeMain").contentWindow.location.href;
 
     path = `.${path.substring(path.indexOf("/pages"), path.length)}`;
-    
+
     // handle non authenticated cases
     if (path.indexOf("noauth.html") > -1) {
         window.location = "../login.html";
@@ -20,6 +26,12 @@ const updateNavbarTitle = () => {
     let routes = getRoutes();
     routes = Object.values(routes).filter(route => route.path == path);
     $("#txtNavbarTitle").text(routes[0].title);
+
+    // make modal functions available inside the iframeMain
+    document.getElementById("iframeMain").contentWindow.mainWindow = {
+        showOutputModal,
+        showConfirmModal
+    }
 }
 
 const getRoutes = () => {

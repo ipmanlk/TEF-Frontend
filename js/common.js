@@ -32,29 +32,6 @@ const validateElementValue = (validationInfo, elementId) => {
     }
 }
 
-// controls modal for showing various outputs
-const showOutputModal = (title, body) => {
-    $("#modalOutputTitle").text(title);
-    $("#modalOutputBody").html(body);
-    $("#modalOutput").modal();
-}
-
-// show confirmation modal
-const showConfirmModal = (title, body) => {
-    return new Promise((resolve, reject) => {
-        $("#modalConfirmTitle").text(title);
-        $("#modalConfirmBody").html(body);
-        $("#modalConfirm").modal();
-        $("#btnModalYes").on("click", () => {
-            resolve(true);
-            $("#modalConfirm").modal("hide");
-        });
-        $("#btnModalNo").on("click", () => {
-            resolve(false);
-        });
-    });
-}
-
 // get regexes from module names
 const getValidationInfo = async (moduleName) => {
     try {
@@ -93,7 +70,7 @@ const request = (url, method, data = {}) => {
             if (res.status) {
                 resolve(res);
             } else {
-                showOutputModal("Error", res.msg);
+                mainWindow.showOutputModal("Error", res.msg);
                 if (res.type == "auth") {
                     window.location = "noauth.html"
                 }
@@ -101,7 +78,7 @@ const request = (url, method, data = {}) => {
         });
 
         req.fail((jqXHR, textStatus) => {
-            showOutputModal("Error", `Unable to retrive data from the server: ${textStatus}`);
+            mainWindow.showOutputModal("Error", `Unable to retrive data from the server: ${textStatus}`);
         });
     });
 }
