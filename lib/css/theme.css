@@ -52,7 +52,8 @@ body {background-color: #2a2b3d}
   top: 0;
   left: 0;
   overflow: auto;
-  z-index: 9999999
+  /* z-index: 9999999 */
+  z-index: 1049;
 }
 .side-nav .close-aside {
   position: absolute;
