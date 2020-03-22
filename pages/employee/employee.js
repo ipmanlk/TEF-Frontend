@@ -2,22 +2,13 @@ let validationInfo;
 
 // when dom is ready
 $(document).ready(async function () {
-    await loadValidationInfo();
+    validationInfo = await getValidationInfo("EMPLOYEE");
     await loadEmployeeTable();
-    registerEventListeners();
+    registerGeneralEventListeners(validationInfo);
+    registerSpecificEventListeners();
 });
 
-const loadValidationInfo = async() => {
-    try {
-        let validationData = await request("http://localhost:3000/api/regex/EMPLOYEE", "GET");
-        validationInfo = validationData.data;
-    } catch (e) {
-        return;
-    }
-}
-
 const loadEmployeeTable = async () => {
-
     // get employee data from server
     let employeeData;
 
@@ -82,13 +73,7 @@ const loadEmployeeTable = async () => {
     });
 }
 
-const registerEventListeners = () => {
-    // realtime validation
-    validationInfo.forEach(vi => {
-        $(`#${vi.attribute}`).on("keyup change", () => {
-            validateElementValue(vi.attribute);
-        });
-    })
+const registerSpecificEventListeners = () => {
 
     // handle image upload preview
     $("#filePhoto").on("change", (event) => {
@@ -103,44 +88,8 @@ const registerEventListeners = () => {
         $("#dobirth").val(dateOfBirth);
     });
 
-    // prevent from submission
-    $("form").on("submit", (e) => e.preventDefault());
-
-
     // for form buttons
     $("#btnFmAdd").on("click", addEmployee);
-}
-
-const validateElementValue = (elementId) => {
-    // get values need for validation
-    let selector = `#${elementId}`;
-    let value = $(selector).val();
-    let elementValidationInfo = validationInfo.find(vi => vi.attribute == elementId);
-    
-    let regex = new RegExp(elementValidationInfo.regex);
-    
-    // for optional values
-    if (elementValidationInfo.optional && value.trim() == "") {
-        $(selector).parent().removeClass("has-error");
-        $(selector).parent().removeClass("has-success");
-        $(selector).parent().children("span").remove();
-        return true;
-    }
-
-    // check form values with each regex
-    if (!regex.test(value)) {
-        $(selector).parent().removeClass("has-success");
-        $(selector).parent().addClass("has-error");
-        $(selector).parent().children("span").remove();
-        $(selector).parent().append(`<span class="glyphicon glyphicon-remove form-control-feedback"></span>`);
-        return false;
-    } else {
-        $(selector).parent().removeClass("has-error");
-        $(selector).parent().addClass("has-success");
-        $(selector).parent().children("span").remove();
-        $(selector).parent().append(`<span class="glyphicon glyphicon-ok form-control-feedback"></span>`);
-        return true;
-    }
 }
 
 const validateForm = () => {
@@ -148,15 +97,17 @@ const validateForm = () => {
     let formData = {};
 
     // test each value and validate
-    Object.keys(validationInfo).forEach(elementId => {
-        let isValid = validateElementValue(elementId);
+    validationInfo.forEach(vi => {
+        let elementId = vi.attribute;
+        let isValid = validateElementValue(validationInfo, elementId);
 
         if (!isValid) {
-            errors += `${validationInfo[elementId].error}<br/>`
+            errors += `${vi.error}<br/>`
         } else {
-            formData[validationInfo[elementId].mapping] = $(`#${elementId}`).val();
+            formData[elementId] = $(`#${elementId}`).val();
         }
     });
+
     console.log(formData);
 
     // if there aren't any errors
@@ -178,36 +129,3 @@ const addEmployee = () => {
     // proceed with adding
 }
 
-// modal for showing various outputs
-const showOutputModal = (title, body) => {
-    $("#modalOutputTitle").text(title);
-    $("#modalOutputBody").html(body);
-    $("#modalOutput").modal();
-}
-
-// http request sender
-const request = (url, method, data = {}) => {
-    return new Promise((resolve, reject) => {
-        let req = $.ajax({
-            url: url,
-            method: method,
-            data: data,
-            dataType: "json"
-        });
-
-        req.done((res) => {
-            if (res.status) {
-                resolve(res);
-            } else {
-                showOutputModal("Error", res.msg);
-                if (res.type == "auth") {
-                    window.location = "noauth.html"
-                }
-            }
-        });
-
-        req.fail((jqXHR, textStatus) => {
-            showOutputModal("Error", `Unable to retrive data from the server: ${textStatus}`);
-        });
-    });
-}
