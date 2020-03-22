@@ -57,14 +57,21 @@ const registerGeneralEventListeners = (validationInfo) => {
 
 
 // send http requests and handle errors
-const request = (url, method, data = {}) => {
+const request = (url, method, data = {}, isFormData = false) => {
     return new Promise((resolve, reject) => {
-        let req = $.ajax({
+        let options;
+        options = {
+            type: method,
             url: url,
-            method: method,
             data: data,
             dataType: "json"
-        });
+        }
+        if (isFormData) {
+            options.processData = false;
+            options.contentType = false;
+        }
+
+        let req = $.ajax(options);
 
         req.done((res) => {
             if (res.status) {
@@ -79,6 +86,7 @@ const request = (url, method, data = {}) => {
 
         req.fail((jqXHR, textStatus) => {
             mainWindow.showOutputModal("Error", `Unable to retrive data from the server: ${textStatus}`);
+            reject(textStatus);
         });
     });
 }

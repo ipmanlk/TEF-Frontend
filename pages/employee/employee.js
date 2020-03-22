@@ -76,9 +76,9 @@ const loadEmployeeTable = async () => {
 const registerSpecificEventListeners = () => {
 
     // handle image upload preview
-    $("#filePhoto").on("change", (event) => {
-        if (filePhoto.files && filePhoto.files[0]) {
-            filePhotoPreview.src = URL.createObjectURL(event.target.files[0]);
+    $("#photo").on("change", (event) => {
+        if (photo.files && photo.files[0]) {
+            photoPreview.src = URL.createObjectURL(event.target.files[0]);
         }
     });
 
@@ -94,7 +94,7 @@ const registerSpecificEventListeners = () => {
 
 const validateForm = () => {
     let errors = "";
-    let formData = {};
+    var formData = new FormData();
 
     // test each value and validate
     validationInfo.forEach(vi => {
@@ -104,28 +104,52 @@ const validateForm = () => {
         if (!isValid) {
             errors += `${vi.error}<br/>`
         } else {
-            formData[elementId] = $(`#${elementId}`).val();
+            if (elementId == "photo") {
+                let file = photo.files[0];
+                formData.append("photo", file);
+            } else {
+                formData.append(elementId, $(`#${elementId}`).val());
+            }
         }
     });
 
-    console.log(formData);
-
     // if there aren't any errors
-    if (errors == "") return formData;
+    if (errors == "") {
+        return {
+            status: true,
+            data: formData
+        }
+    }
+
+    // add date of birth
+    formData.append("dobirth", $("#dobirth").val());
 
     // if there are errors
-    return errors;
+    return {
+        status: false,
+        data: errors
+    };
 }
 
-const addEmployee = () => {
-    const errors = validateForm();
+const addEmployee = async() => {
+    const { status, data } = validateForm();
 
     // if there are errors
-    if (errors) {
-        mainWindow.showOutputModal("Sorry!. Please fix these errors.", errors);
+    if (!status) {
+        mainWindow.showOutputModal("Sorry!. Please fix these errors.", data);
         return;
     }
 
-    // proceed with adding
+    // get response
+    const res = await request("http://localhost:3000/api/employee", "POST", data, true).catch(e => {
+        console.log(e);
+    });
+
+    // show output modal based on response
+    if (res.status) {
+        showOutputModal("Success!", res.msg);
+    } else {
+        showOutputModal("Sorry!", res.msg);
+    }
 }
 
