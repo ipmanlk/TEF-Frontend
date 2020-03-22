@@ -22,7 +22,7 @@
       <div id="table" class="tab-pane fade in active">
         <!-- <div id="table" class="tab-pane fade"> -->
         <div class="container-fluid" style="margin-top:30px">
-          <table id="example" class="display" style="width:100%">
+          <table id="mainTable" class="display" style="width:100%">
             <thead>
               <tr>
                 <th>ID</th>
@@ -135,10 +135,10 @@
                 <option value="2">Terminated</option>
               </select>
             </div>
-            <button class="btn btn-success">Add</button>
-            <button class="btn btn-warning">Update</button>
-            <button class="btn btn-primary" style="float: right; margin-left: 10px;">Reset</button>
-            <button class="btn btn-danger" style="float: right;">Delete</button>
+            <button id="btnFmAdd" class="btn btn-success">Add</button>
+            <button id="btnFmUpdate" class="btn btn-warning">Update</button>
+            <button id="btnFmReset" class="btn btn-primary" style="float: right; margin-left: 10px;">Reset</button>
+            <button id="btnFmDelete" class="btn btn-danger" style="float: right;">Delete</button>
           </form>
         </div>
 
@@ -165,223 +165,16 @@
     </div>
   </div>
   </section>
-  <!-- partial -->
+
+  <!-- libs -->
   <script src="../lib/js/jquery-3.4.1.min.js"></script>
   <script src="../lib/js/bootstrap.min.js"></script>
   <script src="../lib/js/theme.js"></script>
   <script type="text/javascript" src="../lib/DataTables/datatables.min.js"></script>
   <script type="text/javascript" src="../lib/js/lknic.moment.min.js"></script>
 
-  <script>
-    // validation info for each form element
-    let validationInfo = {
-      "txtEmpNumber": {
-        "regex": /^[\d]{4}$/,
-        "mapping": "number",
-        "error": "Please provide a valid employee number!."
-      },
-      "txtFullName": {
-        "regex": /^[\w\s]{5,150}$/,
-        "mapping": "fullname",
-        "error": "Please provide a valid full name!."
-      },
-      "txtCallingName": {
-        "regex": /^[\w\s]{2,45}$/,
-        "mapping": "callingname",
-        "error": "Please provide a valid calling name!."
-      },
-      "txtNIC": {
-        "regex": /^([\d]{9}(\V|\X))|([\d]{12})$/,
-        "mapping": "nic",
-        "error": "Please provide a valid NIC!."
-      },
-      "filePhoto": {
-        "regex": /^.+(jpg|png|gif)$/,
-        "mapping": "photo",
-        "error": "Please select a valid profile picture!."
-      },
-      "txtAddress": {
-        "regex": /^[\w\s\d\,\\\.\n\/]{10,200}$/,
-        "mapping": "address",
-        "error": "Please provide a valid address!."
-      },
-      "txtMobile": {
-        "regex": /^[\d]{10}$/,
-        "mapping": "mobile",
-        "error": "Please provide a valid mobile number!."
-      },
-      "txtLand": {
-        "regex": /^[\d]{10}$/,
-        "mapping": "land",
-        "error": "Please provide a valid landphone number!.",
-        "optional": true
-      },
-      "txtAissgnmentDate": {
-        "regex": /^(\d{4})-(\d{2})-(\d{2})$/,
-        "mapping": "doassignment",
-        "error": "Please select a valid date of assignment!."
-      },
-      "txtDescription": {
-        "regex": /^[\w\s\d\,\\\.\n\/]{10,100}$/,
-        "mapping": "description",
-        "error": "Please provide a valid description!.",
-        "optional": true
-      },
-      "cmbGender": {
-        "regex": /^[\d]+$/,
-        "mapping": "genderId",
-        "error": "Please select a valid gender!."
-      },
-      "cmbCivilStatus": {
-        "regex": /^\d+$/,
-        "mapping": "civilstatusId",
-        "error": "Please select a valid civil status!."
-      },
-      "cmbDesignation": {
-        "regex": /\d+$/,
-        "mapping": "designationId",
-        "error": "Please select a valid designation!."
-      },
-      "cmbEmployeeStatus": {
-        "regex": /^\d+$/,
-        "mapping": "employeestatusId",
-        "error": "Please select a valid employee status!."
-      }
-    }
-
-    // when dom is ready
-    $(document).ready(async function () {
-      let employeeData = await $.getJSON("http://localhost:3000/api/employees");
-
-      if (!employeeData.status) {
-        window.alert(employeeData.msg);
-        return;
-      }
-
-      let data = employeeData.data.map(employee => {
-        return {
-          id: employee.id,
-          number: employee.number,
-          fullName: employee.fullName,
-          callingName: employee.callingName,
-          dobirth: employee.dobirth,
-          nic: employee.nic,
-          address: employee.address,
-          mobile: employee.mobile,
-          land: employee.land,
-          doassignment: employee.doassignment,
-          gender: employee.gender.name,
-          designation: employee.designation.name,
-          civilStatus: employee.civilStatus.name,
-          employeeStatus: employee.employeeStatus.name,
-          edit: `<button class="btn btn-warning btn-sm">Edit</button>`,
-          delete: `<button class="btn btn-danger btn-sm">Delete</button>`
-        }
-      });
-
-      // init data table
-      $('#example').DataTable({
-        dom: 'Bfrtip',
-        buttons: [
-          'copy', 'csv', 'excel', 'pdf', 'print'
-        ],
-        data: data,
-        "columns": [
-          { "data": "id" },
-          { "data": "number" },
-          { "data": "nic" },
-          { "data": "fullName" },
-          { "data": "callingName" },
-          { "data": "dobirth" },
-          { "data": "mobile" },
-          { "data": "land" },
-          { "data": "address" },
-          { "data": "designation" },
-          { "data": "doassignment" },
-          { "data": "employeeStatus" },
-          { "data": "edit" },
-          { "data": "delete" }
-        ],
-        responsive: true
-      });
-
-      // add event listener for each element
-      Object.keys(validationInfo).forEach(elementId => {
-        $(`#${elementId}`).on("keyup change", () => {
-          validateElementValue(elementId);
-        });
-      })
-    });
-
-    // handle image upload preview
-    $("#filePhoto").on("change", (event) => {
-      if (filePhoto.files && filePhoto.files[0]) {
-        filePhotoPreview.src = URL.createObjectURL(event.target.files[0]);
-      }
-    })
-
-    // handle form submissions
-    $("form").on("submit", (e) => {
-      e.preventDefault();
-
-      let errors = "";
-      Object.keys(validationInfo).forEach(elementId => {
-        let isValid = validateElementValue(elementId);
-
-        // get errors
-        if (!isValid) {
-          errors += `${validationInfo[elementId].error}<br/>`
-        }
-      });
-
-      // if there are errors
-      if (errors !== "") {
-        $("#modalOutputTitle").text("Sorry!. Please fix these errors.");
-        $("#modalOutputBody").html(errors);
-        $("#modalOutput").modal();
-        return;
-      }
-
-      // or submit the form
-    })
-
-    // fill date of birth from nic
-    $("#txtNIC").on("change keyup", (e) => {
-      let { dateOfBirth } = getNICinfo(e.target.value);
-      $("#txtDOB").val(dateOfBirth);
-    });
-
-    // validate
-    const validateElementValue = (elementId) => {
-      // get values need for validation
-      let selector = `#${elementId}`;
-      let value = $(selector).val();
-      let regex = validationInfo[elementId].regex;
-
-      // for optional values
-      if (validationInfo[elementId].optional && value.trim() == "") {
-        $(selector).parent().removeClass("has-error");
-        $(selector).parent().removeClass("has-success");
-        $(selector).parent().children("span").remove();
-        return true;
-      }
-
-      // check form values with each regex
-      if (!regex.test(value)) {
-        $(selector).parent().removeClass("has-success");
-        $(selector).parent().addClass("has-error");
-        $(selector).parent().children("span").remove();
-        $(selector).parent().append(`<span class="glyphicon glyphicon-remove form-control-feedback"></span>`);
-        return false;
-      } else {
-        $(selector).parent().removeClass("has-error");
-        $(selector).parent().addClass("has-success");
-        $(selector).parent().children("span").remove();
-        $(selector).parent().append(`<span class="glyphicon glyphicon-ok form-control-feedback"></span>`);
-        return true;
-      }
-    }
-  </script>
+  <!-- main js -->
+  <script src="employee.js"></script>
 </body>
 
 </html>
