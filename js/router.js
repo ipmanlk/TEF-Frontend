@@ -26,11 +26,11 @@ const getRoutes = () => {
     return {
         "dashboard": {
             title: "Dashboard",
-            path: "./pages/dashboard.html"
+            path: "./pages/dashboard/dashboard.html"
         },
         "employee": {
             title: "Employee View",
-            path: "./pages/employee.html"
+            path: "./pages/employee/employee.html"
         },
         "noauth": {
             title: "Auth Failure",
