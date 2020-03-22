@@ -1,85 +1,20 @@
-// validation info for each form element
-const validationInfo = {
-    "txtEmpNumber": {
-        "regex": /^[\d]{4}$/,
-        "mapping": "number",
-        "error": "Please provide a valid employee number!."
-    },
-    "txtFullName": {
-        "regex": /^[\w\s]{5,150}$/,
-        "mapping": "fullname",
-        "error": "Please provide a valid full name!."
-    },
-    "txtCallingName": {
-        "regex": /^[\w\s]{2,45}$/,
-        "mapping": "callingname",
-        "error": "Please provide a valid calling name!."
-    },
-    "txtNIC": {
-        "regex": /^([\d]{9}(\V|\X))|([\d]{12})$/,
-        "mapping": "nic",
-        "error": "Please provide a valid NIC!."
-    },
-    "filePhoto": {
-        "regex": /^.+(jpg|png|gif)$/,
-        "mapping": "photo",
-        "error": "Please select a valid profile picture!."
-    },
-    "txtAddress": {
-        "regex": /^[\w\s\d\,\\\.\n\/]{10,200}$/,
-        "mapping": "address",
-        "error": "Please provide a valid address!."
-    },
-    "txtMobile": {
-        "regex": /^[\d]{10}$/,
-        "mapping": "mobile",
-        "error": "Please provide a valid mobile number!."
-    },
-    "txtLand": {
-        "regex": /^[\d]{10}$/,
-        "mapping": "land",
-        "error": "Please provide a valid landphone number!.",
-        "optional": true
-    },
-    "txtAissgnmentDate": {
-        "regex": /^(\d{4})-(\d{2})-(\d{2})$/,
-        "mapping": "doassignment",
-        "error": "Please select a valid date of assignment!."
-    },
-    "txtDescription": {
-        "regex": /^[\w\s\d\,\\\.\n\/]{10,100}$/,
-        "mapping": "description",
-        "error": "Please provide a valid description!.",
-        "optional": true
-    },
-    "cmbGender": {
-        "regex": /^[\d]+$/,
-        "mapping": "genderId",
-        "error": "Please select a valid gender!."
-    },
-    "cmbCivilStatus": {
-        "regex": /^\d+$/,
-        "mapping": "civilstatusId",
-        "error": "Please select a valid civil status!."
-    },
-    "cmbDesignation": {
-        "regex": /\d+$/,
-        "mapping": "designationId",
-        "error": "Please select a valid designation!."
-    },
-    "cmbEmployeeStatus": {
-        "regex": /^\d+$/,
-        "mapping": "employeestatusId",
-        "error": "Please select a valid employee status!."
-    }
-}
+let validationInfo;
 
 // when dom is ready
 $(document).ready(async function () {
+    await loadValidationInfo();
     await loadEmployeeTable();
     registerEventListeners();
 });
 
+const loadValidationInfo = async() => {
+    try {
+        let validationData = await request("http://localhost:3000/api/regex/EMPLOYEE", "GET");
+        validationInfo = validationData.data;
+    } catch (e) {
+        return;
+    }
+}
 
 const loadEmployeeTable = async () => {
 
@@ -149,11 +84,11 @@ const loadEmployeeTable = async () => {
 
 const registerEventListeners = () => {
     // realtime validation
-    Object.keys(validationInfo).forEach(elementId => {
-        $(`#${elementId}`).on("keyup change", () => {
-            validateElementValue(elementId);
+    validationInfo.forEach(vi => {
+        $(`#${vi.attribute}`).on("keyup change", () => {
+            validateElementValue(vi.attribute);
         });
-    });
+    })
 
     // handle image upload preview
     $("#filePhoto").on("change", (event) => {
@@ -163,9 +98,9 @@ const registerEventListeners = () => {
     });
 
     // fill date of birth from nic
-    $("#txtNIC").on("change keyup", (e) => {
+    $("#nic").on("change keyup", (e) => {
         let { dateOfBirth } = getNICinfo(e.target.value);
-        $("#txtDOB").val(dateOfBirth);
+        $("#dobirth").val(dateOfBirth);
     });
 
     // prevent from submission
@@ -180,10 +115,12 @@ const validateElementValue = (elementId) => {
     // get values need for validation
     let selector = `#${elementId}`;
     let value = $(selector).val();
-    let regex = validationInfo[elementId].regex;
-
+    let elementValidationInfo = validationInfo.find(vi => vi.attribute == elementId);
+    
+    let regex = new RegExp(elementValidationInfo.regex);
+    
     // for optional values
-    if (validationInfo[elementId].optional && value.trim() == "") {
+    if (elementValidationInfo.optional && value.trim() == "") {
         $(selector).parent().removeClass("has-error");
         $(selector).parent().removeClass("has-success");
         $(selector).parent().children("span").remove();
