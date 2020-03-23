@@ -11,6 +11,11 @@ const validateElementValue = (elementValidationInfo) => {
     const regex = new RegExp(elementValidationInfo.regex);
 
 
+    // for input file type 
+    if ($(selector).attr("type") == "file" && value.trim() == "") {
+        return true;
+    }
+
     // if value is optional and not set, ignore
     if (elementValidationInfo.optional && value.trim() == "") {
         $(selector).parent().removeClass("has-error");
@@ -55,6 +60,13 @@ const getImageURLfromBuffer = (buffer) => {
     const urlCreator = window.URL || window.webkitURL;
     const imageUrl = urlCreator.createObjectURL(blob);
     return imageUrl;
+}
+
+// create a blob from buffer
+const getBlobFromBuffer = (buffer) => {
+    const arrayBufferView = new Uint8Array(buffer.data);
+    const blob = new Blob([arrayBufferView], { type: "image/png" });
+    return blob;
 }
 
 // send http requests and handle errors
