@@ -1,13 +1,16 @@
 // validate element values using given regular expressions
-const validateElementValue = (validationInfo, elementId) => {
-    // create selector name for given id
-    let selector = `#${elementId}`;
-    // get value of given element
-    let value = $(selector).val();
-    // find regex for given elementId
-    let elementValidationInfo = validationInfo.find(vi => vi.attribute == elementId);
-    let regex = new RegExp(elementValidationInfo.regex);
+const validateElementValue = (elementValidationInfo) => {
 
+    // create selector name for ui element id
+    const selector = `#${elementValidationInfo.attribute}`;
+   
+    // get value of element id
+    const value = $(selector).val();
+
+    // create RegExp object from regex string
+    const regex = new RegExp(elementValidationInfo.regex);
+
+    
     // if value is optional and not set, ignore
     if (elementValidationInfo.optional && value.trim() == "") {
         $(selector).parent().removeClass("has-error");
@@ -47,7 +50,7 @@ const registerGeneralEventListeners = (validationInfo) => {
     // realtime validation
     validationInfo.forEach(vi => {
         $(`#${vi.attribute}`).on("keyup change", () => {
-            validateElementValue(validationInfo, vi.attribute);
+            validateElementValue(vi);
         });
     });
 
