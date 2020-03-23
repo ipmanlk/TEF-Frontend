@@ -99,7 +99,7 @@ const validateForm = () => {
     // test each value and validate
     validationInfo.forEach(vi => {
         let elementId = vi.attribute;
-        let isValid = validateElementValue(validationInfo, elementId);
+        let isValid = validateElementValue(vi);
 
         if (!isValid) {
             errors += `${vi.error}<br/>`
