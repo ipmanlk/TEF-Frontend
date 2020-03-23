@@ -1,4 +1,5 @@
-let validationInfo;
+// globally available temprary data
+window.tempData = { selectedEntry: undefined, validationInfo: undefined };
 
 // when dom is ready
 $(document).ready(async function () {
@@ -6,12 +7,12 @@ $(document).ready(async function () {
     let { data } = await request("/api/regex/EMPLOYEE", "GET").catch(e => {
         console.log(e);
     });
-    validationInfo = data;
+    tempData.validationInfo = data;
 
     // load form and event listeners
     await loadFromSelects();
     await loadMainTable();
-    registerGeneralEventListeners(validationInfo);
+    registerGeneralEventListeners(tempData.validationInfo);
     registerSpecificEventListeners();
 });
 
@@ -130,6 +131,7 @@ const registerSpecificEventListeners = () => {
 
     // for form buttons
     $("#btnFmAdd").on("click", addEntry);
+    $("#btnFmUpdate").on("click", updateEntry);
 }
 
 const showDateOfBirth = (nic) => {
@@ -139,10 +141,10 @@ const showDateOfBirth = (nic) => {
 
 const validateForm = () => {
     let errors = "";
-    var formData = new FormData();
+    let formData = new FormData();
 
     // test each value and validate
-    validationInfo.forEach(vi => {
+    tempData.validationInfo.forEach(vi => {
         let elementId = vi.attribute;
         let isValid = validateElementValue(vi);
 
@@ -150,7 +152,11 @@ const validateForm = () => {
             errors += `${vi.error}<br/>`
         } else {
             if (elementId == "photo") {
-                let file = photo.files[0];
+                /*
+                when editing a entry photo.files[0] might not be available. 
+                So, we set it to false when profile pic is the same
+                */
+                let file = photo.files[0] || false;
                 formData.append("photo", file);
             } else {
                 formData.append(elementId, $(`#${elementId}`).val());
@@ -192,9 +198,9 @@ const addEntry = async () => {
 
     // show output modal based on response
     if (res.status) {
-        showOutputModal("Success!", res.msg);
+        mainWindow.showOutputModal("Success!", res.msg);
     } else {
-        showOutputModal("Sorry!", res.msg);
+        mainWindow.showOutputModal("Sorry!", res.msg);
     }
 }
 
@@ -236,8 +242,61 @@ const editEntry = async (id) => {
     showDateOfBirth(employee.nic);
 
     // set profile picture preview
-    $("#photoPreview").attr("src", getImageURLfromBuffer(employee.photo));
+    const imageURL = getImageURLfromBuffer(employee.photo);
+    $("#photoPreview").attr("src", imageURL);
+    photo.files[0] = employee.photo.data;
 
     // change tab to form
     $(".nav-tabs a[href='#form']").tab("show");
+
+    // set employee object globally to later compare
+    window.tempData.selectedEntry = employee;
+}
+
+const updateEntry = async () => {
+    const { status, data } = validateForm();
+
+    // if there are errors
+    if (!status) {
+        mainWindow.showOutputModal("Sorry!. Please fix these errors.", data);
+        return;
+    }
+
+    // create a javascript object form the formData object
+    let newEntryObj = {};
+    data.forEach((value, key) => { newEntryObj[key] = value });
+
+
+    // check if any of the data in entry has changed
+    let dataHasChanged = false;
+
+    for (let key in newEntryObj) {
+        if (key == "photo" && newEntryObj[key] == "false") {
+            continue;
+        }
+
+        if (newEntryObj[key] !== tempData.selectedEntry[key].toString()) {
+            hasDataChanged = true;
+        }
+    }
+
+    // if nothing has been modifed
+    if (!dataHasChanged) {
+        mainWindow.showOutputModal("Sorry!.", "You haven't changed anything to update.");
+        return;
+    }
+
+
+
+    // // get response
+    // const res = await request("/api/employee", "PUT", data, true).catch(e => {
+    //     console.log(e);
+    // });
+
+    // // show output modal based on response
+    // if (res.status) {
+    //     showOutputModal("Success!", res.msg);
+    // } else {
+    //     showOutputModal("Sorry!", res.msg);
+    // }
 }
