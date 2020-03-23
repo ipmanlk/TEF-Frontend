@@ -3,14 +3,14 @@ const validateElementValue = (elementValidationInfo) => {
 
     // create selector name for ui element id
     const selector = `#${elementValidationInfo.attribute}`;
-   
+
     // get value of element id
     const value = $(selector).val();
 
     // create RegExp object from regex string
     const regex = new RegExp(elementValidationInfo.regex);
 
-    
+
     // if value is optional and not set, ignore
     if (elementValidationInfo.optional && value.trim() == "") {
         $(selector).parent().removeClass("has-error");
@@ -48,6 +48,14 @@ const registerGeneralEventListeners = (validationInfo) => {
     $("form").on("submit", (e) => e.preventDefault());
 }
 
+// create image url from buffer data recived from server
+const getImageURLfromBuffer = (buffer) => {
+    const arrayBufferView = new Uint8Array(buffer.data);
+    const blob = new Blob([arrayBufferView], { type: "image/png" });
+    const urlCreator = window.URL || window.webkitURL;
+    const imageUrl = urlCreator.createObjectURL(blob);
+    return imageUrl;
+}
 
 // send http requests and handle errors
 const request = (path, method, data = {}, isFormData = false) => {

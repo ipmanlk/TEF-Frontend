@@ -126,13 +126,17 @@ const registerSpecificEventListeners = () => {
     });
 
     // fill date of birth from nic
-    $("#nic").on("change keyup", (e) => {
-        let { dateOfBirth } = getNICinfo(e.target.value);
-        $("#dobirth").val(dateOfBirth);
+    $("#nic").on("paste change keyup", (e) => {
+        showDateOfBirth(e.target.value);
     });
 
     // for form buttons
     $("#btnFmAdd").on("click", addEntry);
+}
+
+const showDateOfBirth = (nic) => {
+    let { dateOfBirth } = getNICinfo(nic);
+    $("#dobirth").val(dateOfBirth);
 }
 
 const validateForm = () => {
@@ -204,7 +208,38 @@ const editEntry = async (id) => {
     }).catch(e => {
         console.log(e);
     });
+    const employee = res.data;
 
+    // set input values
+    Object.keys(employee).forEach(key => {
+        if (key == "photo") return;
+        $(`#${key}`).val(employee[key]);
+    });
+
+    // select correct option in dorpdowns
+    const dropdowns = [
+        "civilStatusId",
+        "designationId",
+        "genderId",
+        "employeeStatusId"
+    ];
+
+    dropdowns.forEach(elementId => {
+        $(`#${elementId}`).children("option").each(function () {
+            $(this).removeAttr("selected");
+            const optionValue = $(this).attr("value");
+            if (optionValue == employee[elementId]) {
+                $(this).attr("selected", "selected");
+            }
+        });
+    });
+
+    // update date of birth
+    showDateOfBirth(employee.nic);
+
+    // set profile picture preview
+    $("#photoPreview").attr("src", getImageURLfromBuffer(employee.photo));
+
+    // change tab to form
     $(".nav-tabs a[href='#form']").tab("show");
-    console.log(res);
 }
