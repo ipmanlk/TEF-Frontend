@@ -35,16 +35,6 @@ const validateElementValue = (elementValidationInfo) => {
     }
 }
 
-// get regexes from module names
-const getValidationInfo = async (moduleName) => {
-    try {
-        let validationData = await request(`http://localhost:3000/api/regex/${moduleName}`, "GET");
-        return validationData.data;
-    } catch (e) {
-        return;
-    }
-}
-
 // general event listeners based on regexes and attributes received from server
 const registerGeneralEventListeners = (validationInfo) => {
     // realtime validation
@@ -60,12 +50,12 @@ const registerGeneralEventListeners = (validationInfo) => {
 
 
 // send http requests and handle errors
-const request = (url, method, data = {}, isFormData = false) => {
+const request = (path, method, data = {}, isFormData = false) => {
     return new Promise((resolve, reject) => {
         let options;
         options = {
             type: method,
-            url: url,
+            url: `http://localhost:3000${path}`,
             data: data,
             dataType: "json"
         }

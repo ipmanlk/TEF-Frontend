@@ -2,21 +2,66 @@ let validationInfo;
 
 // when dom is ready
 $(document).ready(async function () {
-    validationInfo = await getValidationInfo("EMPLOYEE");
-    await loadEmployeeTable();
+    // get regexes
+    let { data } = await request("/api/regex/EMPLOYEE", "GET").catch(e => {
+        console.log(e);
+    });
+    validationInfo = data;
+
+    // load form and event listeners
+    await loadFromSelects();
+    await loadMainTable();
     registerGeneralEventListeners(validationInfo);
     registerSpecificEventListeners();
 });
 
-const loadEmployeeTable = async () => {
-    // get employee data from server
-    let employeeData;
+const loadFromSelects = async () => {
+    let designations, genders, employeeStatuses, civilStatues;
 
+    // get data from the api for each dropbox
     try {
-        employeeData = await request("http://localhost:3000/api/employees", "GET");
+        let response;
+        response = await request("/api/employee/designation");
+        designations = response.data;
+
+        response = await request("/api/employee/gender");
+        genders = response.data;
+
+        response = await request("/api/employee/employee_status");
+        employeeStatuses = response.data;
+
+        response = await request("/api/employee/civil_status");
+        civilStatues = response.data;
     } catch (e) {
-        return;
+        console.log(e);
     }
+
+    // map data with dropdown ids
+    const dropdownData = {
+        civilStatusId: civilStatues,
+        designationId: designations,
+        genderId: genders,
+        employeeStatusId: employeeStatuses
+    }
+
+    // populate dropboxes with data
+    Object.keys(dropdownData).forEach(dropdownId => {
+        const selector = `#${dropdownId}`;
+        $(selector).empty();
+
+        dropdownData[dropdownId].forEach(entry => {
+            $(selector).append(`
+            <option value="${entry.id}">${entry.name}</option>
+            `);
+        });
+    })
+}
+
+const loadMainTable = async () => {
+    // get employee data from server
+    let employeeData = await request("/api/employees", "GET").catch(e => {
+        console.log(e);
+    });
 
     // check if server returned an error
     if (!employeeData.status) {
@@ -27,7 +72,6 @@ const loadEmployeeTable = async () => {
     // map data to support data table structure
     let data = employeeData.data.map(employee => {
         return {
-            id: employee.id,
             number: employee.number,
             fullName: employee.fullName,
             callingName: employee.callingName,
@@ -41,8 +85,8 @@ const loadEmployeeTable = async () => {
             designation: employee.designation.name,
             civilStatus: employee.civilStatus.name,
             employeeStatus: employee.employeeStatus.name,
-            edit: `<button class="btn btn-warning btn-sm">Edit</button>`,
-            delete: `<button class="btn btn-danger btn-sm">Delete</button>`
+            edit: `<button class="btn btn-warning btn-sm" onclick="editEntry('${employee.id}')">Edit</button>`,
+            delete: `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${employee.id}')">Delete</button>`
         }
     });
 
@@ -54,7 +98,6 @@ const loadEmployeeTable = async () => {
         ],
         data: data,
         "columns": [
-            { "data": "id" },
             { "data": "number" },
             { "data": "nic" },
             { "data": "fullName" },
@@ -89,7 +132,7 @@ const registerSpecificEventListeners = () => {
     });
 
     // for form buttons
-    $("#btnFmAdd").on("click", addEmployee);
+    $("#btnFmAdd").on("click", addEntry);
 }
 
 const validateForm = () => {
@@ -131,7 +174,7 @@ const validateForm = () => {
     };
 }
 
-const addEmployee = async() => {
+const addEntry = async () => {
     const { status, data } = validateForm();
 
     // if there are errors
@@ -141,7 +184,7 @@ const addEmployee = async() => {
     }
 
     // get response
-    const res = await request("http://localhost:3000/api/employee", "POST", data, true).catch(e => {
+    const res = await request("/api/employee", "POST", data, true).catch(e => {
         console.log(e);
     });
 
@@ -153,3 +196,15 @@ const addEmployee = async() => {
     }
 }
 
+const editEntry = async (id) => {
+    const res = await request("/api/employee", "GET", {
+        data: {
+            id: id
+        }
+    }).catch(e => {
+        console.log(e);
+    });
+
+    $(".nav-tabs a[href='#form']").tab("show");
+    console.log(res);
+}
