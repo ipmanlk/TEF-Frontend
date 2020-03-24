@@ -132,6 +132,18 @@ const registerSpecificEventListeners = () => {
     // for form buttons
     $("#btnFmAdd").on("click", addEntry);
     $("#btnFmUpdate").on("click", updateEntry);
+
+    // get employee number from server when adding a new one
+    $(".nav-tabs a[href='#form']").on("click", getEmployeeNumber);
+}
+
+// get next employee number available
+const getEmployeeNumber = async () => {
+    const { data } = await request("/api/employee/next_number").catch(e => {
+        console.log(e);
+    });
+
+    $("#number").val(data.nextNumber);
 }
 
 const showDateOfBirth = (nic) => {
@@ -187,13 +199,13 @@ const validateForm = async () => {
 
 const addEntry = async () => {
     const { status, data } = await validateForm();
-    
+
     // if there are errors
     if (!status) {
         mainWindow.showOutputModal("Sorry!. Please fix these errors.", data);
         return;
     }
-    
+
     // get response
     const res = await request("/api/employee", "POST", { data: data }).catch(e => {
         console.log(e);
@@ -267,25 +279,25 @@ const updateEntry = async () => {
 
     // new entry object
     let newEntryObj = data;
-        
+
     // check if any of the data in entry has changed
     let dataHasChanged = false;
 
-    for (let key in newEntryObj) {        
+    for (let key in newEntryObj) {
         if (key == "photo" && newEntryObj[key] == false) {
             continue;
         }
 
         try {
-            if (newEntryObj[key]!== tempData.selectedEntry[key].toString()) {
+            if (newEntryObj[key] !== tempData.selectedEntry[key].toString()) {
                 dataHasChanged = true;
             }
         } catch (error) {
             console.log(key);
-            
+
         }
     }
-    
+
     // if nothing has been modifed
     if (!dataHasChanged) {
         mainWindow.showOutputModal("Sorry!.", "You haven't changed anything to update.");
@@ -296,7 +308,7 @@ const updateEntry = async () => {
     newEntryObj.id = tempData.selectedEntry.id;
 
     // get response
-    const res = await request("/api/employee", "PUT", {data: newEntryObj}).catch(e => {
+    const res = await request("/api/employee", "PUT", { data: newEntryObj }).catch(e => {
         console.log(e);
     });
 
