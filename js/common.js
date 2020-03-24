@@ -12,7 +12,7 @@ const validateElementValue = (elementValidationInfo) => {
 
 
     // for input file type 
-    if ($(selector).attr("type") == "file" && value.trim() == "") {
+    if ($(selector).attr("type") == "file" && value.trim() == "" && tempData.selectedEntry !== undefined) {
         return true;
     }
 
@@ -62,29 +62,39 @@ const getImageURLfromBuffer = (buffer) => {
     return imageUrl;
 }
 
-// create a blob from buffer
-const getBlobFromBuffer = (buffer) => {
-    const arrayBufferView = new Uint8Array(buffer.data);
-    const blob = new Blob([arrayBufferView], { type: "image/png" });
-    return blob;
+// create a base64 string from a file
+function getBase64FromFile(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          let encoded = reader.result.toString().replace(/^data:(.*,)?/, '');
+          if ((encoded.length % 4) > 0) {
+            encoded += '='.repeat(4 - (encoded.length % 4));
+          }
+          resolve(encoded);
+        };
+        reader.onerror = error => reject(error);
+      });
 }
 
 // send http requests and handle errors
-const request = (path, method, data = {}, isFormData = false) => {
+const request = (path, method, data = {}) => {
     return new Promise((resolve, reject) => {
-        let options;
-        options = {
+        const options = {
             type: method,
+            contentType: 'application/json; charset=utf-8',
             url: `http://localhost:3000${path}`,
             data: data,
             dataType: "json"
         }
-        if (isFormData) {
-            options.processData = false;
-            options.contentType = false;
+
+        // send json on post bodies
+        if (method == "POST" || method == "PUT") {
+            options.data = JSON.stringify(data);
         }
 
-        let req = $.ajax(options);
+        const req = $.ajax(options);
 
         req.done((res) => {
             if (res.status) {

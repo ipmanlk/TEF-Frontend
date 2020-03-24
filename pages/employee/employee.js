@@ -139,12 +139,11 @@ const showDateOfBirth = (nic) => {
     $("#dobirth").val(dateOfBirth);
 }
 
-const validateForm = () => {
+const validateForm = async () => {
     let errors = "";
-    let formData = new FormData();
+    let entry = {};
 
-    // test each value and validate
-    tempData.validationInfo.forEach(vi => {
+    for (let vi of tempData.validationInfo) {
         let elementId = vi.attribute;
         let isValid = validateElementValue(vi);
 
@@ -156,24 +155,32 @@ const validateForm = () => {
                 when editing a entry photo.files[0] might not be available. 
                 So, we set it to false when profile pic is the same
                 */
-                let file = photo.files[0] || false;
-                formData.append("photo", file);
+                if (photo.files[0]) {
+                    try {
+                        let photoArrayBuffer = await photo.files[0].arrayBuffer();
+                        entry[elementId] = Array.from(new Uint8Array(photoArrayBuffer));
+                    } catch (e) {
+                        console.log(e);
+                    }
+                } else {
+                    entry[elementId] = false;
+                }
             } else {
-                formData.append(elementId, $(`#${elementId}`).val());
+                entry[elementId] = $(`#${elementId}`).val();
             }
         }
-    });
+    }
+
+    // add date of birth
+    entry["dobirth"] = $("#dobirth").val();
 
     // if there aren't any errors
     if (errors == "") {
         return {
             status: true,
-            data: formData
+            data: entry
         }
     }
-
-    // add date of birth
-    formData.append("dobirth", $("#dobirth").val());
 
     // if there are errors
     return {
@@ -183,16 +190,16 @@ const validateForm = () => {
 }
 
 const addEntry = async () => {
-    const { status, data } = validateForm();
-
+    const { status, data } = await validateForm();
+    
     // if there are errors
     if (!status) {
         mainWindow.showOutputModal("Sorry!. Please fix these errors.", data);
         return;
     }
-
+    
     // get response
-    const res = await request("/api/employee", "POST", data, true).catch(e => {
+    const res = await request("/api/employee", "POST", { data: data }).catch(e => {
         console.log(e);
     });
 
@@ -289,7 +296,7 @@ const updateEntry = async () => {
 
 
     // // get response
-    // const res = await request("/api/employee", "PUT", data, true).catch(e => {
+    // const res = await request("/api/employee", "PUT", data).catch(e => {
     //     console.log(e);
     // });
 
