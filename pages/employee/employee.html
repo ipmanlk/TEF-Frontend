@@ -13,13 +13,13 @@
   <div class="container-fluid" style="margin-top: 30px; margin-bottom:100px;">
 
     <ul class="nav nav-tabs">
-      <li class="active"><a data-toggle="tab" href="#table">Table</a></li>
-      <li><a data-toggle="tab" href="#form">Form</a></li>
+      <li class="active"><a data-toggle="tab" href="#tableTab">Table</a></li>
+      <li><a data-toggle="tab" href="#formTab">Form</a></li>
     </ul>
 
     <div class="tab-content">
 
-      <div id="table" class="tab-pane fade in active">
+      <div id="tableTab" class="tab-pane fade in active">
         <!-- <div id="table" class="tab-pane fade"> -->
         <div class="container-fluid" style="margin-top:30px">
           <table id="mainTable" class="display" style="width:100%">
@@ -46,10 +46,10 @@
         </div>
       </div>
 
-      <div id="form" class="tab-pane fade">
+      <div id="formTab" class="tab-pane fade">
         <!-- <div id="form" class="tab-pane fade in active"> -->
         <div class="container-fluid" style="margin-top:30px">
-          <form>
+          <form id="mainForm">
             <div class="form-group has-feedback">
               <label for="number">Employee Number: <span class="required">*</span></label>
               <input type="text" class="form-control" id="number" placeholder="Enter Number" name="number" disabled>

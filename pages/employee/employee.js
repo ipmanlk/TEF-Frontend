@@ -134,7 +134,7 @@ const registerSpecificEventListeners = () => {
     $("#btnFmUpdate").on("click", updateEntry);
 
     // get employee number from server when adding a new one
-    $(".nav-tabs a[href='#form']").on("click", getEmployeeNumber);
+    $(".nav-tabs a[href='#formTab']").on("click", getEmployeeNumber);
 }
 
 // get next employee number available
@@ -214,6 +214,7 @@ const addEntry = async () => {
     // show output modal based on response
     if (res.status) {
         mainWindow.showOutputModal("Success!", res.msg);
+        reloadData();
     } else {
         mainWindow.showOutputModal("Sorry!", res.msg);
     }
@@ -262,11 +263,12 @@ const editEntry = async (id) => {
     photo.files[0] = employee.photo.data;
 
     // change tab to form
-    $(".nav-tabs a[href='#form']").tab("show");
+    $(".nav-tabs a[href='#formTab']").tab("show");
 
     // set employee object globally to later compare
     window.tempData.selectedEntry = employee;
 }
+
 
 const updateEntry = async () => {
     const { status, data } = await validateForm();
@@ -315,10 +317,22 @@ const updateEntry = async () => {
     // show output modal based on response
     if (res.status) {
         mainWindow.showOutputModal("Success!", res.msg);
-
         // reset selected entry
         tempData.selectedEntry = undefined;
+
+        reloadData();
     } else {
         mainWindow.showOutputModal("Sorry!", res.msg);
     }
+}
+
+// reload main table data and from after making a change
+const reloadData = () => {
+    $("#mainTable").DataTable().destroy();
+    loadMainTable();
+    $("#mainForm").trigger("reset");
+    $(".form-group").removeClass("has-error");
+    $(".form-group").removeClass("has-success");
+    $("#mainForm > .form-group > span").remove()
+    $("#photoPreview").attr("src", "../../img/avatar.png");
 }
