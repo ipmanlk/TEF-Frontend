@@ -63,19 +63,13 @@ const getImageURLfromBuffer = (buffer) => {
 }
 
 // create a base64 string from a file
-function getBase64FromFile(file) {
+const getBase64FromFile = (file) => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
-        reader.onload = () => {
-          let encoded = reader.result.toString().replace(/^data:(.*,)?/, '');
-          if ((encoded.length % 4) > 0) {
-            encoded += '='.repeat(4 - (encoded.length % 4));
-          }
-          resolve(encoded);
-        };
+        reader.onload = () => resolve(reader.result);
         reader.onerror = error => reject(error);
-      });
+    });
 }
 
 // send http requests and handle errors

@@ -157,8 +157,7 @@ const validateForm = async () => {
                 */
                 if (photo.files[0]) {
                     try {
-                        let photoArrayBuffer = await photo.files[0].arrayBuffer();
-                        entry[elementId] = Array.from(new Uint8Array(photoArrayBuffer));
+                        entry[elementId] = await getBase64FromFile(photo.files[0]);
                     } catch (e) {
                         console.log(e);
                     }
