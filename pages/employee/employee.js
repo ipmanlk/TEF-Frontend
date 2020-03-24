@@ -170,9 +170,6 @@ const validateForm = async () => {
         }
     }
 
-    // add date of birth
-    entry["dobirth"] = $("#dobirth").val();
-
     // if there aren't any errors
     if (errors == "") {
         return {
@@ -260,7 +257,7 @@ const editEntry = async (id) => {
 }
 
 const updateEntry = async () => {
-    const { status, data } = validateForm();
+    const { status, data } = await validateForm();
 
     // if there are errors
     if (!status) {
@@ -268,41 +265,48 @@ const updateEntry = async () => {
         return;
     }
 
-    // create a javascript object form the formData object
-    let newEntryObj = {};
-    data.forEach((value, key) => { newEntryObj[key] = value });
-
-
+    // new entry object
+    let newEntryObj = data;
+        
     // check if any of the data in entry has changed
     let dataHasChanged = false;
 
-    for (let key in newEntryObj) {
-        if (key == "photo" && newEntryObj[key] == "false") {
+    for (let key in newEntryObj) {        
+        if (key == "photo" && newEntryObj[key] == false) {
             continue;
         }
 
-        if (newEntryObj[key] !== tempData.selectedEntry[key].toString()) {
-            hasDataChanged = true;
+        try {
+            if (newEntryObj[key]!== tempData.selectedEntry[key].toString()) {
+                dataHasChanged = true;
+            }
+        } catch (error) {
+            console.log(key);
+            
         }
     }
-
+    
     // if nothing has been modifed
     if (!dataHasChanged) {
         mainWindow.showOutputModal("Sorry!.", "You haven't changed anything to update.");
         return;
     }
 
+    // set id of the newEntry object
+    newEntryObj.id = tempData.selectedEntry.id;
 
+    // get response
+    const res = await request("/api/employee", "PUT", {data: newEntryObj}).catch(e => {
+        console.log(e);
+    });
 
-    // // get response
-    // const res = await request("/api/employee", "PUT", data).catch(e => {
-    //     console.log(e);
-    // });
+    // show output modal based on response
+    if (res.status) {
+        mainWindow.showOutputModal("Success!", res.msg);
 
-    // // show output modal based on response
-    // if (res.status) {
-    //     showOutputModal("Success!", res.msg);
-    // } else {
-    //     showOutputModal("Sorry!", res.msg);
-    // }
+        // reset selected entry
+        tempData.selectedEntry = undefined;
+    } else {
+        mainWindow.showOutputModal("Sorry!", res.msg);
+    }
 }
