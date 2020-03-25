@@ -286,10 +286,13 @@ const updateEntry = async () => {
     let dataHasChanged = false;
 
     for (let key in newEntryObj) {
+
+        // when photo hasn't changed, continue
         if (key == "photo" && newEntryObj[key] == false) {
             continue;
         }
 
+        // compare selected entry and edited entry values
         try {
             if (newEntryObj[key] !== tempData.selectedEntry[key].toString()) {
                 dataHasChanged = true;
@@ -331,8 +334,7 @@ const reloadData = () => {
     $("#mainTable").DataTable().destroy();
     loadMainTable();
     $("#mainForm").trigger("reset");
-    $(".form-group").removeClass("has-error");
-    $(".form-group").removeClass("has-success");
+    $(".form-group").removeClass("has-error has-success");
     $("#mainForm > .form-group > span").remove()
     $("#photoPreview").attr("src", "../../img/avatar.png");
 }

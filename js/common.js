@@ -18,8 +18,7 @@ const validateElementValue = (elementValidationInfo) => {
 
     // if value is optional and not set, ignore
     if (elementValidationInfo.optional && value.trim() == "") {
-        $(selector).parent().removeClass("has-error");
-        $(selector).parent().removeClass("has-success");
+        $(selector).parent().removeClass("has-error has-success");
         $(selector).parent().children("span").remove();
         return true;
     }
@@ -77,7 +76,7 @@ const request = (path, method, data = {}) => {
     return new Promise((resolve, reject) => {
         const options = {
             type: method,
-            contentType: 'application/json; charset=utf-8',
+            contentType: "application/json; charset=utf-8",
             url: `http://localhost:3000${path}`,
             data: data,
             dataType: "json"
