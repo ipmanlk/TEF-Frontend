@@ -355,6 +355,6 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
         loadMainTable();
         $("#mainForm").trigger("reset");
         $(".form-group").removeClass("has-error has-success");
-        $("#mainForm > .form-group > span").remove()
+        $(".form-group").children(".form-control-feedback").remove();
         $("#photoPreview").attr("src", "../../img/avatar.png");
     }
