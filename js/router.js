@@ -44,6 +44,10 @@ const getRoutes = () => {
             title: "Employee View",
             path: "./pages/employee/employee.html"
         },
+        "user": {
+            title: "User View",
+            path: "./pages/user/user.html"
+        },
         "noauth": {
             title: "Auth Failure",
             path: "./pages/noauth.html"
