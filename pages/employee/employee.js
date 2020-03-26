@@ -170,23 +170,21 @@ const validateForm = async (type) => {
         if (!isValid) {
             errors += `${vi.error}<br/>`
         } else {
-            if (elementId == "photo" && type == "edit") {
-                /*
-                when editing a entry photo.files[0] might not be available. 
-                So, we set it to false when profile pic is the same
-                */
-                if (photo.files[0]) {
-                    try {
-                        entry[elementId] = await getBase64FromFile(photo.files[0]);
-                    } catch (e) {
-                        console.log(e);
-                    }
-                } else {
-                    entry[elementId] = false;
+            // handle profile picture adding
+            if (photo.files[0]) {
+                try {
+                    entry[elementId] = await getBase64FromFile(photo.files[0]);
+                } catch (e) {
+                    console.log(e);
                 }
             } else {
-                entry[elementId] = $(`#${elementId}`).val();
+                entry[elementId] = false;
             }
+
+            if (elementId == "photo") continue;
+
+            // if it's not a profile picture, just use the value
+            entry[elementId] = $(`#${elementId}`).val();
         }
     }
 
