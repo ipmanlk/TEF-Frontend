@@ -1,5 +1,5 @@
 // validate element values using given regular expressions
-const validateElementValue = (elementValidationInfo) => {
+const validateElementValue = (elementValidationInfo, type=false) => {
 
     // create selector name for ui element id
     const selector = `#${elementValidationInfo.attribute}`;
@@ -12,7 +12,7 @@ const validateElementValue = (elementValidationInfo) => {
 
 
     // for input file type 
-    if ($(selector).attr("type") == "file" && value.trim() == "" && tempData.selectedEntry !== undefined) {
+    if ($(selector).attr("type") == "file" && value.trim() == "" && tempData.selectedEntry !== undefined && type == "edit") {
         return true;
     }
 
@@ -83,7 +83,7 @@ const request = (path, method, data = {}) => {
         }
 
         // send json on post bodies
-        if (method == "POST" || method == "PUT") {
+        if (method == "POST" || method == "PUT" || method == "DELETE") {
             options.data = JSON.stringify(data);
         }
 

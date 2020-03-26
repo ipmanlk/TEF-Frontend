@@ -90,6 +90,11 @@ const loadMainTable = async () => {
         }
     });
 
+    // if data table object is already present, destroy it
+    if ($.fn.DataTable.isDataTable("#mainTable")) {
+        await $("#mainTable").DataTable().clear().destroy();
+    }
+
     // init data table
     mainTable = $("#mainTable").DataTable({
         dom: "Bfrtip",
@@ -132,6 +137,7 @@ const registerSpecificEventListeners = () => {
     // for form buttons
     $("#btnFmAdd").on("click", addEntry);
     $("#btnFmUpdate").on("click", updateEntry);
+    $("#btnFmDelete").on("click", deleteEntry);
 
     // get employee number from server when adding a new one
     $(".nav-tabs a[href='#formTab']").on("click", getEmployeeNumber);
@@ -151,18 +157,20 @@ const showDateOfBirth = (nic) => {
     $("#dobirth").val(dateOfBirth);
 }
 
-const validateForm = async () => {
+// type property determine the validation of profile picture when editing.
+// type = "edit" || "add"
+const validateForm = async (type) => {
     let errors = "";
     let entry = {};
 
     for (let vi of tempData.validationInfo) {
         let elementId = vi.attribute;
-        let isValid = validateElementValue(vi);
+        let isValid = validateElementValue(vi, type);
 
         if (!isValid) {
             errors += `${vi.error}<br/>`
         } else {
-            if (elementId == "photo") {
+            if (elementId == "photo" && type == "edit") {
                 /*
                 when editing a entry photo.files[0] might not be available. 
                 So, we set it to false when profile pic is the same
@@ -198,7 +206,7 @@ const validateForm = async () => {
 }
 
 const addEntry = async () => {
-    const { status, data } = await validateForm();
+    const { status, data } = await validateForm("add");
 
     // if there are errors
     if (!status) {
@@ -271,7 +279,7 @@ const editEntry = async (id) => {
 
 
 const updateEntry = async () => {
-    const { status, data } = await validateForm();
+    const { status, data } = await validateForm("edit");
 
     // if there are errors
     if (!status) {
@@ -329,12 +337,24 @@ const updateEntry = async () => {
     }
 }
 
-// reload main table data and from after making a change
-const reloadData = () => {
-    $("#mainTable").DataTable().destroy();
-    loadMainTable();
-    $("#mainForm").trigger("reset");
-    $(".form-group").removeClass("has-error has-success");
-    $("#mainForm > .form-group > span").remove()
-    $("#photoPreview").attr("src", "../../img/avatar.png");
+const deleteEntry = async (id = tempData.selectedEntry.id) => {
+    const confirmation = await mainWindow.showConfirmModal("Confirmation", "Do you really need to delete this entry?");
+
+    if (confirmation) {
+        const res = await request("/api/employee", "DELETE", { data: { id: id } }).catch(e => {
+            console.log(e); 
+        });
+
+        mainWindow.showOutputModal("Success!", "That entry has been deleted!.");
+        reloadData();
+    }
 }
+
+    // reload main table data and from after making a change
+    const reloadData = () => {
+        loadMainTable();
+        $("#mainForm").trigger("reset");
+        $(".form-group").removeClass("has-error has-success");
+        $("#mainForm > .form-group > span").remove()
+        $("#photoPreview").attr("src", "../../img/avatar.png");
+    }
