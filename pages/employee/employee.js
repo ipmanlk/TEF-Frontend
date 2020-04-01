@@ -10,13 +10,37 @@ $(document).ready(async function () {
     tempData.validationInfo = data;
 
     // load form and event listeners
-    await loadFromSelects();
+    await loadFormDropdowns();
     await loadMainTable();
     registerGeneralEventListeners(tempData.validationInfo);
     registerSpecificEventListeners();
 });
 
-const loadFromSelects = async () => {
+const registerSpecificEventListeners = () => {
+
+    // handle image upload preview
+    $("#photo").on("change", (event) => {
+        if (photo.files && photo.files[0]) {
+            photoPreview.src = URL.createObjectURL(event.target.files[0]);
+        }
+    });
+
+    // fill date of birth from nic
+    $("#nic").on("paste change keyup", (e) => {
+        showDateOfBirth(e.target.value);
+    });
+
+    // for form buttons
+    $("#btnFmAdd").on("click", addEntry);
+    $("#btnFmUpdate").on("click", updateEntry);
+    $("#btnFmDelete").on("click", deleteEntry);
+    $("#btnFmReset").on("click", resetForm);
+
+    // for tabs
+    $(".nav-tabs a[href='#formTab']").on("click", formTabClick);
+}
+
+const loadFormDropdowns = async () => {
     let designations, genders, employeeStatuses, civilStatues;
 
     // get data from the api for each dropbox
@@ -120,30 +144,6 @@ const loadMainTable = async () => {
     });
 }
 
-const registerSpecificEventListeners = () => {
-
-    // handle image upload preview
-    $("#photo").on("change", (event) => {
-        if (photo.files && photo.files[0]) {
-            photoPreview.src = URL.createObjectURL(event.target.files[0]);
-        }
-    });
-
-    // fill date of birth from nic
-    $("#nic").on("paste change keyup", (e) => {
-        showDateOfBirth(e.target.value);
-    });
-
-    // for form buttons
-    $("#btnFmAdd").on("click", addEntry);
-    $("#btnFmUpdate").on("click", updateEntry);
-    $("#btnFmDelete").on("click", deleteEntry);
-    $("#btnFmReset").on("click", resetForm);
-
-    // get employee number from server when adding a new one
-    $(".nav-tabs a[href='#formTab']").on("click", formTabClick);
-}
-
 // when form tab is clicked, rest the form and get next available employee number
 const formTabClick = async () => {
     resetForm();
@@ -152,44 +152,56 @@ const formTabClick = async () => {
         console.log(e);
     });
 
+    // set next employee number in the form
     $("#number").val(data.nextNumber);
 
     $("#btnFmAdd").show();
     $("#btnFmUpdate").hide();
 }
 
+// show dob from the nic in the form field
 const showDateOfBirth = (nic) => {
     let { dateOfBirth } = getNICinfo(nic);
     $("#dobirth").val(dateOfBirth);
 }
 
-// type property determine the validation of profile picture when editing.
-// type = "edit" || "add"
-const validateForm = async (type) => {
+
+const validateForm = async () => {
     let errors = "";
     let entry = {};
 
+    // Loop through each validation info item (vi) validate it's value;
     for (let vi of tempData.validationInfo) {
-        let elementId = vi.attribute;
-        let isValid = validateElementValue(vi, type);
+        // element id is equal to database attribute
+        const elementId = vi.attribute;
 
-        if (!isValid) {
-            errors += `${vi.error}<br/>`
-        } else {
-            // handle profile picture adding
+        let isValid = false;
+
+        // handle profile picture validation
+        if (elementId == "photo") {
             if (photo.files[0]) {
                 try {
                     entry[elementId] = await getBase64FromFile(photo.files[0]);
-                } catch (e) {
-                    console.log(e);
+                    isValid = true;
+                } catch (error) {
+                    isValid = false;
                 }
-            } else {
+            } else if (tempData.selectedEntry && tempData.selectedEntry.photo) {
+                // if photo is not set, check if selected entry has a photo
                 entry[elementId] = false;
+                isValid = true;
             }
 
-            if (elementId == "photo") continue;
+            continue;
+        } else {
+            // if it's not a profile picture, just validate using it's value
+            isValid = validateElementValue(vi);
+        }
 
-            // if it's not a profile picture, just use the value
+        // check for errors and add to entry object
+        if (!isValid) {
+            errors += `${vi.error}<br/>`
+        } else {
             entry[elementId] = $(`#${elementId}`).val();
         }
     }
@@ -201,7 +213,7 @@ const validateForm = async (type) => {
             data: entry
         }
     }
-
+    
     // if there are errors
     return {
         status: false,
@@ -210,7 +222,7 @@ const validateForm = async (type) => {
 }
 
 const addEntry = async () => {
-    const { status, data } = await validateForm("add");
+    const { status, data } = await validateForm();
 
     // if there are errors
     if (!status) {
@@ -288,7 +300,7 @@ const editEntry = async (id) => {
 
 
 const updateEntry = async () => {
-    const { status, data } = await validateForm("edit");
+    const { status, data } = await validateForm();
 
     // if there are errors
     if (!status) {
@@ -316,7 +328,6 @@ const updateEntry = async () => {
             }
         } catch (error) {
             console.log(key);
-
         }
     }
 

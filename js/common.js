@@ -1,5 +1,5 @@
 // validate element values using given regular expressions
-const validateElementValue = (elementValidationInfo, type=false) => {
+const validateElementValue = (elementValidationInfo) => {
 
     // create selector name for ui element id
     const selector = `#${elementValidationInfo.attribute}`;
@@ -9,12 +9,6 @@ const validateElementValue = (elementValidationInfo, type=false) => {
 
     // create RegExp object from regex string
     const regex = new RegExp(elementValidationInfo.regex);
-
-
-    // for input file type 
-    if ($(selector).attr("type") == "file" && value.trim() == "" && tempData.selectedEntry !== undefined && type == "edit") {
-        return true;
-    }
 
     // if value is optional and not set, ignore
     if (elementValidationInfo.optional && value.trim() == "") {
