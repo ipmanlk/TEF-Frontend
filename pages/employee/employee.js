@@ -138,18 +138,24 @@ const registerSpecificEventListeners = () => {
     $("#btnFmAdd").on("click", addEntry);
     $("#btnFmUpdate").on("click", updateEntry);
     $("#btnFmDelete").on("click", deleteEntry);
+    $("#btnFmReset").on("click", resetForm);
 
     // get employee number from server when adding a new one
-    $(".nav-tabs a[href='#formTab']").on("click", getEmployeeNumber);
+    $(".nav-tabs a[href='#formTab']").on("click", formTabClick);
 }
 
-// get next employee number available
-const getEmployeeNumber = async () => {
+// when form tab is clicked, rest the form and get next available employee number
+const formTabClick = async () => {
+    resetForm();
+
     const { data } = await request("/api/employee/next_number").catch(e => {
         console.log(e);
     });
 
     $("#number").val(data.nextNumber);
+
+    $("#btnFmAdd").show();
+    $("#btnFmUpdate").hide();
 }
 
 const showDateOfBirth = (nic) => {
@@ -226,6 +232,7 @@ const addEntry = async () => {
     }
 }
 
+// get entry data from db and show in the form
 const editEntry = async (id) => {
     const res = await request("/api/employee", "GET", {
         data: {
@@ -273,6 +280,10 @@ const editEntry = async (id) => {
 
     // set employee object globally to later compare
     window.tempData.selectedEntry = employee;
+
+    // hide add button
+    $("#btnFmAdd").hide();
+    $("#btnFmUpdate").show();
 }
 
 
@@ -340,7 +351,7 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
 
     if (confirmation) {
         const res = await request("/api/employee", "DELETE", { data: { id: id } }).catch(e => {
-            console.log(e); 
+            console.log(e);
         });
 
         mainWindow.showOutputModal("Success!", "That entry has been deleted!.");
@@ -348,11 +359,16 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
     }
 }
 
-    // reload main table data and from after making a change
-    const reloadData = () => {
-        loadMainTable();
-        $("#mainForm").trigger("reset");
-        $(".form-group").removeClass("has-error has-success");
-        $(".form-group").children(".form-control-feedback").remove();
-        $("#photoPreview").attr("src", "../../img/avatar.png");
-    }
+// reload main table data and from after making a change
+const reloadData = () => {
+    loadMainTable();
+    resetForm();
+}
+
+// reset form
+const resetForm = () => {
+    $("#mainForm").trigger("reset");
+    $(".form-group").removeClass("has-error has-success");
+    $(".form-group").children(".form-control-feedback").remove();
+    $("#photoPreview").attr("src", "../../img/avatar.png");
+}
