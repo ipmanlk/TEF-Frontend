@@ -16,6 +16,8 @@ $(document).ready(async function () {
     registerSpecificEventListeners();
 });
 
+
+// Event listners unique to each module
 const registerSpecificEventListeners = () => {
 
     // handle image upload preview
@@ -40,6 +42,7 @@ const registerSpecificEventListeners = () => {
     $(".nav-tabs a[href='#formTab']").on("click", formTabClick);
 }
 
+// get data and fill drop downs (selects) in the form
 const loadFormDropdowns = async () => {
     let designations, genders, employeeStatuses, civilStatues;
 
@@ -82,6 +85,7 @@ const loadFormDropdowns = async () => {
     })
 }
 
+// get employee list and populate the data table
 const loadMainTable = async () => {
     // get employee data from server
     let employeeData = await request("/api/employees", "GET").catch(e => {
@@ -165,7 +169,7 @@ const showDateOfBirth = (nic) => {
     $("#dobirth").val(dateOfBirth);
 }
 
-
+// validate each input in the form
 const validateForm = async () => {
     let errors = "";
     let entry = {};
@@ -213,7 +217,7 @@ const validateForm = async () => {
             data: entry
         }
     }
-    
+
     // if there are errors
     return {
         status: false,
@@ -221,6 +225,7 @@ const validateForm = async () => {
     };
 }
 
+// add new entry to the database
 const addEntry = async () => {
     const { status, data } = await validateForm();
 
@@ -253,12 +258,12 @@ const editEntry = async (id) => {
     }).catch(e => {
         console.log(e);
     });
-    const employee = res.data;
+    const entry = res.data;
 
     // set input values
-    Object.keys(employee).forEach(key => {
+    Object.keys(entry).forEach(key => {
         if (key == "photo") return;
-        $(`#${key}`).val(employee[key]);
+        $(`#${key}`).val(entry[key]);
     });
 
     // select correct option in dorpdowns
@@ -269,36 +274,37 @@ const editEntry = async (id) => {
         "employeeStatusId"
     ];
 
+    // select proper options in dropdowns
     dropdowns.forEach(elementId => {
         $(`#${elementId}`).children("option").each(function () {
             $(this).removeAttr("selected");
             const optionValue = $(this).attr("value");
-            if (optionValue == employee[elementId]) {
+            if (optionValue == entry[elementId]) {
                 $(this).attr("selected", "selected");
             }
         });
     });
 
     // update date of birth
-    showDateOfBirth(employee.nic);
+    showDateOfBirth(entry.nic);
 
     // set profile picture preview
-    const imageURL = getImageURLfromBuffer(employee.photo);
+    const imageURL = getImageURLfromBuffer(entry.photo);
     $("#photoPreview").attr("src", imageURL);
-    photo.files[0] = employee.photo.data;
+    photo.files[0] = entry.photo.data;
 
     // change tab to form
     $(".nav-tabs a[href='#formTab']").tab("show");
 
-    // set employee object globally to later compare
-    window.tempData.selectedEntry = employee;
+    // set entry object globally to later compare
+    window.tempData.selectedEntry = entry;
 
     // hide add button
     $("#btnFmAdd").hide();
     $("#btnFmUpdate").show();
 }
 
-
+// update entry in the database
 const updateEntry = async () => {
     const { status, data } = await validateForm();
 
@@ -340,7 +346,7 @@ const updateEntry = async () => {
     // set id of the newEntry object
     newEntryObj.id = tempData.selectedEntry.id;
 
-    // get response
+    // send put reqeust to update data
     const res = await request("/api/employee", "PUT", { data: newEntryObj }).catch(e => {
         console.log(e);
     });
@@ -357,6 +363,7 @@ const updateEntry = async () => {
     }
 }
 
+// delete entry from the database
 const deleteEntry = async (id = tempData.selectedEntry.id) => {
     const confirmation = await mainWindow.showConfirmModal("Confirmation", "Do you really need to delete this entry?");
 
