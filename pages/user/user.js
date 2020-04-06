@@ -12,8 +12,8 @@ $(document).ready(async function () {
     // // load form and event listeners
     await loadFormDropdowns();
     await loadMainTable();
-    // registerGeneralEventListeners(tempData.validationInfo);
-    // registerSpecificEventListeners();
+    registerGeneralEventListeners(tempData.validationInfo);
+    registerSpecificEventListeners();
 });
 
 // Event listners unique to each module
@@ -25,7 +25,7 @@ const registerSpecificEventListeners = () => {
     $("#btnFmReset").on("click", resetForm);
 
     // for tabs
-    $(".nav-tabs a[href='#formTab']").on("click", formTabClick);
+    $(".nav-tabs a[href='#tabForm']").on("click", formTabClick);
 }
 
 // get data and fill drop downs (selects) in the form
@@ -118,14 +118,6 @@ const loadMainTable = async () => {
 
 const formTabClick = async () => {
     resetForm();
-
-    const { data } = await request("/api/employee/next_number").catch(e => {
-        console.log(e);
-    });
-
-    // set next employee number in the form
-    $("#number").val(data.nextNumber);
-
     $("#btnFmAdd").show();
     $("#btnFmUpdate").hide();
 }
@@ -142,26 +134,7 @@ const validateForm = async () => {
 
         let isValid = false;
 
-        // handle profile picture validation
-        if (elementId == "photo") {
-            if (photo.files[0]) {
-                try {
-                    entry[elementId] = await getBase64FromFile(photo.files[0]);
-                    isValid = true;
-                } catch (error) {
-                    isValid = false;
-                }
-            } else if (tempData.selectedEntry && tempData.selectedEntry.photo) {
-                // if photo is not set, check if selected entry has a photo
-                entry[elementId] = false;
-                isValid = true;
-            }
-
-            continue;
-        } else {
-            // if it's not a profile picture, just validate using it's value
-            isValid = validateElementValue(vi);
-        }
+        isValid = validateElementValue(vi);
 
         // check for errors and add to entry object
         if (!isValid) {
@@ -195,9 +168,9 @@ const addEntry = async () => {
         mainWindow.showOutputModal("Sorry!. Please fix these errors.", data);
         return;
     }
-
+    
     // get response
-    const res = await request("/api/employee", "POST", { data: data }).catch(e => {
+    const res = await request("/api/user", "POST", { data: data }).catch(e => {
         console.log(e);
     });
 
@@ -212,7 +185,7 @@ const addEntry = async () => {
 
 // get entry data from db and show in the form
 const editEntry = async (id) => {
-    const res = await request("/api/employee", "GET", {
+    const res = await request("/api/user", "GET", {
         data: {
             id: id
         }
@@ -222,17 +195,14 @@ const editEntry = async (id) => {
     const entry = res.data;
 
     // set input values
-    Object.keys(entry).forEach(key => {
-        if (key == "photo") return;
-        $(`#${key}`).val(entry[key]);
-    });
+    $("#number").val(entry.employee.number);
+    $("#username").val(entry.username);
+    $("#description").val(entry.description);
 
     // select correct option in dorpdowns
     const dropdowns = [
-        "civilStatusId",
-        "designationId",
-        "genderId",
-        "employeeStatusId"
+        "roleId",
+        "userStatusId",
     ];
 
     // select proper options in dropdowns
@@ -246,16 +216,8 @@ const editEntry = async (id) => {
         });
     });
 
-    // update date of birth
-    showDateOfBirth(entry.nic);
-
-    // set profile picture preview
-    const imageURL = getImageURLfromBuffer(entry.photo);
-    $("#photoPreview").attr("src", imageURL);
-    photo.files[0] = entry.photo.data;
-
     // change tab to form
-    $(".nav-tabs a[href='#formTab']").tab("show");
+    $(".nav-tabs a[href='#tabForm']").tab("show");
 
     // set entry object globally to later compare
     window.tempData.selectedEntry = entry;
@@ -349,5 +311,4 @@ const resetForm = () => {
     $("#mainForm").trigger("reset");
     $(".form-group").removeClass("has-error has-success");
     $(".form-group").children(".form-control-feedback").remove();
-    $("#photoPreview").attr("src", "../../img/avatar.png");
 }
