@@ -39,7 +39,7 @@ const registerSpecificEventListeners = () => {
     $("#btnFmReset").on("click", resetForm);
 
     // for tabs
-    $(".nav-tabs a[href='#formTab']").on("click", formTabClick);
+    $(".nav-tabs a[href='#tabForm']").on("click", formTabClick);
 }
 
 // get data and fill drop downs (selects) in the form
