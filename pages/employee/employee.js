@@ -294,7 +294,7 @@ const editEntry = async (id) => {
     photo.files[0] = entry.photo.data;
 
     // change tab to form
-    $(".nav-tabs a[href='#formTab']").tab("show");
+    $(".nav-tabs a[href='#tabForm']").tab("show");
 
     // set entry object globally to later compare
     window.tempData.selectedEntry = entry;
