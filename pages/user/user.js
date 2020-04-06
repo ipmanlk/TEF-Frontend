@@ -4,13 +4,13 @@ window.tempData = { selectedEntry: undefined, validationInfo: undefined };
 // when dom is ready
 $(document).ready(async function () {
     // get regexes
-    // let { data } = await request("/api/regex/USER", "GET").catch(e => {
-    //     console.log(e);
-    // });
-    // tempData.validationInfo = data;
+    let { data } = await request("/api/regex/USER", "GET").catch(e => {
+        console.log(e);
+    });
+    tempData.validationInfo = data;
 
     // // load form and event listeners
-    // await loadFormDropdowns();
+    await loadFormDropdowns();
     await loadMainTable();
     // registerGeneralEventListeners(tempData.validationInfo);
     // registerSpecificEventListeners();
@@ -30,45 +30,37 @@ const registerSpecificEventListeners = () => {
 
 // get data and fill drop downs (selects) in the form
 const loadFormDropdowns = async () => {
-    // let designations, genders, employeeStatuses, civilStatues;
+    let roles, userStatuses;
 
-    // // get data from the api for each dropbox
-    // try {
-    //     let response;
-    //     response = await request("/api/employee/designation");
-    //     designations = response.data;
+    // get data from the api for each dropbox
+    try {
+        let response;
+        response = await request("/api/user/role");
+        roles = response.data;
 
-    //     response = await request("/api/employee/gender");
-    //     genders = response.data;
+        response = await request("/api/user/user_status");
+        userStatuses = response.data;
+    } catch (e) {
+        console.log(e);
+    }
 
-    //     response = await request("/api/employee/employee_status");
-    //     employeeStatuses = response.data;
+    // map data with dropdown ids
+    const dropdownData = {
+        roleId: roles,
+        userStatusId: userStatuses,
+    }
 
-    //     response = await request("/api/employee/civil_status");
-    //     civilStatues = response.data;
-    // } catch (e) {
-    //     console.log(e);
-    // }
+    // populate dropboxes with data
+    Object.keys(dropdownData).forEach(dropdownId => {
+        const selector = `#${dropdownId}`;
+        $(selector).empty();
 
-    // // map data with dropdown ids
-    // const dropdownData = {
-    //     civilStatusId: civilStatues,
-    //     designationId: designations,
-    //     genderId: genders,
-    //     employeeStatusId: employeeStatuses
-    // }
-
-    // // populate dropboxes with data
-    // Object.keys(dropdownData).forEach(dropdownId => {
-    //     const selector = `#${dropdownId}`;
-    //     $(selector).empty();
-
-    //     dropdownData[dropdownId].forEach(entry => {
-    //         $(selector).append(`
-    //         <option value="${entry.id}">${entry.name}</option>
-    //         `);
-    //     });
-    // });
+        dropdownData[dropdownId].forEach(entry => {
+            $(selector).append(`
+            <option value="${entry.id}">${entry.name}</option>
+            `);
+        });
+    });
 }
 
 // get entry list and populate the data table
