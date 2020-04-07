@@ -161,6 +161,7 @@
     // controls modal for showing various outputs
     const showOutputModal = (title, body) => {
       $("#modalOutputTitle").text(title);
+      $("#modalOutputBody").html("Unknown");
       $("#modalOutputBody").html(body);
       $("#modalOutput").modal();
     }
@@ -169,6 +170,7 @@
     const showConfirmModal = (title, body) => {
       return new Promise((resolve, reject) => {
         $("#modalConfirmTitle").text(title);
+        $("#modalConfirmBody").html("Unknown");
         $("#modalConfirmBody").html(body);
         $("#modalConfirm").modal();
         $("#btnModalYes").on("click", () => {
