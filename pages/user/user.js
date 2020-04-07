@@ -140,6 +140,13 @@ const validateForm = async () => {
         if (!isValid) {
             errors += `${vi.error}<br/>`
         } else {
+            // sepecial cases
+            if (elementId == "number") {
+                entry["employee"] = {};
+                entry["employee"]["number"] = $(`#${elementId}`).val();
+                continue;
+            }
+
             entry[elementId] = $(`#${elementId}`).val();
         }
     }
@@ -243,13 +250,10 @@ const updateEntry = async () => {
     // check if any of the data in entry has changed
     let dataHasChanged = false;
 
+    console.log(newEntryObj);
+    
+
     for (let key in newEntryObj) {
-
-        // when photo hasn't changed, continue
-        if (key == "photo" && newEntryObj[key] == false) {
-            continue;
-        }
-
         // compare selected entry and edited entry values
         try {
             if (newEntryObj[key] !== tempData.selectedEntry[key].toString()) {
@@ -270,7 +274,7 @@ const updateEntry = async () => {
     newEntryObj.id = tempData.selectedEntry.id;
 
     // send put reqeust to update data
-    const res = await request("/api/employee", "PUT", { data: newEntryObj }).catch(e => {
+    const res = await request("/api/user", "PUT", { data: newEntryObj }).catch(e => {
         console.log(e);
     });
 
@@ -291,7 +295,7 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
     const confirmation = await mainWindow.showConfirmModal("Confirmation", "Do you really need to delete this entry?");
 
     if (confirmation) {
-        const res = await request("/api/employee", "DELETE", { data: { id: id } }).catch(e => {
+        const res = await request("/api/user", "DELETE", { data: { id: id } }).catch(e => {
             console.log(e);
         });
 
