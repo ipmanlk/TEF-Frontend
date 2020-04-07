@@ -49,16 +49,16 @@ const loadFormDropdowns = async () => {
     // get data from the api for each dropbox
     try {
         let response;
-        response = await request("/api/employee/designation");
+        response = await request("/api/designations", "GET");
         designations = response.data;
 
-        response = await request("/api/employee/gender");
+        response = await request("/api/genders", "GET");
         genders = response.data;
 
-        response = await request("/api/employee/employee_status");
+        response = await request("/api/employee_statuses", "GET");
         employeeStatuses = response.data;
 
-        response = await request("/api/employee/civil_status");
+        response = await request("/api/civil_statuses", "GET");
         civilStatues = response.data;
     } catch (e) {
         console.log(e);

@@ -35,10 +35,10 @@ const loadFormDropdowns = async () => {
     // get data from the api for each dropbox
     try {
         let response;
-        response = await request("/api/user/role");
+        response = await request("/api/roles", "GET");
         roles = response.data;
 
-        response = await request("/api/user/user_status");
+        response = await request("/api/user_statuses", "GET");
         userStatuses = response.data;
     } catch (e) {
         console.log(e);
