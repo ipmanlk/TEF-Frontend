@@ -4,7 +4,9 @@ window.tempData = { selectedEntry: undefined, validationInfo: undefined };
 // when dom is ready
 $(document).ready(async function () {
     // get regexes
-    let { data } = await request("/api/regex/USER", "GET").catch(e => {
+    let { data } = await request("/api/regex", "GET", {
+        data: { module: "USER" }
+    }).catch(e => {
         console.log(e);
     });
     tempData.validationInfo = data;
@@ -66,7 +68,7 @@ const loadFormDropdowns = async () => {
 // get entry list and populate the data table
 const loadMainTable = async () => {
     // get data from server
-    let entriesData = await request("/api/users", "GET").catch(e => {
+    let entriesData = await request("/api/user", "GET").catch(e => {
         console.log(e);
     });
 
@@ -175,7 +177,7 @@ const addEntry = async () => {
         mainWindow.showOutputModal("Sorry!. Please fix these errors.", data);
         return;
     }
-    
+
     // get response
     const res = await request("/api/user", "POST", { data: data }).catch(e => {
         console.log(e);
@@ -251,7 +253,7 @@ const updateEntry = async () => {
     let dataHasChanged = false;
 
     console.log(newEntryObj);
-    
+
 
     for (let key in newEntryObj) {
         // compare selected entry and edited entry values

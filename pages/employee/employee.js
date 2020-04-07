@@ -4,7 +4,9 @@ window.tempData = { selectedEntry: undefined, validationInfo: undefined };
 // when dom is ready
 $(document).ready(async function () {
     // get regexes
-    let { data } = await request("/api/regex/EMPLOYEE", "GET").catch(e => {
+    let { data } = await request("/api/regex", "GET", {
+        data: { module: "EMPLOYEE" }
+    }).catch(e => {
         console.log(e);
     });
     tempData.validationInfo = data;
@@ -88,7 +90,7 @@ const loadFormDropdowns = async () => {
 // get employee list and populate the data table
 const loadMainTable = async () => {
     // get employee data from server
-    let employeeData = await request("/api/employees", "GET").catch(e => {
+    let employeeData = await request("/api/employee", "GET").catch(e => {
         console.log(e);
     });
 
