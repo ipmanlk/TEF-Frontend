@@ -4,7 +4,7 @@ window.tempData = { selectedEntry: undefined, validationInfo: undefined };
 // when dom is ready
 $(document).ready(async function () {
     // get regexes
-    let { data } = await request("/api/regex", "GET", {
+    let { data } = await request("/api/regexes", "GET", {
         data: { module: "EMPLOYEE" }
     }).catch(e => {
         console.log(e);
@@ -57,7 +57,7 @@ const loadFormDropdowns = async () => {
         response = await request("/api/genders", "GET");
         genders = response.data;
 
-        response = await request("/api/employee_statuses", "GET");
+        response = await request("/api/employees_statuses", "GET");
         employeeStatuses = response.data;
 
         response = await request("/api/civil_statuses", "GET");
@@ -90,7 +90,7 @@ const loadFormDropdowns = async () => {
 // get employee list and populate the data table
 const loadMainTable = async () => {
     // get employee data from server
-    let employeeData = await request("/api/employee", "GET").catch(e => {
+    let employeeData = await request("/api/employees", "GET").catch(e => {
         console.log(e);
     });
 
@@ -154,7 +154,7 @@ const loadMainTable = async () => {
 const formTabClick = async () => {
     resetForm();
 
-    const { data } = await request("/api/employee/next_number").catch(e => {
+    const { data } = await request("/api/employees/next_number").catch(e => {
         console.log(e);
     });
 
@@ -238,7 +238,7 @@ const addEntry = async () => {
     }
 
     // get response
-    const res = await request("/api/employee", "POST", { data: data }).catch(e => {
+    const res = await request("/api/employees", "POST", { data: data }).catch(e => {
         console.log(e);
     });
 
@@ -253,7 +253,7 @@ const addEntry = async () => {
 
 // get entry data from db and show in the form
 const editEntry = async (id) => {
-    const res = await request("/api/employee", "GET", {
+    const res = await request("/api/employees", "GET", {
         data: {
             id: id
         }
@@ -349,7 +349,7 @@ const updateEntry = async () => {
     newEntryObj.id = tempData.selectedEntry.id;
 
     // send put reqeust to update data
-    const res = await request("/api/employee", "PUT", { data: newEntryObj }).catch(e => {
+    const res = await request("/api/employees", "PUT", { data: newEntryObj }).catch(e => {
         console.log(e);
     });
 
@@ -370,7 +370,7 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
     const confirmation = await mainWindow.showConfirmModal("Confirmation", "Do you really need to delete this entry?");
 
     if (confirmation) {
-        const res = await request("/api/employee", "DELETE", { data: { id: id } }).catch(e => {
+        const res = await request("/api/employees", "DELETE", { data: { id: id } }).catch(e => {
             console.log(e);
         });
 

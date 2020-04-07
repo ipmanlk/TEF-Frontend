@@ -4,7 +4,7 @@ window.tempData = { selectedEntry: undefined, validationInfo: undefined };
 // when dom is ready
 $(document).ready(async function () {
     // get regexes
-    let { data } = await request("/api/regex", "GET", {
+    let { data } = await request("/api/regexes", "GET", {
         data: { module: "USER" }
     }).catch(e => {
         console.log(e);
@@ -68,7 +68,7 @@ const loadFormDropdowns = async () => {
 // get entry list and populate the data table
 const loadMainTable = async () => {
     // get data from server
-    let entriesData = await request("/api/user", "GET").catch(e => {
+    let entriesData = await request("/api/users", "GET").catch(e => {
         console.log(e);
     });
 
@@ -179,7 +179,7 @@ const addEntry = async () => {
     }
 
     // get response
-    const res = await request("/api/user", "POST", { data: data }).catch(e => {
+    const res = await request("/api/users", "POST", { data: data }).catch(e => {
         console.log(e);
     });
 
@@ -194,7 +194,7 @@ const addEntry = async () => {
 
 // get entry data from db and show in the form
 const editEntry = async (id) => {
-    const res = await request("/api/user", "GET", {
+    const res = await request("/api/users", "GET", {
         data: {
             id: id
         }
@@ -276,7 +276,7 @@ const updateEntry = async () => {
     newEntryObj.id = tempData.selectedEntry.id;
 
     // send put reqeust to update data
-    const res = await request("/api/user", "PUT", { data: newEntryObj }).catch(e => {
+    const res = await request("/api/users", "PUT", { data: newEntryObj }).catch(e => {
         console.log(e);
     });
 
@@ -297,7 +297,7 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
     const confirmation = await mainWindow.showConfirmModal("Confirmation", "Do you really need to delete this entry?");
 
     if (confirmation) {
-        const res = await request("/api/user", "DELETE", { data: { id: id } }).catch(e => {
+        const res = await request("/api/users", "DELETE", { data: { id: id } }).catch(e => {
             console.log(e);
         });
 
