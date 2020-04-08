@@ -57,7 +57,7 @@ const loadFormDropdowns = async () => {
         response = await request("/api/genders", "GET");
         genders = response.data;
 
-        response = await request("/api/employees_statuses", "GET");
+        response = await request("/api/employee_statuses", "GET");
         employeeStatuses = response.data;
 
         response = await request("/api/civil_statuses", "GET");
@@ -90,64 +90,69 @@ const loadFormDropdowns = async () => {
 // get employee list and populate the data table
 const loadMainTable = async () => {
     // get employee data from server
-    let employeeData = await request("/api/employees", "GET").catch(e => {
+    let employeeData = await request("/api/employees", "GET", {
+        data: {
+            keyword: ""
+        }
+    }).catch(e => {
         console.log(e);
     });
 
     // check if server returned an error
     if (!employeeData.status) {
-        window.alert(employeeData.msg);
         return;
     }
 
     // map data to support data table structure
     let data = employeeData.data.map(employee => {
         return {
-            number: employee.number,
-            fullName: employee.fullName,
-            callingName: employee.callingName,
-            nic: employee.nic,
-            address: employee.address,
-            mobile: employee.mobile,
-            land: employee.land,
-            doassignment: employee.doassignment,
-            gender: employee.gender.name,
-            designation: employee.designation.name,
-            civilStatus: employee.civilStatus.name,
-            employeeStatus: employee.employeeStatus.name,
-            edit: `<button class="btn btn-warning btn-sm" onclick="editEntry('${employee.id}')">Edit</button>`,
-            delete: `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${employee.id}')">Delete</button>`
+            "Number": employee.number,
+            "Full Name": employee.fullName,
+            "Calling Name": employee.callingName,
+            "NIC": employee.nic,
+            "Mobile": employee.mobile,
+            // "Land": employee.land,
+            // doassignment: employee.doassignment,
+            // gender: employee.gender.name,
+            "Designation": employee.designation.name,
+            "Civil Status": employee.civilStatus.name,
+            "Employee Status": employee.employeeStatus.name,
+            "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${employee.id}')">Edit</button>`,
+            "Delete": `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${employee.id}')">Delete</button>`
         }
     });
 
-    // if data table object is already present, destroy it
-    if ($.fn.DataTable.isDataTable("#mainTable")) {
-        await $("#mainTable").DataTable().clear().destroy();
+    window.mainTable = new DataTable("mainTableHolder", data, searchEntries);
+}
+
+
+const searchEntries = async (searchValue) => {
+    const employeeData = await request("/api/employees", "GET", { data: { keyword: searchValue } }).catch(e => {
+        console.log(e);
+    });
+
+    // check if server returned an error
+    if (!employeeData.status) {
+        return;
     }
 
-    // init data table
-    mainTable = $("#mainTable").DataTable({
-        dom: "Bfrtip",
-        buttons: [
-            "copy", "csv", "excel", "pdf", "print"
-        ],
-        data: data,
-        "columns": [
-            { "data": "number" },
-            { "data": "nic" },
-            { "data": "fullName" },
-            { "data": "callingName" },
-            { "data": "mobile" },
-            { "data": "land" },
-            { "data": "address" },
-            { "data": "designation" },
-            { "data": "doassignment" },
-            { "data": "employeeStatus" },
-            { "data": "edit" },
-            { "data": "delete" }
-        ],
-        responsive: true
+    // map data to support data table structure
+    let data = employeeData.data.map(employee => {
+        return {
+            "Number": employee.number,
+            "Full Name": employee.fullName,
+            "Calling Name": employee.callingName,
+            "NIC": employee.nic,
+            "Mobile": employee.mobile,
+            "Designation": employee.designation.name,
+            "Civil Status": employee.civilStatus.name,
+            "Employee Status": employee.employeeStatus.name,
+            "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${employee.id}')">Edit</button>`,
+            "Delete": `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${employee.id}')">Delete</button>`
+        }
     });
+
+    mainTable.loadTable(data);
 }
 
 // when form tab is clicked, rest the form and get next available employee number

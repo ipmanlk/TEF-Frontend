@@ -5,12 +5,11 @@
   <meta charset="UTF-8">
   <title>TwoElephantFireworks - Employee</title>
   <link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css">
-  <link rel="stylesheet" type="text/css" href="../../lib/DataTables/datatables.min.css" />
-  <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+  <link rel="stylesheet" type="text/css" href="../../lib/DataTable/datatable.css" />
 </head>
 
 <body>
-  <div class="container-fluid" style="margin-top: 30px; margin-bottom:100px;">
+  <div class="container-fluid" style="margin-top: 10px; margin-bottom:100px;">
 
     <ul class="nav nav-tabs">
       <li class="active"><a data-toggle="tab" href="#tabTable">Table</a></li>
@@ -20,29 +19,8 @@
     <div class="tab-content">
 
       <div id="tabTable" class="tab-pane fade in active">
-        <!-- <div id="table" class="tab-pane fade"> -->
-        <div class="container-fluid" style="margin-top:30px">
-          <table id="mainTable" class="display" style="width:100%">
-            <thead>
-              <tr>
-                <th>Number</th>
-                <th>NIC</th>
-                <th>Full Name</th>
-                <th>Calling Name</th>
-                <th>Mobile</th>
-                <th>Land</th>
-                <th>Address</th>
-                <th>Designation</th>
-                <th>Date of Assignment</th>
-                <th>Status</th>
-                <th>Edit</th>
-                <th>Delete</th>
-              </tr>
-            </thead>
-            <tbody>
+        <div id="mainTableHolder" class="container-fluid" style="margin-top:30px">
 
-            </tbody>
-          </table>
         </div>
       </div>
 
@@ -148,9 +126,10 @@
   <!-- libs -->
   <script src="../../lib/js/jquery-3.4.1.min.js"></script>
   <script src="../../lib/js/bootstrap.min.js"></script>
-  <script src="../../lib/js/theme.js"></script>
-  <script type="text/javascript" src="../../lib/DataTables/datatables.min.js"></script>
   <script type="text/javascript" src="../../lib/js/lknic.moment.min.js"></script>
+
+  <script src="../../lib/DataTable/datatable.js"></script>
+
 
   <!-- common stuff -->
   <script src="../../js/common.js"></script>
