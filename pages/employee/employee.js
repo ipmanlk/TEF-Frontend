@@ -1,72 +1,180 @@
-// globally available temprary data
+/*-------------------------------------------------------------------------------------------------------
+                                          Window Data
+-------------------------------------------------------------------------------------------------------*/
 window.tempData = { selectedEntry: undefined, validationInfo: undefined, loadMore: true };
 
-// when dom is ready
-$(document).ready(async function () {
-    // get regexes
-    let { data } = await request("/api/regexes", "GET", {
-        data: { module: "EMPLOYEE" }
-    }).catch(e => {
-        console.log(e);
-    });
-    tempData.validationInfo = data;
 
-    // load form and event listeners
-    await loadFormDropdowns();
+/*-------------------------------------------------------------------------------------------------------
+                                            General
+-------------------------------------------------------------------------------------------------------*/
+
+$(document).ready(async () => {
+    // get regexes for validation and store on window tempData
+    const response = await Request.send("/api/regexes", "GET", {
+        data: { module: "EMPLOYEE" }
+    });
+
+    // check if server returned an error
+    if (!response.status) return;
+
+    // save validation info (regexes) on global tempData
+    tempData.validationInfo = response.data;
+
     await loadMainTable();
-    registerGeneralEventListeners(tempData.validationInfo);
-    registerSpecificEventListeners();
+    await loadFormDropdowns();
+    registerEventListeners();
+    FormUtil.enableRealtimeValidation(tempData.validationInfo);
 });
 
+// reload main table data and from after making a change
+const reloadModule = () => {
+    loadMainTable();
+    resetForm();
+}
 
-// Event listners unique to each module
-const registerSpecificEventListeners = () => {
+/*-------------------------------------------------------------------------------------------------------
+                                            Main Table
+-------------------------------------------------------------------------------------------------------*/
+const loadMainTable = async () => {
 
-    // handle image upload preview
+    // get initial entries from the server
+    const response = await Request.send("/api/employees", "GET", {
+        data: { keyword: "", skip: 0 }
+    });
+
+    if (!response.status) return;
+
+    // convert response data to data table format
+    const tableData = getTableData(response.data);
+
+    // load data table
+    window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries);
+}
+
+
+const searchEntries = async (searchValue) => {
+    const response = await Request.send("/api/employees", "GET", {
+        data: { keyword: searchValue }
+    });
+
+    if (!response.status) return;
+
+    const tableData = getTableData(response.data);
+
+    // load data to global main table
+    mainTable.loadTable(data);
+}
+
+const loadMoreEntries = async (searchValue, rowsCount) => {
+
+    // check if all data has been loaded
+    if (!tempData.loadMore) return;
+
+    const response = await Request.send("/api/employees", "GET", {
+        data: { keyword: searchValue, skip: rowsCount }
+    });
+
+    if (!response.status) return;
+
+    // if results came empty (all loaded)
+    if (response.data.length == 0) {
+        tempData.loadMore = false;
+        return;
+    }
+
+    const tableData = getTableData(response.data);
+
+    // append to global main table
+    mainTable.append(tableData);
+}
+
+const formTabClick = async () => {
+    // when form tab is clicked, reset the form and get next available employee number
+    resetForm();
+    const response = await Request.send("/api/employees/next_number");
+    if (!response.status) return;
+
+    // set next employee number in the form
+    $("#number").val(response.data.nextNumber);
+
+    // show / hide proper button
+    $("#btnFmAdd").show();
+    $("#btnFmUpdate").hide();
+}
+
+const getTableData = (responseData) => {
+    // parse resposne data and return in data table frendly format
+    return responseData.map(entry => {
+        return {
+            "Number": entry.number,
+            "Full Name": entry.fullName,
+            "Calling Name": entry.callingName,
+            "NIC": entry.nic,
+            "Mobile": entry.mobile,
+            "Designation": entry.designation.name,
+            "Civil Status": entry.civilStatus.name,
+            "Employee Status": entry.employeeStatus.name,
+            "View": `<button class="btn btn-success btn-sm" onclick="editEntry('${entry.id}')">View</button>`,
+            "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${entry.id}')">Edit</button>`,
+            "Delete": `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')">Delete</button>`
+        }
+    });
+}
+
+/*-------------------------------------------------------------------------------------------------------
+                                            Main Form
+-------------------------------------------------------------------------------------------------------*/
+
+const registerEventListeners = () => {
+
+    // disable from submissions
+    $("form").on("submit", (e) => e.preventDefault());
+
+    // show photo preview when image is selected
     $("#photo").on("change", (event) => {
         if (photo.files && photo.files[0]) {
             photoPreview.src = URL.createObjectURL(event.target.files[0]);
         }
     });
 
-    // fill date of birth from nic
+    // show date of birth when nic typed
     $("#nic").on("paste change keyup", (e) => {
         showDateOfBirth(e.target.value);
     });
 
-    // for form buttons
+    // register listeners for form buttons
     $("#btnFmAdd").on("click", addEntry);
     $("#btnFmUpdate").on("click", updateEntry);
-    $("#btnFmDelete").on("click", deleteEntry);
+    $("#btnFmDelete").on("click", () => deleteEntry());
     $("#btnFmReset").on("click", resetForm);
 
-    // for tabs
+    //  register listeners for form tab click
     $(".nav-tabs a[href='#tabForm']").on("click", formTabClick);
 }
 
-// get data and fill drop downs (selects) in the form
 const loadFormDropdowns = async () => {
+    // define needed attributes
     let designations, genders, employeeStatuses, civilStatues;
 
     // get data from the api for each dropbox
     try {
         let response;
-        response = await request("/api/designations", "GET");
+        response = await Request.send("/api/designations", "GET");
         designations = response.data;
 
-        response = await request("/api/genders", "GET");
+        response = await Request.send("/api/genders", "GET");
         genders = response.data;
 
-        response = await request("/api/employee_statuses", "GET");
+        response = await Request.send("/api/employee_statuses", "GET");
         employeeStatuses = response.data;
 
-        response = await request("/api/civil_statuses", "GET");
+        response = await Request.send("/api/civil_statuses", "GET");
         civilStatues = response.data;
     } catch (e) {
-        console.log(e);
+        return;
     }
 
-    // map data with dropdown ids
+    // select input ids and relevent data
     const dropdownData = {
         civilStatusId: civilStatues,
         designationId: designations,
@@ -74,7 +182,7 @@ const loadFormDropdowns = async () => {
         employeeStatusId: employeeStatuses
     }
 
-    // populate dropboxes with data
+    // populate select inputs with data
     Object.keys(dropdownData).forEach(dropdownId => {
         const selector = `#${dropdownId}`;
         $(selector).empty();
@@ -87,113 +195,28 @@ const loadFormDropdowns = async () => {
     })
 }
 
-// get employee list and populate the data table
-const loadMainTable = async () => {
-    // get employee data from server
-    let employeeData = await request("/api/employees", "GET", {
-        data: {
-            keyword: "",
-            skip: 0
-        }
-    }).catch(e => {
-        console.log(e);
-    });
-
-    // check if server returned an error
-    if (!employeeData.status) {
-        return;
-    }
-
-    // map data to support data table structure
-    let tableData = getTableData(employeeData.data);
-
-    window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries);
-}
-
-
-const searchEntries = async (searchValue) => {
-    const employeeData = await request("/api/employees", "GET", { data: { keyword: searchValue } }).catch(e => {
-        console.log(e);
-    });
-
-    // check if server returned an error
-    if (!employeeData.status) {
-        return;
-    }
-
-    // map data to support data table structure
-    let data = getTableData(employeeData.data);
-
-    mainTable.loadTable(data);
-}
-
-const loadMoreEntries = async (searchValue, rowsCount) => {
-
-    // check if all data has been loaded
-    if(!tempData.loadMore) return;
-
-    const employeeData = await request("/api/employees", "GET", {
-        data: {
-            keyword: searchValue,
-            skip: rowsCount
-        }
-    }).catch(e => {
-        console.log(e);
-    });
-
-    // check if server returned an error
-    if (!employeeData.status) return;
-
-    // if results came empty (all loaded)
-    if(employeeData.data.length == 0) {
-        tempData.loadMore = false;
-        return;
-    } 
-
-    // map data to support data table structure
-    let data = getTableData(employeeData.data);
-
-    mainTable.append(data);
-}
-
-// when form tab is clicked, rest the form and get next available employee number
-const formTabClick = async () => {
-    resetForm();
-
-    const { data } = await request("/api/employees/next_number").catch(e => {
-        console.log(e);
-    });
-
-    // set next employee number in the form
-    $("#number").val(data.nextNumber);
-
-    $("#btnFmAdd").show();
-    $("#btnFmUpdate").hide();
-}
-
-// show dob from the nic in the form field
 const showDateOfBirth = (nic) => {
     let { dateOfBirth } = getNICinfo(nic);
     $("#dobirth").val(dateOfBirth);
 }
 
-// validate each input in the form
 const validateForm = async () => {
     let errors = "";
-    let entry = {};
+    const entry = {};
 
-    // Loop through each validation info item (vi) validate it's value;
+    // Loop through validation info items (vi) and check it's value using regexes
     for (let vi of tempData.validationInfo) {
-        // element id is equal to database attribute
+        // element id is equal to database attribute name
         const elementId = vi.attribute;
 
+        // validation status of the form
         let isValid = false;
 
         // handle profile picture validation
         if (elementId == "photo") {
             if (photo.files[0]) {
                 try {
-                    entry[elementId] = await getBase64FromFile(photo.files[0]);
+                    entry[elementId] = await ImageUtil.getBase64FromFile(photo.files[0]);
                     isValid = true;
                 } catch (error) {
                     isValid = false;
@@ -203,11 +226,11 @@ const validateForm = async () => {
                 entry[elementId] = false;
                 isValid = true;
             }
-
             continue;
+
         } else {
             // if it's not a profile picture, just validate using it's value
-            isValid = validateElementValue(vi);
+            isValid = FormUtil.validateElementValue(vi);
         }
 
         // check for errors and add to entry object
@@ -244,14 +267,14 @@ const addEntry = async () => {
     }
 
     // get response
-    const res = await request("/api/employees", "POST", { data: data }).catch(e => {
+    const res = await Request.send("/api/employees", "POST", { data: data }).catch(e => {
         console.log(e);
     });
 
     // show output modal based on response
     if (res.status) {
         mainWindow.showOutputModal("Success!", res.msg);
-        reloadData();
+        reloadModule();
     } else {
         mainWindow.showOutputModal("Sorry!", res.msg);
     }
@@ -259,7 +282,7 @@ const addEntry = async () => {
 
 // get entry data from db and show in the form
 const editEntry = async (id) => {
-    const res = await request("/api/employees", "GET", {
+    const res = await Request.send("/api/employees", "GET", {
         data: {
             id: id
         }
@@ -297,7 +320,7 @@ const editEntry = async (id) => {
     showDateOfBirth(entry.nic);
 
     // set profile picture preview
-    const imageURL = getImageURLfromBuffer(entry.photo);
+    const imageURL = ImageUtil.getURLfromBuffer(entry.photo);
     $("#photoPreview").attr("src", imageURL);
     photo.files[0] = entry.photo.data;
 
@@ -355,7 +378,7 @@ const updateEntry = async () => {
     newEntryObj.id = tempData.selectedEntry.id;
 
     // send put reqeust to update data
-    const res = await request("/api/employees", "PUT", { data: newEntryObj }).catch(e => {
+    const res = await Request.send("/api/employees", "PUT", { data: newEntryObj }).catch(e => {
         console.log(e);
     });
 
@@ -365,7 +388,7 @@ const updateEntry = async () => {
         // reset selected entry
         tempData.selectedEntry = undefined;
 
-        reloadData();
+        reloadModule();
     } else {
         mainWindow.showOutputModal("Sorry!", res.msg);
     }
@@ -374,41 +397,14 @@ const updateEntry = async () => {
 // delete entry from the database
 const deleteEntry = async (id = tempData.selectedEntry.id) => {
     const confirmation = await mainWindow.showConfirmModal("Confirmation", "Do you really need to delete this entry?");
+    console.log(id);
 
     if (confirmation) {
-        const res = await request("/api/employees", "DELETE", { data: { id: id } }).catch(e => {
-            console.log(e);
-        });
-
+        const response = await Request.send("/api/employees", "DELETE", { data: { id: id } });
+        if (!response.status) return;
         mainWindow.showOutputModal("Success!", "That entry has been deleted!.");
-        reloadData();
+        reloadModule();
     }
-}
-
-// prepare table rows
-const getTableData = (responseData) => {
-    console.log(responseData);
-
-    return responseData.map(entry => {
-        return {
-            "Number": entry.number,
-            "Full Name": entry.fullName,
-            "Calling Name": entry.callingName,
-            "NIC": entry.nic,
-            "Mobile": entry.mobile,
-            "Designation": entry.designation.name,
-            "Civil Status": entry.civilStatus.name,
-            "Employee Status": entry.employeeStatus.name,
-            "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${entry.id}')">Edit</button>`,
-            "Delete": `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')">Delete</button>`
-        }
-    });
-}
-
-// reload main table data and from after making a change
-const reloadData = () => {
-    loadMainTable();
-    resetForm();
 }
 
 // reset form
