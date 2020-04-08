@@ -28,8 +28,7 @@ $(document).ready(async () => {
 
 // reload main table data and from after making a change
 const reloadModule = () => {
-    loadMainTable();
-    resetForm();
+    location.reload();
 }
 
 /*-------------------------------------------------------------------------------------------------------
