@@ -458,11 +458,6 @@ body {
   overflow-y: hidden;
 }
 
-/* for labels */
-.required {
-  color: red;
-}
-
 /* for showing iframes in 100% width and height */
 .full-size {
   min-height: 100vh;
