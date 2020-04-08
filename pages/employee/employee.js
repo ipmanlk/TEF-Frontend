@@ -1,5 +1,5 @@
 // globally available temprary data
-window.tempData = { selectedEntry: undefined, validationInfo: undefined };
+window.tempData = { selectedEntry: undefined, validationInfo: undefined, loadMore: true };
 
 // when dom is ready
 $(document).ready(async function () {
@@ -92,7 +92,8 @@ const loadMainTable = async () => {
     // get employee data from server
     let employeeData = await request("/api/employees", "GET", {
         data: {
-            keyword: ""
+            keyword: "",
+            skip: 0
         }
     }).catch(e => {
         console.log(e);
@@ -104,25 +105,9 @@ const loadMainTable = async () => {
     }
 
     // map data to support data table structure
-    let data = employeeData.data.map(employee => {
-        return {
-            "Number": employee.number,
-            "Full Name": employee.fullName,
-            "Calling Name": employee.callingName,
-            "NIC": employee.nic,
-            "Mobile": employee.mobile,
-            // "Land": employee.land,
-            // doassignment: employee.doassignment,
-            // gender: employee.gender.name,
-            "Designation": employee.designation.name,
-            "Civil Status": employee.civilStatus.name,
-            "Employee Status": employee.employeeStatus.name,
-            "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${employee.id}')">Edit</button>`,
-            "Delete": `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${employee.id}')">Delete</button>`
-        }
-    });
+    let tableData = getTableData(employeeData.data);
 
-    window.mainTable = new DataTable("mainTableHolder", data, searchEntries);
+    window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries);
 }
 
 
@@ -137,22 +122,38 @@ const searchEntries = async (searchValue) => {
     }
 
     // map data to support data table structure
-    let data = employeeData.data.map(employee => {
-        return {
-            "Number": employee.number,
-            "Full Name": employee.fullName,
-            "Calling Name": employee.callingName,
-            "NIC": employee.nic,
-            "Mobile": employee.mobile,
-            "Designation": employee.designation.name,
-            "Civil Status": employee.civilStatus.name,
-            "Employee Status": employee.employeeStatus.name,
-            "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${employee.id}')">Edit</button>`,
-            "Delete": `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${employee.id}')">Delete</button>`
-        }
-    });
+    let data = getTableData(employeeData.data);
 
     mainTable.loadTable(data);
+}
+
+const loadMoreEntries = async (searchValue, rowsCount) => {
+
+    // check if all data has been loaded
+    if(!tempData.loadMore) return;
+
+    const employeeData = await request("/api/employees", "GET", {
+        data: {
+            keyword: searchValue,
+            skip: rowsCount
+        }
+    }).catch(e => {
+        console.log(e);
+    });
+
+    // check if server returned an error
+    if (!employeeData.status) return;
+
+    // if results came empty (all loaded)
+    if(employeeData.data.length == 0) {
+        tempData.loadMore = false;
+        return;
+    } 
+
+    // map data to support data table structure
+    let data = getTableData(employeeData.data);
+
+    mainTable.append(data);
 }
 
 // when form tab is clicked, rest the form and get next available employee number
@@ -384,6 +385,26 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
     }
 }
 
+// prepare table rows
+const getTableData = (responseData) => {
+    console.log(responseData);
+
+    return responseData.map(entry => {
+        return {
+            "Number": entry.number,
+            "Full Name": entry.fullName,
+            "Calling Name": entry.callingName,
+            "NIC": entry.nic,
+            "Mobile": entry.mobile,
+            "Designation": entry.designation.name,
+            "Civil Status": entry.civilStatus.name,
+            "Employee Status": entry.employeeStatus.name,
+            "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${entry.id}')">Edit</button>`,
+            "Delete": `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')">Delete</button>`
+        }
+    });
+}
+
 // reload main table data and from after making a change
 const reloadData = () => {
     loadMainTable();
@@ -397,3 +418,4 @@ const resetForm = () => {
     $(".form-group").children(".form-control-feedback").remove();
     $("#photoPreview").attr("src", "../../img/avatar.png");
 }
+
