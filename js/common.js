@@ -149,6 +149,7 @@ class Request {
                     if (res.type == "auth") {
                         window.location = "noauth.html"
                     }
+                    reject(res.msg);
                 }
             });
 
