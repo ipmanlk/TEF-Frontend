@@ -30,7 +30,8 @@ const updateRouteInfo = () => {
     // make modal functions available inside the iframeMain
     document.getElementById("iframeMain").contentWindow.mainWindow = {
         showOutputModal,
-        showConfirmModal
+        showConfirmModal,
+        showOutputToast
     }
 }
 
