@@ -272,7 +272,7 @@ const addEntry = async () => {
 
     // show output modal based on response
     if (response.status) {
-        mainWindow.showOutputModal("Success!", response.msg);
+        mainWindow.showOutputToast("Success!", response.msg);
         showNextNumber();
         reloadModule();
     } else {
@@ -384,7 +384,7 @@ const updateEntry = async () => {
 
     // show output modal based on response
     if (response.status) {
-        mainWindow.showOutputModal("Success!", response.msg);
+        mainWindow.showOutputToast("Success!", response.msg);
         // reset selected entry
         tempData.selectedEntry = undefined;
         reloadModule();
@@ -400,7 +400,7 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
     if (confirmation) {
         const response = await Request.send("/api/employees", "DELETE", { data: { id: id } });
         if (response.status) {
-            mainWindow.showOutputModal("Success!", response.msg);
+            mainWindow.showOutputToast("Success!", response.msg);
             tempData.selectedEntry = undefined
             reloadModule();
         } else {
