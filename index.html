@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="./lib/fontawesome/css/font-awesome.min.css">
   <link rel="stylesheet" href="./lib/dashboard/css/theme.css">
+  <link rel="stylesheet" href="./lib/jquerytoast/css/jquery.toast.min.css">
+
 </head>
 
 <body>
@@ -148,6 +150,7 @@
 
   <!-- libraries -->
   <script src="./lib/jquery/jquery.min.js"></script>
+  <script src="./lib/jquerytoast/js/jquery.toast.min.js"></script>
   <script src="./lib/bootstrap/js/bootstrap.min.js"></script>
   <script src="./lib/dashboard/js/theme.js"></script>
   <script src="./js/router.js"></script>
@@ -158,13 +161,24 @@
       updateRouteInfo();
     });
 
-
     // controls modal for showing various outputs
     const showOutputModal = (title, body) => {
       $("#modalOutputTitle").text(title);
       $("#modalOutputBody").html("Unknown");
       $("#modalOutputBody").html(body);
       $("#modalOutput").modal();
+    }
+
+    // controls toast for showing various outputs
+    const showOutputToast = (title, body, type="success") => {
+      $.toast({
+        heading: title,
+        text: body,
+        hideAfter: 4000,
+        position: "bottom-right",
+        icon: type,
+        stack: false,
+      })
     }
 
     // show confirmation modal
