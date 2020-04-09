@@ -153,6 +153,11 @@ const registerEventListeners = () => {
 
     //  register listeners for form tab click
     $(".nav-tabs a[href='#tabForm']").on("click", formTabClick);
+
+    // catch promise rejections
+    $(window).on("unhandledrejection", (event) => {
+        console.error("Unhandled rejection (promise: ", event.promise, ", reason: ", event.reason, ").");
+    });
 }
 
 const loadFormDropdowns = async () => {
@@ -160,22 +165,18 @@ const loadFormDropdowns = async () => {
     let designations, genders, employeeStatuses, civilStatues;
 
     // get data from the api for each dropbox
-    try {
-        let response;
-        response = await Request.send("/api/designations", "GET");
-        designations = response.data;
+    let response;
+    response = await Request.send("/api/designations", "GET");
+    designations = response.data;
 
-        response = await Request.send("/api/genders", "GET");
-        genders = response.data;
+    response = await Request.send("/api/genders", "GET");
+    genders = response.data;
 
-        response = await Request.send("/api/employee_statuses", "GET");
-        employeeStatuses = response.data;
+    response = await Request.send("/api/employee_statuses", "GET");
+    employeeStatuses = response.data;
 
-        response = await Request.send("/api/civil_statuses", "GET");
-        civilStatues = response.data;
-    } catch (e) {
-        return;
-    }
+    response = await Request.send("/api/civil_statuses", "GET");
+    civilStatues = response.data;
 
     // select input ids and relevent data
     const dropdownData = {
@@ -270,9 +271,7 @@ const addEntry = async () => {
     }
 
     // get response
-    const response = await Request.send("/api/employees", "POST", { data: data }).catch(e => {
-        console.log(e);
-    });
+    const response = await Request.send("/api/employees", "POST", { data: data });
 
     // show output modal based on response
     if (response.status) {
@@ -286,14 +285,8 @@ const addEntry = async () => {
 
 const editEntry = async (id, readOnly = false) => {
     // get entry data from db and show in the form
-    const res = await Request.send("/api/employees", "GET", {
-        data: {
-            id: id
-        }
-    }).catch(e => {
-        console.log(e);
-    });
-    const entry = res.data;
+    const response = await Request.send("/api/employees", "GET", { data: { id: id } });
+    const entry = response.data;
 
     // set input values
     Object.keys(entry).forEach(key => {
@@ -386,9 +379,7 @@ const updateEntry = async () => {
     newEntryObj.id = tempData.selectedEntry.id;
 
     // send put reqeust to update data
-    const response = await Request.send("/api/employees", "PUT", { data: newEntryObj }).catch(e => {
-        console.log(e);
-    });
+    const response = await Request.send("/api/employees", "PUT", { data: newEntryObj });
 
     // show output modal based on response
     if (response.status) {
@@ -426,7 +417,7 @@ const setFormButtionsVisibility = (action) => {
             $("#btnFmReset").hide();
             $("#btnFmPrint").show();
             break;
-            
+
         case "edit":
             $("#btnFmAdd").hide();
             $("#btnFmUpdate").show();
@@ -452,4 +443,3 @@ const resetForm = () => {
     $(".form-group").children(".form-control-feedback").remove();
     $("#photoPreview").attr("src", "../../img/avatar.png");
 }
-
