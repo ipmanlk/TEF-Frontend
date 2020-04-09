@@ -424,6 +424,7 @@ const setFormButtionsVisibility = (action) => {
             $("#btnFmUpdate").hide();
             $("#btnFmDelete").hide();
             $("#btnFmReset").hide();
+            $("#btnFmPrint").show();
             break;
             
         case "edit":
@@ -431,6 +432,7 @@ const setFormButtionsVisibility = (action) => {
             $("#btnFmUpdate").show();
             $("#btnFmDelete").show();
             $("#btnFmReset").show();
+            $("#btnFmPrint").hide();
             break;
 
         case "add":
@@ -438,6 +440,7 @@ const setFormButtionsVisibility = (action) => {
             $("#btnFmUpdate").hide();
             $("#btnFmDelete").hide();
             $("#btnFmReset").show();
+            $("#btnFmPrint").hide();
             break;
     }
 }
