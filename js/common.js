@@ -40,6 +40,24 @@ class FormUtil {
             });
         });
     }
+
+    static setReadOnly(selector, readOnly) {
+        if(readOnly) {
+            $(`${selector} .form-group`).children().each((i, el) => {
+                if ($(el).data("editable") == true) {
+                    $(el).attr("readonly", true);
+                    $(el).attr("disabled", true);
+                }
+            });   
+        } else {
+            $(`${selector} .form-group`).children().each((i, el) => {
+                if ($(el).data("editable") == true) {
+                    $(el).attr("readonly", false);
+                    $(el).attr("disabled", false);
+                }
+            });
+        }
+    }
 }
 
 class ImageUtil {
