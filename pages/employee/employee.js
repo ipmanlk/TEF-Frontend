@@ -14,9 +14,6 @@ $(document).ready(async () => {
         data: { module: "EMPLOYEE" }
     });
 
-    // check if server returned an error
-    if (!response.status) return;
-
     // save validation info (regexes) on global tempData
     tempData.validationInfo = response.data;
 
@@ -27,42 +24,44 @@ $(document).ready(async () => {
 });
 
 // reload main table data and from after making a change
-const reloadModule = () => {
-    loadMainTable();
+const reloadModule = async() => {
     resetForm();
+    const tableData = await getInitialTableData();
+    mainTable.reload(tableData);
+
+    // fix for additional load more requests
+    setTimeout(() => tempData.loadMore = true, 500);
 }
 
 /*-------------------------------------------------------------------------------------------------------
                                             Main Table
 -------------------------------------------------------------------------------------------------------*/
 const loadMainTable = async () => {
-
-    // get initial entries from the server
-    const response = await Request.send("/api/employees", "GET", {
-        data: { keyword: "", skip: 0 }
-    });
-
-    if (!response.status) return;
-
-    // convert response data to data table format
-    const tableData = getTableData(response.data);
+    const tableData = await getInitialTableData();
 
     // load data table
     window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries);
 }
 
+const getInitialTableData = async() => {
+    // get initial entries from the server
+    const response = await Request.send("/api/employees", "GET", {
+        data: { keyword: "", skip: 0 }
+    });
+
+    // convert response data to data table format
+    return getTableData(response.data);
+}
 
 const searchEntries = async (searchValue) => {
     const response = await Request.send("/api/employees", "GET", {
         data: { keyword: searchValue }
     });
 
-    if (!response.status) return;
-
     const tableData = getTableData(response.data);
 
     // load data to global main table
-    mainTable.loadTable(data);
+    mainTable.loadTable(tableData);
 }
 
 const loadMoreEntries = async (searchValue, rowsCount) => {
@@ -73,8 +72,6 @@ const loadMoreEntries = async (searchValue, rowsCount) => {
     const response = await Request.send("/api/employees", "GET", {
         data: { keyword: searchValue, skip: rowsCount }
     });
-
-    if (!response.status) return;
 
     // if results came empty (all loaded)
     if (response.data.length == 0) {
@@ -91,15 +88,17 @@ const loadMoreEntries = async (searchValue, rowsCount) => {
 const formTabClick = async () => {
     // when form tab is clicked, reset the form and get next available employee number
     resetForm();
-    const response = await Request.send("/api/employees/next_number");
-    if (!response.status) return;
-
-    // set next employee number in the form
-    $("#number").val(response.data.nextNumber);
-
+    await showNextNumber();
     // show / hide proper button
     $("#btnFmAdd").show();
     $("#btnFmUpdate").hide();
+}
+
+const showNextNumber = async () => {
+    const response = await Request.send("/api/employees/next_number");
+
+    // set next employee number in the form
+    $("#number").val(response.data.nextNumber);
 }
 
 const getTableData = (responseData) => {
@@ -267,16 +266,17 @@ const addEntry = async () => {
     }
 
     // get response
-    const res = await Request.send("/api/employees", "POST", { data: data }).catch(e => {
+    const response = await Request.send("/api/employees", "POST", { data: data }).catch(e => {
         console.log(e);
     });
 
     // show output modal based on response
-    if (res.status) {
-        mainWindow.showOutputModal("Success!", res.msg);
+    if (response.status) {
+        mainWindow.showOutputModal("Success!", response.msg);
+        showNextNumber();
         reloadModule();
     } else {
-        mainWindow.showOutputModal("Sorry!", res.msg);
+        mainWindow.showOutputModal("Sorry!", response.msg);
     }
 }
 
@@ -378,32 +378,34 @@ const updateEntry = async () => {
     newEntryObj.id = tempData.selectedEntry.id;
 
     // send put reqeust to update data
-    const res = await Request.send("/api/employees", "PUT", { data: newEntryObj }).catch(e => {
+    const response = await Request.send("/api/employees", "PUT", { data: newEntryObj }).catch(e => {
         console.log(e);
     });
 
     // show output modal based on response
-    if (res.status) {
-        mainWindow.showOutputModal("Success!", res.msg);
+    if (response.status) {
+        mainWindow.showOutputModal("Success!", response.msg);
         // reset selected entry
         tempData.selectedEntry = undefined;
-
         reloadModule();
     } else {
-        mainWindow.showOutputModal("Sorry!", res.msg);
+        mainWindow.showOutputModal("Sorry!", response.msg);
     }
 }
 
 // delete entry from the database
 const deleteEntry = async (id = tempData.selectedEntry.id) => {
     const confirmation = await mainWindow.showConfirmModal("Confirmation", "Do you really need to delete this entry?");
-    console.log(id);
 
     if (confirmation) {
         const response = await Request.send("/api/employees", "DELETE", { data: { id: id } });
-        if (!response.status) return;
-        mainWindow.showOutputModal("Success!", "That entry has been deleted!.");
-        reloadModule();
+        if (response.status) {
+            mainWindow.showOutputModal("Success!", response.msg);
+            tempData.selectedEntry = undefined
+            reloadModule();
+        } else {
+            mainWindow.showOutputModal("Sorry!", response.msg);
+        }
     }
 }
 
