@@ -24,7 +24,7 @@ $(document).ready(async () => {
 });
 
 // reload main table data and from after making a change
-const reloadModule = async() => {
+const reloadModule = async () => {
     resetForm();
     const tableData = await getInitialTableData();
     mainTable.reload(tableData);
@@ -43,7 +43,7 @@ const loadMainTable = async () => {
     window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries);
 }
 
-const getInitialTableData = async() => {
+const getInitialTableData = async () => {
     // get initial entries from the server
     const response = await Request.send("/api/employees", "GET", {
         data: { keyword: "", skip: 0 }
@@ -195,7 +195,7 @@ const loadFormDropdowns = async () => {
 }
 
 const showDateOfBirth = (nic) => {
-    let { dateOfBirth } = getNICinfo(nic);
+    const dateOfBirth = NIClkUtil.getDOB(nic);
     $("#dobirth").val(dateOfBirth);
 }
 
