@@ -61,7 +61,7 @@ const searchEntries = async (searchValue) => {
     const tableData = getTableData(response.data);
 
     // load data to global main table
-    mainTable.loadTable(tableData);
+    mainTable.reload(tableData);
 }
 
 const loadMoreEntries = async (searchValue, rowsCount) => {
