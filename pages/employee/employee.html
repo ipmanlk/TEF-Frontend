@@ -35,16 +35,16 @@
             </div>
             <div class="form-group has-feedback">
               <label for="fullName">Full Name: <span class="required">*</span></label>
-              <input type="text" class="form-control" id="fullName" placeholder="Enter Full Name" name="fullName">
+              <input type="text" class="form-control" id="fullName" placeholder="Enter Full Name" name="fullName" data-editable="true">
             </div>
             <div class="form-group has-feedback">
               <label for="callingName">Calling Name: <span class="required">*</span></label>
               <input type="text" class="form-control" id="callingName" placeholder="Enter Calling Name"
-                name="callingName">
+                name="callingName" data-editable="true">
             </div>
             <div class="form-group has-feedback">
               <label for="genderId">Gender: <span class="required">*</span></label>
-              <select name="genderId" id="genderId" class="form-control">
+              <select name="genderId" id="genderId" class="form-control" data-editable="true">
                 <option value="1">Male</option>
                 <option value="2">Female</option>
                 <option value="3">Other</option>
@@ -52,14 +52,14 @@
             </div>
             <div class="form-group has-feedback">
               <label for="civilStatusId">Civil Status: <span class="required">*</span></label>
-              <select name="civilStatusId" id="civilStatusId" class="form-control">
+              <select name="civilStatusId" id="civilStatusId" class="form-control" data-editable="true">
                 <option value="1">Married</option>
                 <option value="2">Not Married</option>
               </select>
             </div>
             <div class="form-group has-feedback">
               <label for="nic">NIC: <span class="required">*</span></label>
-              <input type="text" class="form-control" id="nic" placeholder="Enter NIC" name="nic">
+              <input type="text" class="form-control" id="nic" placeholder="Enter NIC" name="nic" data-editable="true">
             </div>
             <div class="form-group has-feedback">
               <label for="dobirth">Date of Birth:</label>
@@ -73,49 +73,52 @@
               <div class="col-md-11">
                 <div class="form-group has-feedback">
                   <label for="photo">Photo: <span class="required">*</span></label>
-                  <input type="file" class="form-control" id="photo" name="photo">
+                  <input type="file" class="form-control" id="photo" name="photo" data-editable="true">
                 </div>
               </div>
             </div>
             <div class="form-group has-feedback">
               <label for="address">Address: <span class="required">*</span></label>
               <textarea class="form-control" name="address" id="address" cols="30" rows="3"
-                placeholder="Enter your address here"></textarea>
+                placeholder="Enter your address here" data-editable="true"></textarea>
             </div>
             <div class="form-group has-feedback">
               <label for="mobile">Mobile: <span class="required">*</span></label>
-              <input type="text" class="form-control" id="mobile" placeholder="Enter Mobile Number" name="mobile">
+              <input type="text" class="form-control" id="mobile" placeholder="Enter Mobile Number" name="mobile" data-editable="true">
             </div>
             <div class="form-group has-feedback">
               <label for="land">Land:</label>
-              <input type="text" class="form-control" id="land" placeholder="Enter Land Here" name="land">
+              <input type="text" class="form-control" id="land" placeholder="Enter Land Here" name="land" data-editable="true">
             </div>
             <div class="form-group has-feedback">
               <label for="designationId">Designation: <span class="required">*</span></label>
-              <select name="designationId" id="designationId" class="form-control">
+              <select name="designationId" id="designationId" class="form-control" data-editable="true">
                 <option value="1">Manager</option>
                 <option value="2">Staff</option>
               </select>
             </div>
             <div class="form-group has-feedback">
               <label for="doassignment">Assignment Date: <span class="required">*</span></label>
-              <input type="date" class="form-control" id="doassignment" name="doassignment">
+              <input type="date" class="form-control" id="doassignment" name="doassignment" data-editable="true">
             </div>
             <div class="form-group has-feedback">
               <label for="description">Description: </label>
-              <textarea class="form-control" name="description" id="description" cols="30" rows="3"></textarea>
+              <textarea class="form-control" name="description" id="description" cols="30" rows="3" data-editable="true"></textarea>
             </div>
             <div class="form-group has-feedback">
               <label for="employeeStatusId">Employee Status: <span class="required">*</span></label>
-              <select name="employeeStatusId" id="employeeStatusId" class="form-control">
+              <select name="employeeStatusId" id="employeeStatusId" class="form-control" data-editable="true">
                 <option value="1">Active</option>
                 <option value="2">Terminated</option>
               </select>
             </div>
-            <button id="btnFmAdd" class="btn btn-success">Add</button>
-            <button id="btnFmUpdate" class="btn btn-warning">Update</button>
-            <button id="btnFmReset" class="btn btn-primary" style="float: right; margin-left: 10px;">Reset</button>
-            <button id="btnFmDelete" class="btn btn-danger" style="float: right;">Delete</button>
+            <div id="fmButtons">
+              <button id="btnFmAdd" class="btn btn-success">Add</button>
+              <button id="btnFmUpdate" class="btn btn-warning">Update</button>
+              <button id="btnFmPrint" class="btn btn-info">Print</button>
+              <button id="btnFmReset" class="btn btn-primary" style="float: right; margin-left: 10px;">Reset</button>
+              <button id="btnFmDelete" class="btn btn-danger" style="float: right;">Delete</button>
+            </div>
           </form>
         </div>
 

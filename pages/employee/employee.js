@@ -89,9 +89,12 @@ const formTabClick = async () => {
     // when form tab is clicked, reset the form and get next available employee number
     resetForm();
     await showNextNumber();
+
     // show / hide proper button
-    $("#btnFmAdd").show();
-    $("#btnFmUpdate").hide();
+    setFormButtionsVisibility("add");
+
+    // enable form inputs
+    FormUtil.setReadOnly("#mainForm", false);
 }
 
 const showNextNumber = async () => {
@@ -113,7 +116,7 @@ const getTableData = (responseData) => {
             "Designation": entry.designation.name,
             "Civil Status": entry.civilStatus.name,
             "Employee Status": entry.employeeStatus.name,
-            "View": `<button class="btn btn-success btn-sm" onclick="editEntry('${entry.id}')">View</button>`,
+            "View": `<button class="btn btn-success btn-sm" onclick="editEntry('${entry.id}', true)">View</button>`,
             "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${entry.id}')">Edit</button>`,
             "Delete": `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')">Delete</button>`
         }
@@ -280,8 +283,8 @@ const addEntry = async () => {
     }
 }
 
-// get entry data from db and show in the form
-const editEntry = async (id) => {
+const editEntry = async (id, readOnly = false) => {
+    // get entry data from db and show in the form
     const res = await Request.send("/api/employees", "GET", {
         data: {
             id: id
@@ -330,9 +333,13 @@ const editEntry = async (id) => {
     // set entry object globally to later compare
     window.tempData.selectedEntry = entry;
 
-    // hide add button
-    $("#btnFmAdd").hide();
-    $("#btnFmUpdate").show();
+    if (readOnly) {
+        setFormButtionsVisibility("view");
+        FormUtil.setReadOnly("#mainForm", true);
+    } else {
+        FormUtil.setReadOnly("#mainForm", false);
+        setFormButtionsVisibility("edit");
+    }
 }
 
 // update entry in the database
@@ -406,6 +413,31 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
         } else {
             mainWindow.showOutputModal("Sorry!", response.msg);
         }
+    }
+}
+
+const setFormButtionsVisibility = (action) => {
+    switch (action) {
+        case "view":
+            $("#btnFmAdd").hide();
+            $("#btnFmUpdate").hide();
+            $("#btnFmDelete").hide();
+            $("#btnFmReset").hide();
+            break;
+            
+        case "edit":
+            $("#btnFmAdd").hide();
+            $("#btnFmUpdate").show();
+            $("#btnFmDelete").show();
+            $("#btnFmReset").show();
+            break;
+
+        case "add":
+            $("#btnFmAdd").show();
+            $("#btnFmUpdate").hide();
+            $("#btnFmDelete").hide();
+            $("#btnFmReset").show();
+            break;
     }
 }
 
