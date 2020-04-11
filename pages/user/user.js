@@ -156,10 +156,10 @@ const loadFormDropdowns = async () => {
 
     // get data from the api for each dropbox
     let response;
-    response = await Request.send("/api/roles", "GET");
+    response = await Request.send("/api/roles", "GET", { data: { keyword: "" } });
     roles = response.data;
 
-    response = await Request.send("/api/general", "GET", { data: {table: "user_status"} });
+    response = await Request.send("/api/general", "GET", { data: { table: "user_status" } });
     userStatuses = response.data;
 
     // select input ids and relevent data
