@@ -49,6 +49,10 @@ const getRoutes = () => {
             title: "User View",
             path: "./pages/user/user.html"
         },
+        "user": {
+            title: "Role View",
+            path: "./pages/role/role.html"
+        },
         "noauth": {
             title: "Auth Failure",
             path: "./pages/noauth.html"
