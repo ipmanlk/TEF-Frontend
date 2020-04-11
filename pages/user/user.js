@@ -241,7 +241,6 @@ const addEntry = async () => {
     // show output modal based on response
     if (response.status) {
         mainWindow.showOutputToast("Success!", response.msg);
-        showNextNumber();
         reloadModule();
     } else {
         mainWindow.showOutputModal("Sorry!", response.msg);
