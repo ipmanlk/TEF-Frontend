@@ -101,19 +101,19 @@ const getTableData = (responseData) => {
     responseData.forEach(role => {
         role.privilages.forEach(p => {
             const perms = p.permission.split("");
-            let add, read, modify, remove;
-            add = perms[0] ? "Yes" : "No";
-            read = perms[1] ? "Yes" : "No";
-            modify = perms[2] ? "Yes" : "No";
-            remove = perms[3] ? "Yes" : "No";
+            let post, get, put, del;
+            post = perms[0] ? "Yes" : "No";
+            get = perms[1] ? "Yes" : "No";
+            put = perms[2] ? "Yes" : "No";
+            del = perms[3] ? "Yes" : "No";
 
             data.push({
                 "Role": role.name,
                 "Module": p.module.name,
-                "Read": read,
-                "Add": add,
-                "Modify": modify,
-                "Remove": remove,
+                "Read": get,
+                "Add": post,
+                "Modify": put,
+                "Remove": del,
                 "View": `<button class="btn btn-success btn-sm" onclick="editEntry('${role.id}', true)">View</button>`,
                 "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${role.id}')">Edit</button>`,
                 "Delete": `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${role.id}')">Delete</button>`
@@ -139,7 +139,9 @@ const registerEventListeners = () => {
     $("#btnFmDelete").on("click", () => deleteEntry());
     $("#btnFmReset").on("click", resetForm);
     $("#btnFmPrint").on("click", () => FormUtil.print());
-    $("#btnModuleAdd").on("click", addModuleToList);
+    $("#btnModuleAdd").on("click", () => {
+        addModuleToList($("#moduleId").val());
+    });
     //  register listeners for form tab click
     $(".nav-tabs a[href='#tabForm']").on("click", formTabClick);
 
@@ -184,30 +186,29 @@ const validateForm = async () => {
     let errors = "";
     let entry = {};
 
-    // Loop through each validation info item (vi) validate it's value;
-    for (let vi of tempData.validationInfo) {
-        // element id is equal to database attribute
-        const elementId = vi.attribute;
+    // validate module permissions
+    const modulePermission = {
 
-        let isValid = false;
+    };
 
-        isValid = FormUtil.validateElementValue(vi);
-
-        // check for errors and add to entry object
-        if (!isValid) {
-            errors += `${vi.error}<br/>`
-        } else {
-            // sepecial cases
-            if (elementId == "number") {
-                entry["employee"] = {};
-                entry["employee"]["number"] = $(`#${elementId}`).val();
-                continue;
-            }
-
-            entry[elementId] = $(`#${elementId}`).val();
+    $("#moduleTable tbody tr").each((i, tr) => {
+        const children = $(tr).children();
+        const moduleId = $(children[0]).html();
+        const post = $(children[2]).children().first().is(":checked") ? 1 : 0;
+        const get = $(children[3]).children().first().is(":checked") ? 1 : 0;
+        const put = $(children[4]).children().first().is(":checked") ? 1 : 0;
+        const del = $(children[5]).children().first().is(":checked") ? 1 : 0;
+        let permission = `${post}${get}${put}${del}`;
+        if (permission == "0000") {
+            errors += "Please check at least one permission for each module or remove restricted ones.";
+            return false;
         }
-    }
+        modulePermission[moduleId] = permission;
+    });
+    
+    // todo: validate form inputs
 
+    
     // if there aren't any errors
     if (errors == "") {
         return {
@@ -392,24 +393,32 @@ const resetForm = () => {
                                             Module Table
 -------------------------------------------------------------------------------------------------------*/
 
-const addModuleToList = (e) => {
-    const moduleId = $("#moduleId").val();
-    const moduleName = $("#moduleId option:selected").text();
-    
+const addModuleToList = (moduleId, permission="0000") => {
+    const moduleName = $(`#moduleId option[value=${moduleId}]`).text();
+
     // check if module is already in the list
     if ($("#moduleTable tbody").html().indexOf(`${moduleName}`) > -1) {
         window.alert("You can't add same one twice");
         return;
     }
 
+    // permissions and checkbox selections
+    let permissions = permission.split("");
+    let post, get, put, del;    
+    post = parseInt(permissions[0]) ? "checked" : "";
+    get = parseInt(permissions[1]) ? "checked" : "";
+    put = parseInt(permissions[2])  ? "checked" : "";
+    del = parseInt(permissions[3])  ? "checked" : "";
+
+    // append module to the list
     $("#moduleTable tbody").append(`
         <tr>
             <td style="display:none">${moduleId}</td>
             <td>${moduleName}</td>
-            <td><input type="checkbox" id="${moduleId}read"></td>
-            <td><input type="checkbox" id="${moduleId}add"></td>
-            <td><input type="checkbox" id="${moduleId}modify"></td>
-            <td><input type="checkbox" id="${moduleId}remove"></td>
+            <td><input type="checkbox" id="${moduleId}read" ${get}></td>
+            <td><input type="checkbox" id="${moduleId}add" ${post}></td>
+            <td><input type="checkbox" id="${moduleId}modify" ${put}></td>
+            <td><input type="checkbox" id="${moduleId}remove" ${del}></td>
             <td>
             <buttn onClick="removeModuleFromList(this)" class="btn btn-danger btn-xs">Delete</buttn>
             </td>  
