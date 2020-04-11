@@ -169,13 +169,13 @@ const loadFormDropdowns = async () => {
     response = await Request.send("/api/designations", "GET");
     designations = response.data;
 
-    response = await Request.send("/api/genders", "GET");
+    response = await Request.send("/api/general", "GET", { data: { table: "gender" } });
     genders = response.data;
 
     response = await Request.send("/api/employee_statuses", "GET");
     employeeStatuses = response.data;
 
-    response = await Request.send("/api/civil_statuses", "GET");
+    response = await Request.send("/api/general", "GET", { data: { table: "civil_status" } });
     civilStatues = response.data;
 
     // select input ids and relevent data

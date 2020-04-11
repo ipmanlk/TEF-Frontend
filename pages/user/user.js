@@ -159,7 +159,7 @@ const loadFormDropdowns = async () => {
     response = await Request.send("/api/roles", "GET");
     roles = response.data;
 
-    response = await Request.send("/api/user_statuses", "GET");
+    response = await Request.send("/api/general", "GET", { data: {table: "user_status"} });
     userStatuses = response.data;
 
     // select input ids and relevent data
@@ -257,7 +257,7 @@ const editEntry = async (id, readOnly = false) => {
     $("#number").val(entry.employee.number);
     $("#username").val(entry.username);
     $("#description").val(entry.description);
-        
+
     const dropdowns = [
         "roleId",
         "userStatusId",
