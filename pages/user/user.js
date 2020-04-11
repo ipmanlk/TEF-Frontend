@@ -45,9 +45,7 @@ const loadMainTable = async () => {
 
 const getInitialTableData = async () => {
     // get initial entries from the server
-    const response = await Request.send("/api/users", "GET", {
-        data: { keyword: "", skip: 0 }
-    });
+    const response = await Request.send("/api/users", "GET");
 
     // convert response data to data table format
     return getTableData(response.data);
@@ -156,7 +154,7 @@ const loadFormDropdowns = async () => {
 
     // get data from the api for each dropbox
     let response;
-    response = await Request.send("/api/roles", "GET", { data: { keyword: "" } });
+    response = await Request.send("/api/roles", "GET");
     roles = response.data;
 
     response = await Request.send("/api/general", "GET", { data: { table: "user_status" } });

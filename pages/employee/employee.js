@@ -45,9 +45,7 @@ const loadMainTable = async () => {
 
 const getInitialTableData = async () => {
     // get initial entries from the server
-    const response = await Request.send("/api/employees", "GET", {
-        data: { keyword: "", skip: 0 }
-    });
+    const response = await Request.send("/api/employees", "GET");
 
     // convert response data to data table format
     return getTableData(response.data);
