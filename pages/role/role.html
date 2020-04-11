@@ -18,33 +18,16 @@
 
     <div class="tab-content">
 
-      <div id="tabTable" class="tab-pane fade in active">
+      <div id="tabTable" class="tab-pane fade">
         <div id="mainTableHolder" class="container-fluid" style="margin-top:30px">
 
         </div>
       </div>
 
-      <div id="tabForm" class="tab-pane fade">
+      <div id="tabForm" class="tab-pane fade in active">
         <div class="container-fluid" style="margin-top:30px">
           <form id="mainForm">
-            <div class="form-group has-feedback">
-              <label for="number">Employee Number: <span class="required">*</span></label>
-              <input type="text" class="form-control" id="number" placeholder="Enter Employee Number" name="number" data-editable="true">
-            </div>
-            <div class="form-group has-feedback">
-              <label for="username">Username: <span class="required">*</span></label>
-              <input type="text" class="form-control" id="username" placeholder="Enter Username" name="username" data-editable="true">
-            </div>
-            <div class="form-group has-feedback">
-              <label for="password">Password: <span class="required">*</span></label>
-              <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password" data-editable="true">
-            </div>
-            <div class="form-group has-feedback">
-              <label for="passwordConfirm">Confirm Password: <span class="required">*</span></label>
-              <input type="password" class="form-control" id="passwordConfirm" name="passwordConfirm"
-                placeholder="Enter Password Again" data-editable="true">
-            </div>
-            <div class="form-group has-feedback">
+            <div class="form-group">
               <label for="roleId">Role: <span class="required">*</span></label>
               <select name="roleId" id="roleId" class="form-control" data-editable="true">
                 <option value="1">Role A</option>
@@ -52,17 +35,47 @@
                 <option value="3">Role C</option>
               </select>
             </div>
-            <div class="form-group has-feedback">
-              <label for="userStatusId">Role: <span class="required">*</span></label>
-              <select name="userStatusId" id="userStatusId" class="form-control" data-editable="true">
-                <option value="1">Role A</option>
-                <option value="2">Role B</option>
-                <option value="3">Role C</option>
-              </select>
+
+            <div class="row">
+              <div class="col-xs-10">
+                <div class="form-group">
+                  <label for="moduleId">Module: <span class="required">*</span></label>
+                  <select name="moduleId" id="moduleId" class="form-control" data-editable="true">
+                    <option value="1">Role A</option>
+                    <option value="2">Role B</option>
+                    <option value="3">Role C</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-xs-2">
+                  <div class="form-group">
+                    <label style="color: white;">.</label>
+                    <span class="btn btn-primary btn-block" id="btnModuleAdd">Add</span>
+                  </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="moduleTable">Permissions: <span class="required">*</span></label>
+              <table id="moduleTable" class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Module</th>
+                    <th>Read</th>
+                    <th>Add</th>
+                    <th>Modify</th>
+                    <th>Remove</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+              </table>
             </div>
             <div class="form-group has-feedback">
               <label for="description">Description: </label>
-              <textarea class="form-control" name="description" id="description" cols="30" rows="3" data-editable="true"></textarea>
+              <textarea class="form-control" name="description" id="description" cols="30" rows="3"
+                data-editable="true"></textarea>
             </div>
             <button id="btnFmAdd" class="btn btn-success">Add</button>
             <button id="btnFmUpdate" class="btn btn-warning">Update</button>

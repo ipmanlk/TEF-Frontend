@@ -18,8 +18,8 @@ $(document).ready(async () => {
     tempData.validationInfo = response.data;
 
     await loadMainTable();
-    // await loadFormDropdowns();
-    // registerEventListeners();
+    await loadFormDropdowns();
+    registerEventListeners();
     // FormUtil.enableRealtimeValidation(tempData.validationInfo);
 });
 
@@ -45,9 +45,7 @@ const loadMainTable = async () => {
 
 const getInitialTableData = async () => {
     // get initial entries from the server
-    const response = await Request.send("/api/roles", "GET", {
-        data: { keyword: "", skip: 0 }
-    });
+    const response = await Request.send("/api/roles", "GET");
 
     // convert response data to data table format
     return getTableData(response.data);
@@ -103,10 +101,10 @@ const getTableData = (responseData) => {
     responseData.forEach(role => {
         role.privilages.forEach(p => {
             const perms = p.permission.split("");
-            let add, read, update, remove;
+            let add, read, modify, remove;
             add = perms[0] ? "Yes" : "No";
             read = perms[1] ? "Yes" : "No";
-            update = perms[2] ? "Yes" : "No";
+            modify = perms[2] ? "Yes" : "No";
             remove = perms[3] ? "Yes" : "No";
 
             data.push({
@@ -114,7 +112,7 @@ const getTableData = (responseData) => {
                 "Module": p.module.name,
                 "Read": read,
                 "Add": add,
-                "Update": update,
+                "Modify": modify,
                 "Remove": remove,
                 "View": `<button class="btn btn-success btn-sm" onclick="editEntry('${role.id}', true)">View</button>`,
                 "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${role.id}')">Edit</button>`,
@@ -135,25 +133,13 @@ const registerEventListeners = () => {
     // disable from submissions
     $("form").on("submit", (e) => e.preventDefault());
 
-    // show photo preview when image is selected
-    $("#photo").on("change", (event) => {
-        if (photo.files && photo.files[0]) {
-            photoPreview.src = URL.createObjectURL(event.target.files[0]);
-        }
-    });
-
-    // show date of birth when nic typed
-    $("#nic").on("paste change keyup", (e) => {
-        showDateOfBirth(e.target.value);
-    });
-
     // register listeners for form buttons
     $("#btnFmAdd").on("click", addEntry);
     $("#btnFmUpdate").on("click", updateEntry);
     $("#btnFmDelete").on("click", () => deleteEntry());
     $("#btnFmReset").on("click", resetForm);
     $("#btnFmPrint").on("click", () => FormUtil.print());
-
+    $("#btnModuleAdd").on("click", addModuleToList);
     //  register listeners for form tab click
     $(".nav-tabs a[href='#tabForm']").on("click", formTabClick);
 
@@ -165,20 +151,20 @@ const registerEventListeners = () => {
 
 const loadFormDropdowns = async () => {
     // define needed attributes
-    let roles, userStatuses;
+    let roles, modules;
 
     // get data from the api for each dropbox
     let response;
     response = await Request.send("/api/roles", "GET");
     roles = response.data;
 
-    response = await Request.send("/api/general", "GET", { data: { table: "user_status" } });
-    userStatuses = response.data;
+    response = await Request.send("/api/general", "GET", { data: { table: "module" } });
+    modules = response.data;
 
     // select input ids and relevent data
     const dropdownData = {
         roleId: roles,
-        userStatusId: userStatuses,
+        moduleId: modules,
     }
 
     // populate select inputs with data
@@ -193,7 +179,6 @@ const loadFormDropdowns = async () => {
         });
     });
 }
-
 
 const validateForm = async () => {
     let errors = "";
@@ -401,4 +386,37 @@ const resetForm = () => {
     $(".form-group").removeClass("has-error has-success");
     $(".form-group").children(".form-control-feedback").remove();
     $("#photoPreview").attr("src", "../../img/avatar.png");
+}
+
+/*-------------------------------------------------------------------------------------------------------
+                                            Module Table
+-------------------------------------------------------------------------------------------------------*/
+
+const addModuleToList = (e) => {
+    const moduleId = $("#moduleId").val();
+    const moduleName = $("#moduleId option:selected").text();
+    
+    // check if module is already in the list
+    if ($("#moduleTable tbody").html().indexOf(`${moduleName}`) > -1) {
+        window.alert("You can't add same one twice");
+        return;
+    }
+
+    $("#moduleTable tbody").append(`
+        <tr>
+            <td style="display:none">${moduleId}</td>
+            <td>${moduleName}</td>
+            <td><input type="checkbox" id="${moduleId}read"></td>
+            <td><input type="checkbox" id="${moduleId}add"></td>
+            <td><input type="checkbox" id="${moduleId}modify"></td>
+            <td><input type="checkbox" id="${moduleId}remove"></td>
+            <td>
+            <buttn onClick="removeModuleFromList(this)" class="btn btn-danger btn-xs">Delete</buttn>
+            </td>  
+        </tr>
+    `);
+}
+
+const removeModuleFromList = (button) => {
+    $(button).parent().parent().remove();
 }
