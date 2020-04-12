@@ -11,7 +11,7 @@ window.tempData = { selectedEntry: undefined, validationInfo: undefined, loadMor
 $(document).ready(async () => {
     // get regexes for validation and store on window tempData
     const response = await Request.send("/api/regexes", "GET", {
-        data: { module: "USER" }
+        data: { module: "ROLE" }
     });
 
     // save validation info (regexes) on global tempData
@@ -20,7 +20,7 @@ $(document).ready(async () => {
     await loadMainTable();
     await loadFormDropdowns();
     registerEventListeners();
-    // FormUtil.enableRealtimeValidation(tempData.validationInfo);
+    FormUtil.enableRealtimeValidation(tempData.validationInfo);
 });
 
 // reload main table data and from after making a change
@@ -114,7 +114,6 @@ const getTableData = (responseData) => {
                 "Add": post,
                 "Modify": put,
                 "Remove": del,
-                "View": `<button class="btn btn-success btn-sm" onclick="editEntry('${role.id}', true)">View</button>`,
                 "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${role.id}')">Edit</button>`,
                 "Delete": `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${role.id}')">Delete</button>`
             });
@@ -138,7 +137,6 @@ const registerEventListeners = () => {
     $("#btnFmUpdate").on("click", updateEntry);
     $("#btnFmDelete").on("click", () => deleteEntry());
     $("#btnFmReset").on("click", resetForm);
-    $("#btnFmPrint").on("click", () => FormUtil.print());
     $("#btnModuleAdd").on("click", () => {
         addModuleToList($("#moduleId").val());
     });
@@ -186,10 +184,28 @@ const validateForm = async () => {
     let errors = "";
     let entry = {};
 
-    // validate module permissions
-    const modulePermission = {
+    // validate form inputs
+    for (let vi of tempData.validationInfo) {
+        // element id is equal to database attribute
+        const elementId = vi.attribute;
+        let isValid = false;
+        isValid = FormUtil.validateElementValue(vi);
+        // check for errors and add to entry object
+        if (!isValid) {
+            errors += `${vi.error}<br/>`
+        } else {
+            entry[elementId] = $(`#${elementId}`).val();
+        }
+    }
 
-    };
+    // set id (role id)
+    entry.id = tempData.selectedEntry.id;
+    
+
+    // validate module permissions
+    const privilages = [
+
+    ];
 
     $("#moduleTable tbody tr").each((i, tr) => {
         const children = $(tr).children();
@@ -203,12 +219,20 @@ const validateForm = async () => {
             errors += "Please check at least one permission for each module or remove restricted ones.";
             return false;
         }
-        modulePermission[moduleId] = permission;
+        privilages.push({
+            roleId: entry.id,
+            moduleId: moduleId,
+            permission: permission
+        });
     });
     
-    // todo: validate form inputs
+    // add permissions for each module to the entry
+    entry.privilages = privilages;
 
-    
+    // delete useless property
+    delete entry.moduleId;
+    delete entry.roleId;
+
     // if there aren't any errors
     if (errors == "") {
         return {
@@ -246,30 +270,32 @@ const addEntry = async () => {
     }
 }
 
-const editEntry = async (id, readOnly = false) => {
+const editEntry = async (id) => {
     // get entry data from db and show in the form
-    const response = await Request.send("/api/users", "GET", { data: { id: id } });
+    const response = await Request.send("/api/roles", "GET", { data: { id: id } });
     const entry = response.data;
-
-    // set input values
-    $("#number").val(entry.employee.number);
-    $("#username").val(entry.username);
-    $("#description").val(entry.description);
 
     const dropdowns = [
         "roleId",
-        "userStatusId",
     ];
 
     // select proper options in dropdowns
-    dropdowns.forEach(elementId => {
+    dropdowns.forEach(elementId => {        
         $(`#${elementId}`).children("option").each(function () {
             $(this).removeAttr("selected");
-            const optionValue = $(this).attr("value");
-            if (optionValue == entry[elementId]) {
+            const optionValue = parseInt($(this).attr("value"));                  
+            if (optionValue == entry.id) {                
                 $(this).attr("selected", "selected");
             }
         });
+    });
+
+    // clear the module list in the form
+    $("#moduleTable tbody").empty();
+    
+    // append each privilage to the module list
+    entry.privilages.forEach(p => {
+        addModuleToList(p.moduleId, p.permission);
     });
 
     // change tab to form
@@ -278,13 +304,7 @@ const editEntry = async (id, readOnly = false) => {
     // set entry object globally to later compare
     window.tempData.selectedEntry = entry;
 
-    if (readOnly) {
-        setFormButtionsVisibility("view");
-        FormUtil.setReadOnly("#mainForm", true);
-    } else {
-        FormUtil.setReadOnly("#mainForm", false);
-        setFormButtionsVisibility("edit");
-    }
+    setFormButtionsVisibility("edit");
 }
 
 // update entry in the database
@@ -297,22 +317,24 @@ const updateEntry = async () => {
         return;
     }
 
+    
+    const selectedEntry = tempData.selectedEntry;
     // new entry object
     let newEntryObj = data;
-
+    
     // check if any of the data in entry has changed
     let dataHasChanged = false;
 
-    for (let key in newEntryObj) {
-        // compare selected entry and edited entry values
-        try {
-            if (newEntryObj[key] !== tempData.selectedEntry[key].toString()) {
-                dataHasChanged = true;
-            }
-        } catch (error) {
-            console.log(key);
+    if (newEntryObj.description !== selectedEntry.description) dataHasChanged = true;
+
+    selectedEntry.privilages.every((p, index) => {                
+        if (p.permission !== newEntryObj.privilages[index].permission) {
+            dataHasChanged = true;
+            return false;
         }
-    }
+        return true;
+    });
+    
 
     // if nothing has been modifed
     if (!dataHasChanged) {
@@ -324,7 +346,7 @@ const updateEntry = async () => {
     newEntryObj.id = tempData.selectedEntry.id;
 
     // send put reqeust to update data
-    const response = await Request.send("/api/users", "PUT", { data: newEntryObj });
+    const response = await Request.send("/api/roles", "PUT", { data: newEntryObj });
 
     // show output modal based on response
     if (response.status) {
@@ -342,7 +364,7 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
     const confirmation = await mainWindow.showConfirmModal("Confirmation", "Do you really need to delete this entry?");
 
     if (confirmation) {
-        const response = await Request.send("/api/users", "DELETE", { data: { id: id } });
+        const response = await Request.send("/api/roles", "DELETE", { data: { id: id } });
         if (response.status) {
             mainWindow.showOutputToast("Success!", response.msg);
             tempData.selectedEntry = undefined
@@ -355,20 +377,11 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
 
 const setFormButtionsVisibility = (action) => {
     switch (action) {
-        case "view":
-            $("#btnFmAdd").hide();
-            $("#btnFmUpdate").hide();
-            $("#btnFmDelete").hide();
-            $("#btnFmReset").hide();
-            $("#btnFmPrint").show();
-            break;
-
         case "edit":
             $("#btnFmAdd").hide();
             $("#btnFmUpdate").show();
             $("#btnFmDelete").show();
             $("#btnFmReset").show();
-            $("#btnFmPrint").hide();
             break;
 
         case "add":
@@ -376,7 +389,6 @@ const setFormButtionsVisibility = (action) => {
             $("#btnFmUpdate").hide();
             $("#btnFmDelete").hide();
             $("#btnFmReset").show();
-            $("#btnFmPrint").hide();
             break;
     }
 }
