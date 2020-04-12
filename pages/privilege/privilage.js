@@ -99,7 +99,7 @@ const getTableData = (responseData) => {
     const data = [];
 
     responseData.forEach(role => {
-        role.privilages.forEach(p => {
+        role.privileges.forEach(p => {
             const perms = p.permission.split("");
             let post, get, put, del;
             post = perms[0] ? "Yes" : "No";
@@ -203,7 +203,7 @@ const validateForm = async () => {
     
 
     // validate module permissions
-    const privilages = [
+    const privileges = [
 
     ];
 
@@ -219,7 +219,7 @@ const validateForm = async () => {
             errors += "Please check at least one permission for each module or remove restricted ones.";
             return false;
         }
-        privilages.push({
+        privileges.push({
             roleId: entry.id,
             moduleId: moduleId,
             permission: permission
@@ -227,7 +227,7 @@ const validateForm = async () => {
     });
     
     // add permissions for each module to the entry
-    entry.privilages = privilages;
+    entry.privileges = privileges;
 
     // delete useless property
     delete entry.moduleId;
@@ -293,8 +293,8 @@ const editEntry = async (id) => {
     // clear the module list in the form
     $("#moduleTable tbody").empty();
     
-    // append each privilage to the module list
-    entry.privilages.forEach(p => {
+    // append each privilege to the module list
+    entry.privileges.forEach(p => {
         addModuleToList(p.moduleId, p.permission);
     });
 
@@ -327,8 +327,8 @@ const updateEntry = async () => {
 
     if (newEntryObj.description !== selectedEntry.description) dataHasChanged = true;
 
-    selectedEntry.privilages.every((p, index) => {                
-        if (p.permission !== newEntryObj.privilages[index].permission) {
+    selectedEntry.privileges.every((p, index) => {                
+        if (p.permission !== newEntryObj.privileges[index].permission) {
             dataHasChanged = true;
             return false;
         }
