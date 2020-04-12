@@ -185,8 +185,8 @@ const validateForm = async () => {
     $("#moduleTable tbody tr").each((i, tr) => {
         const children = $(tr).children();
         const moduleId = $(children[0]).html();
-        const post = $(children[2]).children().first().is(":checked") ? 1 : 0;
-        const get = $(children[3]).children().first().is(":checked") ? 1 : 0;
+        const post = $(children[3]).children().first().is(":checked") ? 1 : 0;
+        const get = $(children[2]).children().first().is(":checked") ? 1 : 0;
         const put = $(children[4]).children().first().is(":checked") ? 1 : 0;
         const del = $(children[5]).children().first().is(":checked") ? 1 : 0;
         let permission = `${post}${get}${put}${del}`;
@@ -210,7 +210,7 @@ const validateForm = async () => {
             status: true,
             data: entry
         }
-    }
+    }    
 
     // if there are errors
     return {
@@ -304,19 +304,19 @@ const updateEntry = async () => {
     // check if any of the data in entry has changed
     let dataHasChanged = false;
 
-    selectedEntry.privileges.every((p, index) => {
-        // when all permissions are removed
-        if (selectedEntry.privileges.length > 0 && newEntryObj.privileges.length == 0) {
-            dataHasChanged = true;
-            return false;
-        }
 
-        if (p.permission !== newEntryObj.privileges[index].permission) {
-            dataHasChanged = true;
-            return false;
-        }
-        return true;
-    });
+    // when all permissions are removed
+    if ((selectedEntry.privileges.length > 0 && newEntryObj.privileges.length == 0 )|| selectedEntry.privileges.length == 0) {
+        dataHasChanged = true;
+    } else {
+        selectedEntry.privileges.every((p, index) => {
+            if (p.permission !== newEntryObj.privileges[index].permission) {
+                dataHasChanged = true;
+                return false;
+            }
+            return true;
+        });
+    }
 
     // if nothing has been modifed
     if (!dataHasChanged) {
@@ -373,6 +373,7 @@ const addToModuleList = (moduleId, permission = "0000") => {
 
     // permissions and checkbox selections
     let permissions = permission.split("");
+    
     let post, get, put, del;
     post = parseInt(permissions[0]) ? "checked" : "";
     get = parseInt(permissions[1]) ? "checked" : "";
