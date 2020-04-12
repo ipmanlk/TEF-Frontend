@@ -114,8 +114,7 @@ const getTableData = (responseData) => {
                 "Add": post,
                 "Modify": put,
                 "Remove": del,
-                "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${role.id}')">Edit</button>`,
-                "Delete": `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${role.id}')">Delete</button>`
+                "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${role.id}')">Edit</button>`
             });
         });
     });
@@ -135,10 +134,11 @@ const registerEventListeners = () => {
     // register listeners for form buttons
     $("#btnFmAdd").on("click", addEntry);
     $("#btnFmUpdate").on("click", updateEntry);
-    $("#btnFmDelete").on("click", () => deleteEntry());
-    $("#btnFmReset").on("click", resetForm);
     $("#btnModuleAdd").on("click", () => {
-        addModuleToList($("#moduleId").val());
+        addToModuleList($("#moduleId").val());
+    });
+    $("#roleId").on("change", (e) => {
+        reloadModuleList(e.target.value);
     });
     //  register listeners for form tab click
     $(".nav-tabs a[href='#tabForm']").on("click", formTabClick);
@@ -151,19 +151,19 @@ const registerEventListeners = () => {
 
 const loadFormDropdowns = async () => {
     // define needed attributes
-    let roles, modules;
+    let privileges, modules;
 
     // get data from the api for each dropbox
     let response;
     response = await Request.send("/api/privileges", "GET");
-    roles = response.data;
+    privileges = response.data;
 
     response = await Request.send("/api/general", "GET", { data: { table: "module" } });
     modules = response.data;
 
     // select input ids and relevent data
     const dropdownData = {
-        roleId: roles,
+        roleId: privileges,
         moduleId: modules,
     }
 
@@ -178,6 +178,9 @@ const loadFormDropdowns = async () => {
             `);
         });
     });
+
+    // load initial privilege table
+    reloadModuleList(privileges[0].id);
 }
 
 const validateForm = async (isForUpdating = false) => {
@@ -298,7 +301,7 @@ const editEntry = async (id) => {
 
     // append each privilege to the module list
     entry.privileges.forEach(p => {
-        addModuleToList(p.moduleId, p.permission);
+        addToModuleList(p.moduleId, p.permission);
     });
 
     // change tab to form
@@ -307,7 +310,11 @@ const editEntry = async (id) => {
     // set entry object globally to later compare
     window.tempData.selectedEntry = entry;
 
-    setFormButtionsVisibility("edit");
+    if (entry.privileges.length > 0) {
+        setFormButtionsVisibility("edit");
+    } else {
+        setFormButtionsVisibility("add");
+    }
 }
 
 // update entry in the database
@@ -359,35 +366,17 @@ const updateEntry = async () => {
     }
 }
 
-// delete entry from the database
-const deleteEntry = async (id = tempData.selectedEntry.id) => {
-    const confirmation = await mainWindow.showConfirmModal("Confirmation", "Do you really need to delete this entry?");
-
-    if (confirmation) {
-        const response = await Request.send("/api/privileges", "DELETE", { data: { id: id } });
-        if (response.status) {
-            mainWindow.showOutputToast("Success!", response.msg);
-            tempData.selectedEntry = undefined
-            reloadModule();
-        } else {
-            mainWindow.showOutputModal("Sorry!", response.msg);
-        }
-    }
-}
-
 const setFormButtionsVisibility = (action) => {
     switch (action) {
         case "edit":
             $("#btnFmAdd").hide();
             $("#btnFmUpdate").show();
-            $("#btnFmDelete").show();
             $("#btnFmReset").show();
             break;
 
         case "add":
             $("#btnFmAdd").show();
             $("#btnFmUpdate").hide();
-            $("#btnFmDelete").hide();
             $("#btnFmReset").show();
             break;
     }
@@ -398,14 +387,14 @@ const resetForm = () => {
     $("#mainForm").trigger("reset");
     $(".form-group").removeClass("has-error has-success");
     $(".form-group").children(".form-control-feedback").remove();
-    $("#photoPreview").attr("src", "../../img/avatar.png");
+    $("#moduleTable tbody").empty();
 }
 
 /*-------------------------------------------------------------------------------------------------------
                                             Module Table
 -------------------------------------------------------------------------------------------------------*/
 
-const addModuleToList = (moduleId, permission = "0000") => {
+const addToModuleList = (moduleId, permission = "0000") => {
     const moduleName = $(`#moduleId option[value=${moduleId}]`).text();
 
     // check if module is already in the list
@@ -432,12 +421,16 @@ const addModuleToList = (moduleId, permission = "0000") => {
             <td><input type="checkbox" id="${moduleId}modify" ${put}></td>
             <td><input type="checkbox" id="${moduleId}remove" ${del}></td>
             <td>
-            <buttn onClick="removeModuleFromList(this)" class="btn btn-danger btn-xs">Delete</buttn>
+            <buttn onClick="removeFromModuleList(this)" class="btn btn-danger btn-xs">Delete</buttn>
             </td>  
         </tr>
     `);
 }
 
-const removeModuleFromList = (button) => {
+const removeFromModuleList = (button) => {
     $(button).parent().parent().remove();
+}
+
+const reloadModuleList = (roleId) => {
+    editEntry(roleId);
 }
