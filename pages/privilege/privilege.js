@@ -11,7 +11,7 @@ window.tempData = { selectedEntry: undefined, validationInfo: undefined, loadMor
 $(document).ready(async () => {
     // get regexes for validation and store on window tempData
     const response = await Request.send("/api/regexes", "GET", {
-        data: { module: "ROLE" }
+        data: { module: "PRIVILEGE" }
     });
 
     // save validation info (regexes) on global tempData
@@ -52,7 +52,7 @@ const getInitialTableData = async () => {
 }
 
 const searchEntries = async (searchValue) => {
-    const response = await Request.send("/api/users", "GET", {
+    const response = await Request.send("/api/privileges", "GET", {
         data: { keyword: searchValue }
     });
 
@@ -67,7 +67,7 @@ const loadMoreEntries = async (searchValue, rowsCount) => {
     // check if all data has been loaded
     if (!tempData.loadMore) return;
 
-    const response = await Request.send("/api/users", "GET", {
+    const response = await Request.send("/api/privileges", "GET", {
         data: { keyword: searchValue, skip: rowsCount }
     });
 
@@ -180,7 +180,7 @@ const loadFormDropdowns = async () => {
     });
 }
 
-const validateForm = async () => {
+const validateForm = async (isForUpdating = false) => {
     let errors = "";
     let entry = {};
 
@@ -199,8 +199,12 @@ const validateForm = async () => {
     }
 
     // set id (role id)
-    entry.id = tempData.selectedEntry.id;
-    
+    if (isForUpdating) {
+        entry.roleId = tempData.selectedEntry.id;
+    }
+
+    // delete useless property
+    delete entry.moduleId;
 
     // validate module permissions
     const privileges = [
@@ -220,18 +224,14 @@ const validateForm = async () => {
             return false;
         }
         privileges.push({
-            roleId: entry.id,
+            roleId: entry.roleId,
             moduleId: moduleId,
             permission: permission
         });
     });
-    
+
     // add permissions for each module to the entry
     entry.privileges = privileges;
-
-    // delete useless property
-    delete entry.moduleId;
-    delete entry.roleId;
 
     // if there aren't any errors
     if (errors == "") {
@@ -258,8 +258,11 @@ const addEntry = async () => {
         return;
     }
 
-    // get response
-    const response = await Request.send("/api/users", "POST", { data: data });
+    // new entry object
+    let newEntryObj = data;
+
+    // send put reqeust to update data
+    const response = await Request.send("/api/privileges", "POST", { data: newEntryObj });
 
     // show output modal based on response
     if (response.status) {
@@ -280,11 +283,11 @@ const editEntry = async (id) => {
     ];
 
     // select proper options in dropdowns
-    dropdowns.forEach(elementId => {        
+    dropdowns.forEach(elementId => {
         $(`#${elementId}`).children("option").each(function () {
             $(this).removeAttr("selected");
-            const optionValue = parseInt($(this).attr("value"));                  
-            if (optionValue == entry.id) {                
+            const optionValue = parseInt($(this).attr("value"));
+            if (optionValue == entry.id) {
                 $(this).attr("selected", "selected");
             }
         });
@@ -292,7 +295,7 @@ const editEntry = async (id) => {
 
     // clear the module list in the form
     $("#moduleTable tbody").empty();
-    
+
     // append each privilege to the module list
     entry.privileges.forEach(p => {
         addModuleToList(p.moduleId, p.permission);
@@ -309,7 +312,7 @@ const editEntry = async (id) => {
 
 // update entry in the database
 const updateEntry = async () => {
-    const { status, data } = await validateForm();
+    const { status, data } = await validateForm(true);
 
     // if there are errors
     if (!status) {
@@ -317,24 +320,21 @@ const updateEntry = async () => {
         return;
     }
 
-    
     const selectedEntry = tempData.selectedEntry;
+
     // new entry object
     let newEntryObj = data;
-    
+
     // check if any of the data in entry has changed
     let dataHasChanged = false;
 
-    if (newEntryObj.description !== selectedEntry.description) dataHasChanged = true;
-
-    selectedEntry.privileges.every((p, index) => {                
+    selectedEntry.privileges.every((p, index) => {
         if (p.permission !== newEntryObj.privileges[index].permission) {
             dataHasChanged = true;
             return false;
         }
         return true;
     });
-    
 
     // if nothing has been modifed
     if (!dataHasChanged) {
@@ -405,7 +405,7 @@ const resetForm = () => {
                                             Module Table
 -------------------------------------------------------------------------------------------------------*/
 
-const addModuleToList = (moduleId, permission="0000") => {
+const addModuleToList = (moduleId, permission = "0000") => {
     const moduleName = $(`#moduleId option[value=${moduleId}]`).text();
 
     // check if module is already in the list
@@ -416,11 +416,11 @@ const addModuleToList = (moduleId, permission="0000") => {
 
     // permissions and checkbox selections
     let permissions = permission.split("");
-    let post, get, put, del;    
+    let post, get, put, del;
     post = parseInt(permissions[0]) ? "checked" : "";
     get = parseInt(permissions[1]) ? "checked" : "";
-    put = parseInt(permissions[2])  ? "checked" : "";
-    del = parseInt(permissions[3])  ? "checked" : "";
+    put = parseInt(permissions[2]) ? "checked" : "";
+    del = parseInt(permissions[3]) ? "checked" : "";
 
     // append module to the list
     $("#moduleTable tbody").append(`
