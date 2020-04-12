@@ -90,8 +90,8 @@ const formTabClick = async () => {
     // show / hide proper button
     setFormButtionsVisibility("add");
 
-    // enable form inputs
-    FormUtil.setReadOnly("#mainForm", false);
+    // load initial privilege table
+    reloadModuleList($("#roleId").val());
 }
 
 const getTableData = (responseData) => {
@@ -178,9 +178,6 @@ const loadFormDropdowns = async () => {
             `);
         });
     });
-
-    // load initial privilege table
-    reloadModuleList(privileges[0].id);
 }
 
 const validateForm = async (isForUpdating = false) => {
