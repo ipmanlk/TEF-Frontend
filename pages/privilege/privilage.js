@@ -45,7 +45,7 @@ const loadMainTable = async () => {
 
 const getInitialTableData = async () => {
     // get initial entries from the server
-    const response = await Request.send("/api/roles", "GET");
+    const response = await Request.send("/api/privileges", "GET");
 
     // convert response data to data table format
     return getTableData(response.data);
@@ -155,7 +155,7 @@ const loadFormDropdowns = async () => {
 
     // get data from the api for each dropbox
     let response;
-    response = await Request.send("/api/roles", "GET");
+    response = await Request.send("/api/privileges", "GET");
     roles = response.data;
 
     response = await Request.send("/api/general", "GET", { data: { table: "module" } });
@@ -272,7 +272,7 @@ const addEntry = async () => {
 
 const editEntry = async (id) => {
     // get entry data from db and show in the form
-    const response = await Request.send("/api/roles", "GET", { data: { id: id } });
+    const response = await Request.send("/api/privileges", "GET", { data: { id: id } });
     const entry = response.data;
 
     const dropdowns = [
@@ -346,7 +346,7 @@ const updateEntry = async () => {
     newEntryObj.id = tempData.selectedEntry.id;
 
     // send put reqeust to update data
-    const response = await Request.send("/api/roles", "PUT", { data: newEntryObj });
+    const response = await Request.send("/api/privileges", "PUT", { data: newEntryObj });
 
     // show output modal based on response
     if (response.status) {
@@ -364,7 +364,7 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
     const confirmation = await mainWindow.showConfirmModal("Confirmation", "Do you really need to delete this entry?");
 
     if (confirmation) {
-        const response = await Request.send("/api/roles", "DELETE", { data: { id: id } });
+        const response = await Request.send("/api/privileges", "DELETE", { data: { id: id } });
         if (response.status) {
             mainWindow.showOutputToast("Success!", response.msg);
             tempData.selectedEntry = undefined

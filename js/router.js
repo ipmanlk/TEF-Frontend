@@ -50,8 +50,8 @@ const getRoutes = () => {
             path: "./pages/user/user.html"
         },
         "user": {
-            title: "Role View",
-            path: "./pages/role/role.html"
+            title: "Privileges View",
+            path: "./pages/privilege/privilege.html"
         },
         "noauth": {
             title: "Auth Failure",
