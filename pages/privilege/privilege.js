@@ -9,23 +9,13 @@ window.tempData = { selectedEntry: undefined, validationInfo: undefined, loadMor
 -------------------------------------------------------------------------------------------------------*/
 
 $(document).ready(async () => {
-    // get regexes for validation and store on window tempData
-    const response = await Request.send("/api/regexes", "GET", {
-        data: { module: "PRIVILEGE" }
-    });
-
-    // save validation info (regexes) on global tempData
-    tempData.validationInfo = response.data;
-
     await loadMainTable();
     await loadFormDropdowns();
     registerEventListeners();
-    FormUtil.enableRealtimeValidation(tempData.validationInfo);
 });
 
 // reload main table data and from after making a change
 const reloadModule = async () => {
-    resetForm();
     const tableData = await getInitialTableData();
     mainTable.reload(tableData);
 
@@ -84,9 +74,6 @@ const loadMoreEntries = async (searchValue, rowsCount) => {
 }
 
 const formTabClick = async () => {
-    // when form tab is clicked, reset the form 
-    resetForm();
-
     // show / hide proper button
     setFormButtionsVisibility("add");
 
@@ -180,28 +167,12 @@ const loadFormDropdowns = async () => {
     });
 }
 
-const validateForm = async (isForUpdating = false) => {
+const validateForm = async () => {
     let errors = "";
     let entry = {};
 
-    // validate form inputs
-    for (let vi of tempData.validationInfo) {
-        // element id is equal to database attribute
-        const elementId = vi.attribute;
-        let isValid = false;
-        isValid = FormUtil.validateElementValue(vi);
-        // check for errors and add to entry object
-        if (!isValid) {
-            errors += `${vi.error}<br/>`
-        } else {
-            entry[elementId] = $(`#${elementId}`).val();
-        }
-    }
-
     // set id (role id)
-    if (isForUpdating) {
-        entry.roleId = tempData.selectedEntry.id;
-    }
+    entry.roleId = $("#roleId").val();
 
     // delete useless property
     delete entry.moduleId;
@@ -268,6 +239,7 @@ const addEntry = async () => {
     if (response.status) {
         mainWindow.showOutputToast("Success!", response.msg);
         reloadModule();
+        setFormButtionsVisibility("edit");
     } else {
         mainWindow.showOutputModal("Sorry!", response.msg);
     }
@@ -316,7 +288,7 @@ const editEntry = async (id) => {
 
 // update entry in the database
 const updateEntry = async () => {
-    const { status, data } = await validateForm(true);
+    const { status, data } = await validateForm();
 
     // if there are errors
     if (!status) {
@@ -333,6 +305,12 @@ const updateEntry = async () => {
     let dataHasChanged = false;
 
     selectedEntry.privileges.every((p, index) => {
+        // when all permissions are removed
+        if (selectedEntry.privileges.length > 0 && newEntryObj.privileges.length == 0) {
+            dataHasChanged = true;
+            return false;
+        }
+
         if (p.permission !== newEntryObj.privileges[index].permission) {
             dataHasChanged = true;
             return false;
@@ -356,8 +334,9 @@ const updateEntry = async () => {
     if (response.status) {
         mainWindow.showOutputToast("Success!", response.msg);
         // reset selected entry
-        tempData.selectedEntry = undefined;
         reloadModule();
+        editEntry(newEntryObj.id);
+        tempData.selectedEntry = undefined;
     } else {
         mainWindow.showOutputModal("Sorry!", response.msg);
     }
@@ -377,14 +356,6 @@ const setFormButtionsVisibility = (action) => {
             $("#btnFmReset").show();
             break;
     }
-}
-
-// reset form
-const resetForm = () => {
-    $("#mainForm").trigger("reset");
-    $(".form-group").removeClass("has-error has-success");
-    $(".form-group").children(".form-control-feedback").remove();
-    $("#moduleTable tbody").empty();
 }
 
 /*-------------------------------------------------------------------------------------------------------
