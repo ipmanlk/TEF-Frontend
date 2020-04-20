@@ -49,7 +49,7 @@ const getRoutes = () => {
             title: "User View",
             path: "./pages/user/user.html"
         },
-        "user": {
+        "privilege": {
             title: "Privileges View",
             path: "./pages/privilege/privilege.html"
         },
