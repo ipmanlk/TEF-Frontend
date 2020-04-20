@@ -56,10 +56,11 @@
                     password: $("#password").val()
                 }
             }).then(res => {
-                console.log(res);
+                window.location = "./index.html";
             }).catch(e => {
-                console.log(e);
-            })
+                msg.style.display = 'block';
+                msg.innerHTML = "Invalid Credentials!";
+            });
         }
 
     </script>
