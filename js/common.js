@@ -42,13 +42,13 @@ class FormUtil {
     }
 
     static setReadOnly(selector, readOnly) {
-        if(readOnly) {
+        if (readOnly) {
             $(`${selector} .form-group`).children().each((i, el) => {
                 if ($(el).data("editable") == true) {
                     $(el).attr("readonly", true);
                     $(el).attr("disabled", true);
                 }
-            });   
+            });
         } else {
             $(`${selector} .form-group`).children().each((i, el) => {
                 if ($(el).data("editable") == true) {
@@ -58,7 +58,7 @@ class FormUtil {
             });
         }
     }
-    
+
     static print() {
         $("input[type=file]").hide();
         $("#fmButtons").hide();
@@ -115,16 +115,20 @@ class Request {
                 if (res.status) {
                     resolve(res);
                 } else {
-                    mainWindow.showOutputModal("Error", res.msg);
-                    if (res.type == "auth") {
-                        window.location = "noauth.html"
-                    }
+                    try {
+                        mainWindow.showOutputModal("Error", res.msg);
+                        if (res.type == "auth") {
+                            window.location = "noauth.html"
+                        }
+                    } catch (e) { }
                     reject(res.msg);
                 }
             });
 
             req.fail((jqXHR, textStatus) => {
-                mainWindow.showOutputModal("Error", `Unable to retrive data from the server: ${textStatus}`);
+                try {
+                    mainWindow.showOutputModal("Error", `Unable to retrive data from the server: ${textStatus}`);
+                } catch (e) { }
                 reject(textStatus);
             });
         });
