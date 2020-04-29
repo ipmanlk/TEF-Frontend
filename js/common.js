@@ -127,8 +127,13 @@ class Request {
 
             req.fail((jqXHR, textStatus) => {
                 try {
+                    mainWindow.showOutputModal("Error", jqXHR.responseJSON.msg);
+                    if (jqXHR.responseJSON.type == "auth") {
+                        window.location = "noauth.html"
+                    }
+                } catch (e) {
                     mainWindow.showOutputModal("Error", `Unable to retrive data from the server: ${textStatus}`);
-                } catch (e) { }
+                }
                 reject(textStatus);
             });
         });
