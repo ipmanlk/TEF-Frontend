@@ -16,10 +16,10 @@
   <aside class="side-nav" id="show-side-navigation1">
     <i class="fa fa-bars close-aside hidden-sm hidden-md hidden-lg" data-close="show-side-navigation1"></i>
     <div class="heading">
-      <img src="./img/avatar.png" alt="">
+      <img id="imgAvatar" src="./img/avatar.png" alt="">
       <div class="info">
-        <h3><a href="#">Kasun Chandima</a></h3>
-        <p>Administrator</p>
+        <h3><a id="txtEmployeeName" href="#">Jhon Doe</a></h3>
+        <p id="txtEmployeeRole">Unknown</p>
       </div>
     </div>
     <!-- <div class="search">
@@ -152,12 +152,50 @@
 
   <!-- libraries -->
   <script src="./lib/jquery/jquery.min.js"></script>
+  <script src="./js/common.js"></script>
   <script src="./lib/jquerytoast/js/jquery.toast.min.js"></script>
   <script src="./lib/bootstrap/js/bootstrap.min.js"></script>
   <script src="./lib/dashboard/js/theme.js"></script>
   <script src="./js/router.js"></script>
 
   <script>
+
+    $(document).ready(() => {
+      // get profile using fetch api
+      fetch("http://localhost:3000/api/profile").then(res => {
+        return res.json();
+
+      }).then(response => {
+        if (!response.status) {
+          showOutputModal("Error", "Unable to retrive employee profile!.");
+          window.location = "./login.html";
+          return;
+        }
+
+        // get data from the response
+        const data = response.data;
+
+        // show avatar on dhashboard side menu
+        const avatarUrl = ImageUtil.getURLfromBuffer(data.employee.photo);
+
+
+        // show employee details
+        $("#txtEmployeeName").text(data.employee.fullName);
+        $("#txtEmployeeRole").text(data.role.name);
+
+
+        $("#imgAvatar").attr("src", avatarUrl);
+
+        // save employee profile for later use
+        localStorage.setItem("profile", JSON.stringify(data));
+        
+      }).catch(e => {
+        console.log(e);
+        showOutputModal("Error", "Something went wrong while reading your profile!.");
+        return;
+      });
+    });
+
     $("#iframeMain").on("load", () => {
       // check logged in
       updateRouteInfo();
@@ -172,7 +210,7 @@
     }
 
     // controls toast for showing various outputs
-    const showOutputToast = (title, body, type="success") => {
+    const showOutputToast = (title, body, type = "success") => {
       $.toast({
         heading: title,
         text: body,
