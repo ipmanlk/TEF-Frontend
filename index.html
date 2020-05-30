@@ -218,6 +218,13 @@
         // save privilages for later use
         localStorage.setItem("privileges", JSON.stringify(tempData.privileges));
 
+        // check window location and load correct page (route)
+        const locationParts = window.location.href.split("?page=");
+        const route = locationParts[locationParts.length - 1].trim();
+        if (route !== "") {
+          loadRoute(route)
+        }
+
       }).catch(e => {
         console.log(e);
         showOutputModal("Error", "Something went wrong while reading your profile!.");

@@ -1,5 +1,5 @@
 // load routes
-const loadRoute = (route) => {
+const loadRoute = (route) => {    
     let routes = getRoutes();
     $("#iframeMain").attr("src", routes[route].path);
 
@@ -8,6 +8,9 @@ const loadRoute = (route) => {
 
     // scroll to top
     $("html, body").animate({ scrollTop: 0 }, "slow");
+
+    // change url
+    history.pushState({}, null, `?page=${route}`);
 }
 
 // handle iframe src changing
