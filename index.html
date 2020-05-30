@@ -42,33 +42,31 @@
       <li><i class="fa fa-user fa-fw"></i><a href="#">Admin</a>
         <ul class="side-nav-dropdown">
           <li>
-            <a onclick="loadRoute('employee')">Employee</a>
+            <a onclick="loadRoute('employee')" class="EMPLOYEE LEFTMENU-ITEM">Employee</a>
           </li>
           <li>
-            <a onclick="loadRoute('user')">User</a>
+            <a onclick="loadRoute('user')" class="USER LEFTMENU-ITEM">User</a>
           </li>
           <li>
-            <a onclick="loadRoute('privilege')">Privilages</a>
+            <a onclick="loadRoute('privilege')" class="PRIVILEGE LEFTMENU-ITEM">Privilages</a>
           </li>
-          <li><a href="#">Designation</a></li>
-          <li><a href="#">Gender</a></li>
-          <li><a href="#">Civil Status</a></li>
-          <li><a href="#">Employee Status</a></li>
+          <li><a href="#" class="DESIGNATION LEFTMENU-ITEM">Designation</a></li>
+          <li><a href="#" class="EMPLOYEE_STATUS LEFTMENU-ITEM">Employee Status</a></li>
         </ul>
       </li>
       <li><i class="fa fa-archive fa-fw"></i><a href="#">Product</a>
         <ul class="side-nav-dropdown">
-          <li><a href="#">Product</a></li>
-          <li><a href="#">Item Package</a></li>
+          <li><a href="#" class="PRODUCT LEFTMENU-ITEM">Product</a></li>
+          <li><a href="#" class="ITEM LEFTMENU-ITEM">Item Package</a></li>
         </ul>
       </li>
       <li><i class="fa fa-shopping-cart fa-fw"></i><a href="#">Purchase</a>
         <ul class="side-nav-dropdown">
-          <li><a href="#">Purchase Order</a></li>
-          <li><a href="#">GRN</a></li>
-          <li><a href="#">Supplier</a></li>
-          <li><a href="#">Meterial</a></li>
-          <li><a href="#">Invoice</a></li>
+          <li><a href="#" class="PURCHASE_ORDER LEFTMENU-ITEM">Purchase Order</a></li>
+          <li><a href="#" class="GRN LEFTMENU-ITEM">GRN</a></li>
+          <li><a href="#" class="SUPPLIER LEFTMENU-ITEM">Supplier</a></li>
+          <li><a href="#" class="METERIAL LEFTMENU-ITEM">Meterial</a></li>
+          <li><a href="#" class="INVOICE LEFTMENU-ITEM">Invoice</a></li>
         </ul>
       </li>
     </ul>
@@ -159,6 +157,11 @@
   <script src="./js/router.js"></script>
 
   <script>
+    /*-------------------------------------------------------------------------------------------------------
+                                              Window Data
+    -------------------------------------------------------------------------------------------------------*/
+    // privileges will have {module name: 0101} style 
+    window.tempData = { profile: null, privileges: {} };
 
     $(document).ready(() => {
       // get profile using fetch api
@@ -186,9 +189,35 @@
 
         $("#imgAvatar").attr("src", avatarUrl);
 
-        // save employee profile for later use
-        localStorage.setItem("profile", JSON.stringify(data));
-        
+        // store employee profile for later use
+        tempData.profile = data;
+
+        // hide all menu items
+        $(".LEFTMENU-ITEM").hide();
+
+        // hide all menu titles
+        $(".LEFTMENU-ITEM").parent().parent().parent().hide();
+
+
+        // build privileges from the response and update UI
+        data.role.privileges.forEach(p => {
+          const moduleName = p.module.name;
+          const permission = p.permission;
+          tempData.privileges[moduleName] = permission;
+
+          // update ui
+          $(".LEFTMENU-ITEM").each((i, menuItem) => {
+            if ($(menuItem).hasClass(moduleName)) {
+              $(menuItem).show();
+              $(menuItem).parent().parent().parent().show();
+            }
+          });
+        });
+
+
+        // save privilages for later use
+        localStorage.setItem("privileges", JSON.stringify(tempData.privileges));
+
       }).catch(e => {
         console.log(e);
         showOutputModal("Error", "Something went wrong while reading your profile!.");
@@ -196,6 +225,8 @@
       });
     });
 
+
+    // when iframe is load
     $("#iframeMain").on("load", () => {
       // check logged in
       updateRouteInfo();
