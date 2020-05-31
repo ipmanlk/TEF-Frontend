@@ -47,6 +47,7 @@ class FormUtil {
                 if ($(el).data("editable") == true) {
                     $(el).attr("readonly", true);
                     $(el).attr("disabled", true);
+                    $(el).addClass("no-outline");
                 }
             });
         } else {
@@ -54,6 +55,7 @@ class FormUtil {
                 if ($(el).data("editable") == true) {
                     $(el).attr("readonly", false);
                     $(el).attr("disabled", false);
+                    $(el).removeClass("no-outline");
                 }
             });
         }
@@ -63,10 +65,12 @@ class FormUtil {
         $("input[type=file]").hide();
         $("#fmButtons").hide();
         $("#tabHolder").hide();
+        $(".form-control").addClass("form-control-no-border");
         window.print();
         $("#fmButtons").show();
         $("#tabHolder").show();
         $("input[type=file]").show();
+        $(".form-control").removeClass("form-control-no-border");
         return true;
     }
 }
