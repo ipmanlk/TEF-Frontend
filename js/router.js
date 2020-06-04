@@ -22,7 +22,7 @@ const loadRoute = (route) => {
 }
 
 // handle iframe src changing
-const updateRouteInfo = () => {
+const updateRouteInfo = () => {    
     let path = document.getElementById("iframeMain").contentWindow.location.href;
 
     path = `.${path.substring(path.indexOf("/pages"), path.length)}`;
@@ -42,7 +42,8 @@ const updateRouteInfo = () => {
     document.getElementById("iframeMain").contentWindow.mainWindow = {
         showOutputModal,
         showConfirmModal,
-        showOutputToast
+        showOutputToast,
+        tempData
     }
 }
 
@@ -67,6 +68,10 @@ const getRoutes = () => {
         "role": {
             title: "Role View",
             path: "./pages/role/role.html"
+        },
+        "profile": {
+            title: "Profile View",
+            path: "./pages/profile/profile.html"
         },
         "noauth": {
             title: "Auth Failure",
