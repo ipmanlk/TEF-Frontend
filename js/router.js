@@ -1,6 +1,14 @@
 // load routes
 const loadRoute = (route) => {
+
     let routes = getRoutes();
+
+    // if route doesn't exist
+    if (!routes[route]) {
+        window.alert("This route doesnt exist (404)");
+        return;
+    }
+
     $("#iframeMain").attr("src", routes[route].path);
 
     // hide open modals
