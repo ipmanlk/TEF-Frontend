@@ -192,9 +192,6 @@
 
         $("#imgAvatar").attr("src", avatarUrl);
 
-        // store employee profile for later use
-        tempData.profile = data;
-
         // hide all menu items
         $(".LEFTMENU-ITEM").hide();
 
@@ -219,7 +216,7 @@
 
 
         // save privilages for later use
-        localStorage.setItem("privileges", JSON.stringify(tempData.privileges));
+        //localStorage.setItem("privileges", JSON.stringify(tempData.privileges));
 
         // check window location and load correct page (route)
         const locationParts = window.location.href.split("?page=");
