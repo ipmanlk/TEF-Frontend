@@ -305,6 +305,7 @@ const updateEntry = async () => {
     for (let key in newEntryObj) {
         // compare selected entry and edited entry values
         try {
+            tempData.selectedEntry[key] = (tempData.selectedEntry[key] == null) ? "" : tempData.selectedEntry[key];
             if (newEntryObj[key] !== tempData.selectedEntry[key].toString()) {
                 dataHasChanged = true;
             }
