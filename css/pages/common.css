@@ -1,17 +1,24 @@
 .required {
-    color: red;
+  color: red;
 }
 
 .form-control-no-border {
-    border-top-style: hidden !important;
-    border-right-style: hidden !important;
-    border-left-style: hidden !important;
-    border-bottom-style: groove !important;
-    background-color: #eee !important;
-    border-width:0px !important;
-	border:none !important;
-  }
-  
+  border-top-style: hidden !important;
+  border-right-style: hidden !important;
+  border-left-style: hidden !important;
+  border-bottom-style: groove !important;
+  background-color: #eee !important;
+  border-width: 0px !important;
+  border: none !important;
+}
+
 .form-control-no-border:focus {
-    outline: none !important;
+  outline: none !important;
+}
+
+.select-no-arrow {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  text-indent: 1px;
+  text-overflow: "";
 }

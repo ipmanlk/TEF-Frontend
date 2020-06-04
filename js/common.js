@@ -66,11 +66,13 @@ class FormUtil {
         $("#fmButtons").hide();
         $("#tabHolder").hide();
         $(".form-control").addClass("form-control-no-border");
+        $("select,.from-control").addClass("select-no-arrow");
         window.print();
         $("#fmButtons").show();
         $("#tabHolder").show();
         $("input[type=file]").show();
         $(".form-control").removeClass("form-control-no-border");
+        $("select,.from-control").removeClass("select-no-arrow");
         return true;
     }
 }
