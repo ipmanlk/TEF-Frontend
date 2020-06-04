@@ -48,6 +48,9 @@
             <a onclick="loadRoute('user')" class="USER LEFTMENU-ITEM">User</a>
           </li>
           <li>
+            <a onclick="loadRoute('role')" class="ROLE LEFTMENU-ITEM">Role</a>
+          </li>
+          <li>
             <a onclick="loadRoute('privilege')" class="PRIVILEGE LEFTMENU-ITEM">Privilages</a>
           </li>
           <li><a href="#" class="DESIGNATION LEFTMENU-ITEM">Designation</a></li>
@@ -220,9 +223,14 @@
 
         // check window location and load correct page (route)
         const locationParts = window.location.href.split("?page=");
-        const route = locationParts[locationParts.length - 1].trim();
-        if (route !== "") {
-          loadRoute(route)
+        let routeName = locationParts[locationParts.length - 1].trim();
+
+        // if route name is not given in the url, load dhasboard
+        if (!routeName || locationParts.length == 1) routeName = "dashboard";
+
+        // load route
+        if (routeName !== "") {
+          loadRoute(routeName);
         }
 
       }).catch(e => {
