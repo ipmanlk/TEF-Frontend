@@ -42,6 +42,12 @@ const loadMainTable = async () => {
     // load data table
     window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries);
 
+    applyTablePermissions();
+}   
+
+
+// set table permissions according to global permission
+const applyTablePermissions = () => {
     // show hide columns based on permission
     if (tempData.permission[2] == 0) {
         mainTable.showEditColumn(false);
@@ -89,6 +95,9 @@ const loadMoreEntries = async (searchValue, rowsCount) => {
 
     // append to global main table
     mainTable.append(tableData);
+
+    // apply permissions for newly added rows
+    applyTablePermissions();
 }
 
 const formTabClick = async () => {
@@ -448,7 +457,7 @@ const setFormButtionsVisibility = (action) => {
 function loadPermission(permissionStr) {
     // create an array from permission string
     permission = permissionStr.split("").map((p) => parseInt(p));
-    
+
     // show hide buttions based on permission
     if (permission[0] == 0) {
         $("#btnFmAdd").hide();
