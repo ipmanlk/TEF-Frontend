@@ -50,10 +50,19 @@ const updateRouteInfo = () => {
     // make modal functions available inside the iframeMain
     const iframeWindow = document.getElementById("iframeMain").contentWindow;
     iframeWindow.mainWindow = mainWindowData;
-    
+
     // if location is dashboard, update tile visibility
     if (path.indexOf("dashboard.html") > -1) {
         iframeWindow.updateTiles();
+    }
+
+    // set permissions for forms and other components inside iframe
+    if (iframeWindow.loadPermission) {
+        path = path.replace(".html", "");
+        const pathParts = path.split("/");
+        const moduleName = pathParts[pathParts.length - 1].toUpperCase().trim();
+        const permission = tempData.privileges[moduleName];
+        iframeWindow.loadPermission(permission);
     }
 }
 
