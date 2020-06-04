@@ -119,8 +119,9 @@ class Request {
                 if (res.status) {
                     resolve(res);
                 } else {
+                    console.log(res);
                     try {
-                        mainWindow.showOutputModal("Error", res.msg);
+                        mainWindow.showOutputModal("Error", `common.js ${res.msg}`);
                         if (res.type == "auth") {
                             window.location = "noauth.html"
                         }
