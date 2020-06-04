@@ -1,7 +1,7 @@
 /*-------------------------------------------------------------------------------------------------------
                                           Window Data
 -------------------------------------------------------------------------------------------------------*/
-window.tempData = { selectedEntry: undefined, validationInfo: undefined, loadMore: true };
+window.tempData = { selectedEntry: undefined, validationInfo: undefined, loadMore: true, permission: undefined };
 
 
 /*-------------------------------------------------------------------------------------------------------
@@ -41,6 +41,14 @@ const loadMainTable = async () => {
 
     // load data table
     window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries);
+
+    // show hide columns based on permission
+    if (tempData.permission[2] == 0) {
+        mainTable.showEditColumn(false);
+    }
+    if (tempData.permission[3] == 0) {
+        mainTable.showDeleteColumn(false);
+    }
 }
 
 const getInitialTableData = async () => {
@@ -408,6 +416,8 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
 }
 
 const setFormButtionsVisibility = (action) => {
+    let permission = tempData.permission;
+
     switch (action) {
         case "view":
             $("#btnFmAdd").hide();
@@ -419,20 +429,39 @@ const setFormButtionsVisibility = (action) => {
 
         case "edit":
             $("#btnFmAdd").hide();
-            $("#btnFmUpdate").show();
-            $("#btnFmDelete").show();
+            if (permission[2] !== 0) $("#btnFmUpdate").show();
+            if (permission[3] !== 0) $("#btnFmDelete").show();
             $("#btnFmReset").show();
             $("#btnFmPrint").hide();
             break;
 
         case "add":
-            $("#btnFmAdd").show();
+            if (permission[0] !== 0) $("#btnFmAdd").show();
             $("#btnFmUpdate").hide();
             $("#btnFmDelete").hide();
             $("#btnFmReset").show();
             $("#btnFmPrint").hide();
             break;
     }
+}
+
+function loadPermission(permissionStr) {
+    // create an array from permission string
+    permission = permissionStr.split("").map((p) => parseInt(p));
+    
+    // show hide buttions based on permission
+    if (permission[0] == 0) {
+        $("#btnFmAdd").hide();
+    }
+    if (permission[2] == 0) {
+        $("#btnFmUpdate").hide();
+    }
+    if (permission[3] == 0) {
+        $("#btnFmDelete").hide();
+    }
+
+    // save permission globally
+    tempData.permission = permission;
 }
 
 // reset form
