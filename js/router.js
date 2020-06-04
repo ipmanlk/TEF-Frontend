@@ -1,5 +1,5 @@
 // load routes
-const loadRoute = (route) => {    
+const loadRoute = (route) => {
     let routes = getRoutes();
     $("#iframeMain").attr("src", routes[route].path);
 
@@ -55,6 +55,10 @@ const getRoutes = () => {
         "privilege": {
             title: "Privileges View",
             path: "./pages/privilege/privilege.html"
+        },
+        "role": {
+            title: "Role View",
+            path: "./pages/role/role.html"
         },
         "noauth": {
             title: "Auth Failure",
