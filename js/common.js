@@ -116,6 +116,8 @@ class Request {
             const req = $.ajax(options);
 
             req.done((res) => {
+                if (res.status == undefined) return;
+                
                 if (res.status) {
                     resolve(res);
                 } else {
@@ -133,7 +135,7 @@ class Request {
             req.fail((jqXHR, textStatus) => {
                 // if no json response is recived, ignore
                 if (jqXHR.responseJSON == undefined) return;
-                
+
                 try {
                     mainWindow.showOutputModal("Error", jqXHR.responseJSON.msg);
                     if (jqXHR.responseJSON.type == "auth") {
