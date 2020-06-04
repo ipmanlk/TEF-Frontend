@@ -5,112 +5,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
-    <link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../lib/metrobootstrap/css/metro-bootstrap.min.css">
     <link rel="stylesheet" href="../../lib/fontawesome/css/font-awesome.min.css">
 
 </head>
 
 <body>
-    <div class="container" style="margin-top: 30px; margin-bottom:100px;">
+    <div class="container-fluid" style="margin: 30px 100px 100px 100px;">
         <div class="row">
-            <div class="col-md-4">
-                <div class="panel panel-primary" style="height: 368px;">
-                    <div class="panel-heading">
-                        Product
-                    </div>
-                    <div class="panel-body">
-                        <center>
-                            <span class="fa fa-archive fa-lg fa-5x" style="margin-bottom: 20px;"></span>
-                        </center>
-                    </div>
-                    <div style="margin-left: 20px; margin-right: 20px; margin-top: 50px;">
-                        <div class="btn btn-primary btn-block">Product</div>
-                        <div class="btn btn-primary btn-block">Item Packge</div>
-                    </div>
+            <div class="col-md-12">
+                <h2>Quick Access</h2>
+                <hr>
+            </div>
+        </div>
+        <div class="row">
+            <div class="EMPLOYEE TILE col-md-3">
+                <div class="thumbnail tile tile-wide tile-blue" onclick="mainWindow.loadRoute('employee')">
+                    <a href="#" class="fa-links">
+                        <h1>Employee</h1>
+                        <i class="fa fa-3x fa-address-card"></i>
+                    </a>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="panel panel-primary" style="height: 368px;">
-                    <div class="panel-heading">
-                        Product
-                    </div>
-                    <div class="panel-body">
-                        <center>
-                            <span class="fa fa-archive fa-lg fa-5x" style="margin-bottom: 20px;"></span>
-                        </center>
-                    </div>
-                    <div style="margin-left: 20px; margin-right: 20px; margin-top: 50px;">
-                        <div class="btn btn-primary btn-block">Product</div>
-                        <div class="btn btn-primary btn-block">Item Packge</div>
-                    </div>
+            <div class="USER TILE col-md-3">
+                <div class="thumbnail tile tile-wide tile-green" onclick="mainWindow.loadRoute('user')">
+                    <a href="#" class="fa-links">
+                        <h1>User</h1>
+                        <i class="fa fa-3x fa-users"></i>
+                    </a>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="panel panel-primary" style="height: 368px;">
-                    <div class="panel-heading">
-                        Product
-                    </div>
-                    <div class="panel-body">
-                        <center>
-                            <span class="fa fa-archive fa-lg fa-5x" style="margin-bottom: 20px;"></span>
-                        </center>
-                    </div>
-                    <div style="margin-left: 20px; margin-right: 20px; margin-top: 50px;">
-                        <div class="btn btn-primary btn-block">Product</div>
-                        <div class="btn btn-primary btn-block">Item Packge</div>
-                    </div>
+            <div class="ROLE TILE col-md-3">
+                <div class="thumbnail tile tile-wide tile-red" onclick="mainWindow.loadRoute('role')">
+                    <a href="#" class="fa-links">
+                        <h1>Role</h1>
+                        <i class="fa fa-3x fa-user-circle"></i>
+                    </a>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="panel panel-primary" style="height: 368px;">
-                    <div class="panel-heading">
-                        Product
-                    </div>
-                    <div class="panel-body">
-                        <center>
-                            <span class="fa fa-archive fa-lg fa-5x" style="margin-bottom: 20px;"></span>
-                        </center>
-                    </div>
-                    <div style="margin-left: 20px; margin-right: 20px; margin-top: 50px;">
-                        <div class="btn btn-primary btn-block">Product</div>
-                        <div class="btn btn-primary btn-block">Item Packge</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="panel panel-primary" style="height: 368px;">
-                    <div class="panel-heading">
-                        Product
-                    </div>
-                    <div class="panel-body">
-                        <center>
-                            <span class="fa fa-archive fa-lg fa-5x" style="margin-bottom: 20px;"></span>
-                        </center>
-                    </div>
-                    <div style="margin-left: 20px; margin-right: 20px; margin-top: 50px;">
-                        <div class="btn btn-primary btn-block">Product</div>
-                        <div class="btn btn-primary btn-block">Item Packge</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="panel panel-primary" style="height: 368px;">
-                    <div class="panel-heading">
-                        Product
-                    </div>
-                    <div class="panel-body">
-                        <center>
-                            <span class="fa fa-archive fa-lg fa-5x" style="margin-bottom: 20px;"></span>
-                        </center>
-                    </div>
-                    <div style="margin-left: 20px; margin-right: 20px; margin-top: 50px;">
-                        <div class="btn btn-primary btn-block">Product</div>
-                        <div class="btn btn-primary btn-block">Item Packge</div>
-                    </div>
+            <div class="PRIVILEGE TILE col-md-3">
+                <div class="thumbnail tile tile-wide tile-purple" onclick="mainWindow.loadRoute('privilege')">
+                    <a href="#" class="fa-links">
+                        <h1>Privilege</h1>
+                        <i class="fa fa-3x fa-lock"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- libs -->
+    <script src="../../lib/jquery/jquery.min.js"></script>
+
+    <!-- main js -->
+    <script src="dashboard.js"></script>
 </body>
 
 </html>
