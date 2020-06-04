@@ -22,7 +22,7 @@ const loadRoute = (route) => {
 }
 
 // handle iframe src changing
-const updateRouteInfo = () => {    
+const updateRouteInfo = () => {
     let path = document.getElementById("iframeMain").contentWindow.location.href;
 
     path = `.${path.substring(path.indexOf("/pages"), path.length)}`;
@@ -38,12 +38,22 @@ const updateRouteInfo = () => {
     routes = Object.values(routes).filter(route => route.path == path);
     $("#txtNavbarTitle").text(routes[0].title);
 
-    // make modal functions available inside the iframeMain
-    document.getElementById("iframeMain").contentWindow.mainWindow = {
+    // public data for iframe access
+    const mainWindowData = {
         showOutputModal,
         showConfirmModal,
         showOutputToast,
-        tempData
+        tempData,
+        loadRoute
+    }
+
+    // make modal functions available inside the iframeMain
+    const iframeWindow = document.getElementById("iframeMain").contentWindow;
+    iframeWindow.mainWindow = mainWindowData;
+    
+    // if location is dashboard, update tile visibility
+    if (path.indexOf("dashboard.html") > -1) {
+        iframeWindow.updateTiles();
     }
 }
 
