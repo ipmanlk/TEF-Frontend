@@ -131,12 +131,16 @@ class Request {
             });
 
             req.fail((jqXHR, textStatus) => {
+                // if no json response is recived, ignore
+                if (jqXHR.responseJSON == undefined) return;
+                
                 try {
                     mainWindow.showOutputModal("Error", jqXHR.responseJSON.msg);
                     if (jqXHR.responseJSON.type == "auth") {
                         window.location = "noauth.html"
                     }
                 } catch (e) {
+                    console.log(e);
                     mainWindow.showOutputModal("Error", `Unable to retrive data from the server: ${textStatus}`);
                 }
                 reject(textStatus);
