@@ -41,6 +41,7 @@ class FormUtil {
         });
     }
 
+    // make an element read only
     static setReadOnly(selector, readOnly) {
         if (readOnly) {
             $(`${selector} .form-group`).children().each((i, el) => {
@@ -61,6 +62,7 @@ class FormUtil {
         }
     }
 
+    // print a form
     static print() {
         $("input[type=file]").hide();
         $("#fmButtons").hide();
@@ -74,6 +76,36 @@ class FormUtil {
         $(".form-control").removeClass("form-control-no-border");
         $("select,.from-control").removeClass("select-no-arrow");
         return true;
+    }
+
+    // select an option in a dropdown using value
+    static selectDropdownOptionByValue(dropdownId, optionValue) {
+        $(`#${dropdownId}`).children("option").each(function () {
+            $(this).removeAttr("selected");
+
+            // get the value of current option element
+            const currentValue = $(this).attr("value");
+
+            // check if current value is equal to given value
+            if (currentValue == optionValue) {
+                $(this).attr("selected", "selected");
+            }
+        });
+    }
+
+    // select an option in a dropdown using text
+    static selectDropdownOptionByText(dropdownId, optionText) {
+        $(`#${dropdownId}`).children("option").each(function () {
+            $(this).removeAttr("selected");
+
+            // get the text of current option element
+            const currentText = $(this).text();
+
+            // check if current text is equal to given text
+            if (currentText == optionText) {
+                $(this).attr("selected", "selected");
+            }
+        });
     }
 }
 
@@ -119,7 +151,7 @@ class Request {
 
             req.done((res) => {
                 if (res.status == undefined) return;
-                
+
                 if (res.status) {
                     resolve(res);
                 } else {
@@ -151,4 +183,11 @@ class Request {
             });
         });
     }
+}
+
+// Misc functions for useful tasks
+
+// capitalazie first letters of words in a given string
+String.prototype.capitalize = function () {
+    return this.charAt(0).toUpperCase() + this.slice(1);
 }
