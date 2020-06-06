@@ -43,7 +43,7 @@ const loadMainTable = async () => {
     window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries);
 
     applyTablePermissions();
-}   
+}
 
 
 // set table permissions according to global permission
@@ -156,7 +156,7 @@ const registerEventListeners = () => {
 
     // show date of birth when nic typed
     $("#nic").on("paste change keyup", (e) => {
-        showDateOfBirth(e.target.value);
+        showNicDetails(e.target.value);
     });
 
     // register listeners for form buttons
@@ -214,9 +214,16 @@ const loadFormDropdowns = async () => {
     })
 }
 
-const showDateOfBirth = (nic) => {
+const showNicDetails = (nic) => {
+    // get details from nic
     const dateOfBirth = NIClkUtil.getDOB(nic);
+    const gender = (NIClkUtil.getGender(nic)).toString().capitalize();
+
+    // fill form elements
     $("#dobirth").val(dateOfBirth);
+    
+    // select proper option in dropdown
+    FormUtil.selectDropdownOptionByText("genderId", gender);
 }
 
 const validateForm = async () => {
@@ -318,18 +325,9 @@ const editEntry = async (id, readOnly = false) => {
     ];
 
     // select proper options in dropdowns
-    dropdowns.forEach(elementId => {
-        $(`#${elementId}`).children("option").each(function () {
-            $(this).removeAttr("selected");
-            const optionValue = $(this).attr("value");
-            if (optionValue == entry[elementId]) {
-                $(this).attr("selected", "selected");
-            }
-        });
+    dropdowns.forEach(dropdownId => {
+        FormUtil.selectDropdownOptionByValue(dropdownId, entry[dropdownId]);
     });
-
-    // update date of birth
-    showDateOfBirth(entry.nic);
 
     // set profile picture preview
     const imageURL = ImageUtil.getURLfromBuffer(entry.photo);
@@ -354,6 +352,7 @@ const editEntry = async (id, readOnly = false) => {
 // update entry in the database
 const updateEntry = async () => {
     const { status, data } = await validateForm();
+    console.log(data);
 
     // if there are errors
     if (!status) {
