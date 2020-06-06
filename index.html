@@ -93,7 +93,7 @@
               <ul class="dropdown-menu">
                 <li><a href="./?page=profile"><i class="fa fa-user-o fw"></i> My account</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a href="#"><i class="fa fa-sign-out"></i> Log out</a></li>
+                <li onclick="logOut();"><a href="#"><i class="fa fa-sign-out"></i> Log out</a></li>
               </ul>
             </li>
             <li><a href="#"><i data-show="show-side-navigation1" class="fa fa-bars show-side-btn"></i></a></li>
@@ -243,6 +243,21 @@
       // check logged in
       updateRouteInfo();
     });
+
+    // logout from the system
+    const logOut = () => {
+      fetch("http://localhost:3000/api/logOut").then(res => {
+        return res.json();
+      }).then(data => {
+        if (data.status) {
+          loadRoute("noauth");
+        } else {
+          showOutputModal("Error!.", "You need to be logged in first!.");
+        }
+      }).catch(e => {
+        showOutputModal("Error!.", "Unable to send a logout request.");
+      });
+    }
 
     // controls modal for showing various outputs
     const showOutputModal = (title, body) => {
