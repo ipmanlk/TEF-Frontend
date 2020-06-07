@@ -57,12 +57,12 @@ const updateRouteInfo = () => {
     }
 
     // set permissions for forms and other components inside iframe
-    if (iframeWindow.loadPermission) {
+    if (iframeWindow.loadModule) {
         path = path.replace(".html", "");
         const pathParts = path.split("/");
         const moduleName = pathParts[pathParts.length - 1].toUpperCase().trim();
         const permission = tempData.privileges[moduleName];
-        iframeWindow.loadPermission(permission);
+        iframeWindow.loadModule(permission);
     }
 }
 
