@@ -8,7 +8,8 @@ window.tempData = { selectedEntry: undefined, validationInfo: undefined, loadMor
                                             General
 -------------------------------------------------------------------------------------------------------*/
 
-$(document).ready(async () => {
+async function loadModule(permissionStr) {
+    
     // get regexes for validation and store on window tempData
     const response = await Request.send("/api/regexes", "GET", {
         data: { module: "EMPLOYEE" }
@@ -17,11 +18,29 @@ $(document).ready(async () => {
     // save validation info (regexes) on global tempData
     tempData.validationInfo = response.data;
 
-    await loadMainTable();
     await loadFormDropdowns();
     registerEventListeners();
     FormUtil.enableRealtimeValidation(tempData.validationInfo);
-});
+
+    // create an array from permission string
+    const permission = permissionStr.split("").map((p) => parseInt(p));
+
+    // show hide buttions based on permission
+    if (permission[0] == 0) {
+        $("#btnFmAdd").hide();
+    }
+    if (permission[2] == 0) {
+        $("#btnFmUpdate").hide();
+    }
+    if (permission[3] == 0) {
+        $("#btnFmDelete").hide();
+    }
+
+    // save permission globally
+    tempData.permission = permission;
+
+    await loadMainTable();
+}
 
 // reload main table data and from after making a change
 const reloadModule = async () => {
@@ -40,21 +59,7 @@ const loadMainTable = async () => {
     const tableData = await getInitialTableData();
 
     // load data table
-    window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries);
-
-    applyTablePermissions();
-}
-
-
-// set table permissions according to global permission
-const applyTablePermissions = () => {
-    // show hide columns based on permission
-    if (tempData.permission[2] == 0) {
-        mainTable.showEditColumn(false);
-    }
-    if (tempData.permission[3] == 0) {
-        mainTable.showDeleteColumn(false);
-    }
+    window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries, tempData.permission);
 }
 
 const getInitialTableData = async () => {
@@ -95,9 +100,6 @@ const loadMoreEntries = async (searchValue, rowsCount) => {
 
     // append to global main table
     mainTable.append(tableData);
-
-    // apply permissions for newly added rows
-    applyTablePermissions();
 }
 
 const formTabClick = async () => {
@@ -221,7 +223,7 @@ const showNicDetails = (nic) => {
 
     // fill form elements
     $("#dobirth").val(dateOfBirth);
-    
+
     // select proper option in dropdown
     FormUtil.selectDropdownOptionByText("genderId", gender);
 }
@@ -453,24 +455,6 @@ const setFormButtionsVisibility = (action) => {
     }
 }
 
-function loadPermission(permissionStr) {
-    // create an array from permission string
-    permission = permissionStr.split("").map((p) => parseInt(p));
-
-    // show hide buttions based on permission
-    if (permission[0] == 0) {
-        $("#btnFmAdd").hide();
-    }
-    if (permission[2] == 0) {
-        $("#btnFmUpdate").hide();
-    }
-    if (permission[3] == 0) {
-        $("#btnFmDelete").hide();
-    }
-
-    // save permission globally
-    tempData.permission = permission;
-}
 
 // reset form
 const resetForm = () => {

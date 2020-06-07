@@ -1,14 +1,14 @@
 /*-------------------------------------------------------------------------------------------------------
                                           Window Data
 -------------------------------------------------------------------------------------------------------*/
-window.tempData = { selectedEntry: undefined, validationInfo: undefined, loadMore: true };
+window.tempData = { selectedEntry: undefined, validationInfo: undefined, loadMore: true, permission: undefined };
 
 
 /*-------------------------------------------------------------------------------------------------------
                                             General
 -------------------------------------------------------------------------------------------------------*/
 
-$(document).ready(async () => {
+async function loadModule(permissionStr) {
     // get regexes for validation and store on window tempData
     const response = await Request.send("/api/regexes", "GET", {
         data: { module: "ROLE" }
@@ -17,10 +17,29 @@ $(document).ready(async () => {
     // save validation info (regexes) on global tempData
     tempData.validationInfo = response.data;
 
-    await loadMainTable();
     registerEventListeners();
     FormUtil.enableRealtimeValidation(tempData.validationInfo);
-});
+
+
+    // create an array from permission string
+    const permission = permissionStr.split("").map((p) => parseInt(p));
+
+    // show hide buttions based on permission
+    if (permission[0] == 0) {
+        $("#btnFmAdd").hide();
+    }
+    if (permission[2] == 0) {
+        $("#btnFmUpdate").hide();
+    }
+    if (permission[3] == 0) {
+        $("#btnFmDelete").hide();
+    }
+
+    // save permission globally
+    tempData.permission = permission;
+
+    await loadMainTable();
+}
 
 // reload main table data and from after making a change
 const reloadModule = async () => {
@@ -38,7 +57,7 @@ const reloadModule = async () => {
 const loadMainTable = async () => {
     const tableData = await getInitialTableData();
     // load data table
-    window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries);
+    window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries, tempData.permission);
 }
 
 const getInitialTableData = async () => {
@@ -279,6 +298,8 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
 }
 
 const setFormButtionsVisibility = (action) => {
+    let permission = tempData.permission;
+
     switch (action) {
         case "view":
             $("#btnFmAdd").hide();
@@ -290,14 +311,14 @@ const setFormButtionsVisibility = (action) => {
 
         case "edit":
             $("#btnFmAdd").hide();
-            $("#btnFmUpdate").show();
-            $("#btnFmDelete").show();
+            if (permission[2] !== 0) $("#btnFmUpdate").show();
+            if (permission[3] !== 0) $("#btnFmDelete").show();
             $("#btnFmReset").show();
             $("#btnFmPrint").hide();
             break;
 
         case "add":
-            $("#btnFmAdd").show();
+            if (permission[0] !== 0) $("#btnFmAdd").show();
             $("#btnFmUpdate").hide();
             $("#btnFmDelete").hide();
             $("#btnFmReset").show();
