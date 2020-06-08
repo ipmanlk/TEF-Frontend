@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>TwoElephantFireworks - User</title>
+	<link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../../lib/datatable/datatable.css" />
+	<link rel="stylesheet" type="text/css" href="../../css/pages/common.css" />
+</head>
+
+<body>
+	<div class="container-fluid" style="margin-top: 20px; margin-bottom:100px;">
+
+		<div class="row" style="margin-bottom: 20px;">
+			<div class="col-md-12">
+				<button id="btnTopAddEntry" class="btn btn-primary">
+					<i class="glyphicon glyphicon-plus-sign" aria-hidden="true"></i>
+					Add New Entry
+				</button>
+				<button id="btnTopViewEntry" class="btn btn-primary" style="display: none;">
+					<i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i>
+					View Entries
+				</button>
+			</div>
+		</div>
+
+
+		<ul id="tabHolder" class="nav nav-tabs">
+			<li class="active"><a data-toggle="tab" href="#tabTable">Table</a></li>
+			<li><a data-toggle="tab" href="#tabForm">Form</a></li>
+		</ul>
+
+		<div class="tab-content">
+
+			<div id="tabTable" class="tab-pane fade in active">
+				<div id="mainTableHolder" class="container-fluid" style="margin-top:30px">
+
+				</div>
+			</div>
+
+			<div id="tabForm" class="tab-pane fade">
+				<div class="container-fluid" style="margin-top:30px">
+					<form id="mainForm">
+						<div class="form-group has-feedback">
+							<label for="name">Designation Name: <span class="required">*</span></label>
+							<input type="text" class="form-control" id="name" placeholder="Enter Role Name" name="name"
+								data-editable="true">
+                        </div>
+                        
+						<button id="btnFmAdd" class="btn btn-success">Add</button>
+						<button id="btnFmUpdate" class="btn btn-warning">Update</button>
+						<button id="btnFmReset" class="btn btn-primary" style="float: right; margin-left: 10px;">Reset</button>
+						<button id="btnFmDelete" class="btn btn-danger" style="float: right;">Delete</button>
+					</form>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+
+	<!-- libs -->
+	<script src="../../lib/jquery/jquery.min.js"></script>
+	<script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
+
+	<script src="../../lib/datatable/datatable.js"></script>
+
+	<!-- common stuff -->
+	<script src="../../js/common.js"></script>
+
+	<!-- main js -->
+	<script src="designation.js"></script>
+</body>
+
+</html>
