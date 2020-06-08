@@ -1,7 +1,7 @@
 /*-------------------------------------------------------------------------------------------------------
                                           Window Data
 -------------------------------------------------------------------------------------------------------*/
-window.tempData = { selectedEntry: undefined, validationInfo: undefined, loadMore: true, permission: undefined  };
+window.tempData = { selectedEntry: undefined, validationInfo: undefined, loadMore: true, permission: undefined };
 
 
 /*-------------------------------------------------------------------------------------------------------
@@ -58,7 +58,7 @@ const reloadModule = async () => {
 -------------------------------------------------------------------------------------------------------*/
 const loadMainTable = async () => {
     const tableData = await getInitialTableData();
-    
+
     // load data table
     window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries, tempData.permission);
 }
@@ -117,10 +117,16 @@ const formTabClick = async () => {
 const getTableData = (responseData) => {
     // parse resposne data and return in data table frendly format
     return responseData.map(entry => {
+        console.log(entry);
+        let roles = "";
+        entry.userRoles.forEach((ur, i) => {
+            roles += (i !== entry.userRoles.length - 1) ? ur.role.name + "," : ur.role.name;
+        });
+
         return {
             "Number": entry.employee.number,
             "Username": entry.username,
-            "Role": entry.role.name,
+            "Roles": roles,
             "Status": entry.userStatus.name,
             "Created by": entry.employeeCreated.number,
             "Created on": entry.docreation,
