@@ -112,6 +112,9 @@ const formTabClick = async () => {
 
     // enable form inputs
     FormUtil.setReadOnly("#mainForm", false);
+
+    // set date of assignment
+    $("#doassignment").val(new Date().today());
 }
 
 const showNextNumber = async () => {
