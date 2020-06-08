@@ -119,7 +119,7 @@ const getTableData = (responseData) => {
                 "Add": post,
                 "Modify": put,
                 "Remove": del,
-                "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,            });
+                "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${p.roleId}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,            });
         });
     });
 
