@@ -184,14 +184,14 @@
 
         // get data from the response
         const data = response.data;
-
+        
         // show avatar on dhashboard side menu
         const avatarUrl = ImageUtil.getURLfromBuffer(data.employee.photo);
 
 
         // show employee details
         $("#txtEmployeeName").text(data.employee.fullName);
-        $("#txtEmployeeRole").text(data.role.name);
+        $("#txtEmployeeRole").text(data.employee.designation.name);
 
 
         $("#imgAvatar").attr("src", avatarUrl);
@@ -204,9 +204,9 @@
 
 
         // build privileges from the response and update UI
-        data.role.privileges.forEach(p => {
-          const moduleName = p.module.name;
-          const permission = p.permission;
+
+        Object.keys(data.privileges).forEach(moduleName => {
+          const permission =data.privileges[moduleName];
           tempData.privileges[moduleName] = permission;
 
           // update ui
@@ -217,6 +217,7 @@
             }
           });
         });
+  
 
 
         // save privilages for later use
