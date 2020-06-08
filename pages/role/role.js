@@ -101,7 +101,7 @@ const loadMoreEntries = async (searchValue, rowsCount) => {
 }
 
 const formTabClick = async () => {
-    // when form tab is clicked, reset the form and get next available employee number
+    // when form tab is clicked, reset the form
     resetForm();
 
     // show / hide proper button
