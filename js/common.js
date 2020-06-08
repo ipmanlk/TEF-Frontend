@@ -191,3 +191,11 @@ class Request {
 String.prototype.capitalize = function () {
     return this.charAt(0).toUpperCase() + this.slice(1);
 }
+
+// get today in inputtype=date compatible format
+Date.prototype.today = function () {
+    const now = new Date();
+    const day = ("0" + now.getDate()).slice(-2);
+    const month = ("0" + (now.getMonth() + 1)).slice(-2);
+    return (now.getFullYear() + "-" + (month) + "-" + (day));
+}
