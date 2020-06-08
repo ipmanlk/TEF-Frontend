@@ -2,103 +2,106 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>TwoElephantFireworks - Employee</title>
-    <link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="../../lib/datatable/datatable.css" />
-    <link rel="stylesheet" type="text/css" href="../../css/pages/common.css" />
+	<meta charset="UTF-8">
+	<title>TwoElephantFireworks - Employee</title>
+	<link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../../lib/datatable/datatable.css" />
+	<link rel="stylesheet" type="text/css" href="../../css/pages/common.css" />
 </head>
 
 <body>
-    <div class="container-fluid" style="margin-top: 10px; margin-bottom:100px;">
+	<div class="container-fluid" style="margin-top: 10px; margin-bottom:100px;">
 
-        <div class="container-fluid" style="margin-top:30px">
-            <form id="mainForm">
-                <div class="form-group has-feedback">
-                    <label for="number">Employee Number: <span class="required">*</span></label>
-                    <input type="text" class="form-control form-control-no-border" id="number" placeholder="Enter Number" name="number">
-                </div>
-                <div class="form-group has-feedback">
-                    <label for="fullName">Full Name: <span class="required">*</span></label>
-                    <input type="text" class="form-control form-control-no-border" id="fullName" name="fullName">
-                </div>
-                <div class="form-group has-feedback">
-                    <label for="callingName">Calling Name: <span class="required">*</span></label>
-                    <input type="text" class="form-control form-control-no-border" id="callingName" name="callingName">
-                </div>
-                <div class="form-group has-feedback">
-                    <label for="gender">Gender: <span class="required">*</span></label>
-                    <input type="text" class="form-control form-control-no-border" id="gender" name="gender">
-                </div>
-                <div class="form-group has-feedback">
-                    <label for="civilStatus">Civil Status: <span class="required">*</span></label>
-                    <input type="text" class="form-control form-control-no-border" id="civilStatus" name="civilStatus">
-                </div>
-                <div class="form-group has-feedback">
-                    <label for="nic">NIC: <span class="required">*</span></label>
-                    <input type="text" class="form-control form-control-no-border" id="nic" placeholder="Enter NIC" name="nic">
-                </div>
-                <div class="form-group has-feedback">
-                    <label for="dobirth">Date of Birth:</label>
-                    <input type="date" class="form-control form-control-no-border" id="dobirth" name="dobirth">
-                </div>
-                <div class="form-group">
-                    <label for="photo">Profile Picture:</label>
-                    <div class="col-md-1">
-                        <img id="photo" src="../../img/avatar.png"
-                            style="height: 100px; width: 100px; background-color: black; border-radius: 100px;">
-                    </div>
-                </div>
-                <div class="form-group has-feedback">
-                    <label for="address">Address: <span class="required">*</span></label>
-                    <textarea class="form-control form-control-no-border" name="address" id="address" cols="30" rows="3"></textarea>
-                </div>
-                <div class="form-group has-feedback">
-                    <label for="mobile">Mobile: <span class="required">*</span></label>
-                    <input type="text" class="form-control form-control-no-border" id="mobile" name="mobile">
-                </div>
-                <div class="form-group has-feedback">
-                    <label for="land">Land:</label>
-                    <input type="text" class="form-control form-control-no-border" id="land" name="land">
-                </div>
-                <div class="form-group has-feedback">
-                    <label for="designation">Designation: <span class="required">*</span></label>
-                    <input type="text" class="form-control form-control-no-border" id="designation" name="designation">
-                </div>
-                <div class="form-group has-feedback">
-                    <label for="doassignment">Assignment Date: <span class="required">*</span></label>
-                    <input type="date" class="form-control form-control-no-border" id="doassignment" name="doassignment">
-                </div>
-                <div class="form-group has-feedback">
-                    <label for="description">Description: </label>
-                    <textarea class="form-control form-control-no-border" name="description" id="description" cols="30" rows="3"></textarea>
-                </div>
-                <div class="form-group has-feedback">
-                    <label for="employeeStatus">Employee Status: <span class="required">*</span></label>
-                    <input type="text" class="form-control form-control-no-border" id="employeeStatus" name="employeeStatus">
+		<div class="container-fluid" style="margin-top:30px">
+			<form id="mainForm">
+				<div class="form-group has-feedback">
+					<label for="number">Employee Number: <span class="required">*</span></label>
+					<input type="text" class="form-control form-control-no-border" id="number" placeholder="Enter Number"
+						name="number">
+				</div>
+				<div class="form-group has-feedback">
+					<label for="fullName">Full Name: <span class="required">*</span></label>
+					<input type="text" class="form-control form-control-no-border" id="fullName" name="fullName">
+				</div>
+				<div class="form-group has-feedback">
+					<label for="callingName">Calling Name: <span class="required">*</span></label>
+					<input type="text" class="form-control form-control-no-border" id="callingName" name="callingName">
+				</div>
+				<div class="form-group has-feedback">
+					<label for="gender">Gender: <span class="required">*</span></label>
+					<input type="text" class="form-control form-control-no-border" id="gender" name="gender">
+				</div>
+				<div class="form-group has-feedback">
+					<label for="civilStatus">Civil Status: <span class="required">*</span></label>
+					<input type="text" class="form-control form-control-no-border" id="civilStatus" name="civilStatus">
+				</div>
+				<div class="form-group has-feedback">
+					<label for="nic">NIC: <span class="required">*</span></label>
+					<input type="text" class="form-control form-control-no-border" id="nic" placeholder="Enter NIC" name="nic">
+				</div>
+				<div class="form-group has-feedback">
+					<label for="dobirth">Date of Birth:</label>
+					<input type="date" class="form-control form-control-no-border" id="dobirth" name="dobirth">
+				</div>
+				<div class="form-group">
+					<label for="photo">Profile Picture:</label>
+					<div class="col-md-1">
+						<img id="photo" src="../../img/avatar.png"
+							style="height: 100px; width: 100px; background-color: black; border-radius: 100px;">
+					</div>
+				</div>
+				<div class="form-group has-feedback">
+					<label for="address">Address: <span class="required">*</span></label>
+					<textarea class="form-control form-control-no-border" name="address" id="address" cols="30"
+						rows="3"></textarea>
+				</div>
+				<div class="form-group has-feedback">
+					<label for="mobile">Mobile: <span class="required">*</span></label>
+					<input type="text" class="form-control form-control-no-border" id="mobile" name="mobile">
+				</div>
+				<div class="form-group has-feedback">
+					<label for="land">Land:</label>
+					<input type="text" class="form-control form-control-no-border" id="land" name="land">
+				</div>
+				<div class="form-group has-feedback">
+					<label for="designation">Designation: <span class="required">*</span></label>
+					<input type="text" class="form-control form-control-no-border" id="designation" name="designation">
+				</div>
+				<div class="form-group has-feedback">
+					<label for="doassignment">Assignment Date: <span class="required">*</span></label>
+					<input type="date" class="form-control form-control-no-border" id="doassignment" name="doassignment">
+				</div>
+				<div class="form-group has-feedback">
+					<label for="description">Description: </label>
+					<textarea class="form-control form-control-no-border" name="description" id="description" cols="30"
+						rows="3"></textarea>
+				</div>
+				<div class="form-group has-feedback">
+					<label for="employeeStatus">Employee Status: <span class="required">*</span></label>
+					<input type="text" class="form-control form-control-no-border" id="employeeStatus" name="employeeStatus">
 
-                </div>
-                <!-- <div id="fmButtons">
+				</div>
+				<!-- <div id="fmButtons">
             <button id="btnFmAdd" class="btn btn-success">Edit</button>
             <button id="btnFmUpdate" class="btn btn-warning">Update</button>
           </div> -->
-            </form>
-        </div>
+			</form>
+		</div>
 
-    </div>
+	</div>
 
-    <!-- libs -->
-    <script src="../../lib/jquery/jquery.min.js"></script>
-    <script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
+	<!-- libs -->
+	<script src="../../lib/jquery/jquery.min.js"></script>
+	<script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
 
 
 
-    <!-- common stuff -->
-    <script src="../../js/common.js"></script>
-    <script type="text/javascript" src="../../lib/niclk/niclk.js"></script>
+	<!-- common stuff -->
+	<script src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../lib/niclk/niclk.js"></script>
 
-    <!-- main js -->
-    <script src="profile.js"></script>
+	<!-- main js -->
+	<script src="profile.js"></script>
 </body>
 
 </html>

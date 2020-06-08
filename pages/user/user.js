@@ -124,9 +124,9 @@ const getTableData = (responseData) => {
             "Status": entry.userStatus.name,
             "Created by": entry.employeeCreated.number,
             "Created on": entry.docreation,
-            "View": `<button class="btn btn-success btn-sm" onclick="editEntry('${entry.id}', true)">View</button>`,
-            "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${entry.id}')">Edit</button>`,
-            "Delete": `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')">Delete</button>`
+            "View": `<button class="btn btn-success btn-sm" onclick="editEntry('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
+            "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
+            "Delete": `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-trash" aria-hidden="true"></i> Delete</button>`
         }
     });
 }
