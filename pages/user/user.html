@@ -6,6 +6,7 @@
   <title>TwoElephantFireworks - User</title>
   <link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="../../lib/datatable/datatable.css" />
+  <link rel="stylesheet" type="text/css" href="../../lib/multi-select/css/multi-select.dist.css" />
   <link rel="stylesheet" type="text/css" href="../../css/pages/common.css" />
 </head>
 
@@ -62,11 +63,9 @@
                 placeholder="Enter Password Again" data-editable="true">
             </div>
             <div class="form-group has-feedback">
-              <label for="roleId">Role: <span class="required">*</span></label>
-              <select name="roleId" id="roleId" class="form-control" data-editable="true">
-                <option value="1">Role A</option>
-                <option value="2">Role B</option>
-                <option value="3">Role C</option>
+              <label for="roleIds">Role: <span class="required">*</span></label>
+              <select multiple="multiple" name="roleIds" id="roleIds">
+
               </select>
             </div>
             <div class="form-group has-feedback">
@@ -99,6 +98,7 @@
   <script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
 
   <script src="../../lib/datatable/datatable.js"></script>
+  <script src="../../lib/multi-select/js/jquery.multi-select.js"></script>
 
   <!-- common stuff -->
   <script src="../../js/common.js"></script>

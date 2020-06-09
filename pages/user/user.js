@@ -43,6 +43,24 @@ async function loadModule(permissionStr) {
     await loadMainTable();
 }
 
+$(document).ready(() => {
+    // load muti select dropdowns
+    $("#roleIds").multiSelect({
+        selectableHeader: "All Roles",
+        selectionHeader: "Selected Roles",
+    });
+
+    Request.send("/api/roles", "GET").then(response => {
+        let roles = response.data;
+        // populate muti selects
+        roles.forEach((role) => {
+            $("#roleIds").multiSelect('addOption', { value: role.id, text: role.name });
+        });
+    }).catch(e => {
+        console.log(e);
+    });
+});
+
 // reload main table data and from after making a change
 const reloadModule = async () => {
     resetForm();
@@ -112,12 +130,14 @@ const formTabClick = async () => {
 
     // enable form inputs
     FormUtil.setReadOnly("#mainForm", false);
+
+    // clear muti select
+    $("#roleIds").multiSelect("deselect_all");
 }
 
 const getTableData = (responseData) => {
     // parse resposne data and return in data table frendly format
     return responseData.map(entry => {
-        console.log(entry);
         let roles = "";
         entry.userRoles.forEach((ur, i) => {
             roles += (i !== entry.userRoles.length - 1) ? ur.role.name + "," : ur.role.name;
@@ -188,28 +208,20 @@ const registerEventListeners = () => {
 }
 
 const loadFormDropdowns = async () => {
-    // define needed attributes
-    let roles, userStatuses;
 
     // get data from the api for each dropbox
-    let response;
-    response = await Request.send("/api/roles", "GET");
-    roles = response.data;
-
-    response = await Request.send("/api/general", "GET", { data: { table: "user_status" } });
-    userStatuses = response.data;
+    let response = await Request.send("/api/general", "GET", { data: { table: "user_status" } });
+    let userStatuses = response.data;
 
     // select input ids and relevent data
     const dropdownData = {
-        roleId: roles,
-        userStatusId: userStatuses,
+        userStatusId: userStatuses
     }
 
     // populate select inputs with data
     Object.keys(dropdownData).forEach(dropdownId => {
         const selector = `#${dropdownId}`;
         $(selector).empty();
-
         dropdownData[dropdownId].forEach(entry => {
             $(selector).append(`
             <option value="${entry.id}">${entry.name}</option>
@@ -265,7 +277,7 @@ const validateForm = async () => {
 // add new entry to the database
 const addEntry = async () => {
     const { status, data } = await validateForm();
-
+0
     // if there are errors
     if (!status) {
         mainWindow.showOutputModal("Sorry!. Please fix these errors.", data);
@@ -295,7 +307,6 @@ const editEntry = async (id, readOnly = false) => {
     $("#description").val(entry.description);
 
     const dropdowns = [
-        "roleId",
         "userStatusId",
     ];
 
@@ -309,6 +320,13 @@ const editEntry = async (id, readOnly = false) => {
             }
         });
     });
+
+    // update muti select roles
+    $("#roleIds").multiSelect("deselect_all");
+    entry.userRoles.forEach(ur => {
+        $("#roleIds").multiSelect("select", ur.roleId.toString());
+    });
+    
 
     // change tab to form
     $(".nav-tabs a[href='#tabForm']").tab("show");
@@ -344,6 +362,18 @@ const updateEntry = async () => {
     for (let key in newEntryObj) {
         // compare selected entry and edited entry values
         try {
+
+            // exception for roleIds
+            if (key == "roleIds") {
+                const selectedEntryRoleIds = tempData.selectedEntry.userRoles.map(ur => ur.roleId.toString());
+                
+                if (JSON.stringify(newEntryObj["roleIds"]) !== JSON.stringify(selectedEntryRoleIds)) {
+                    dataHasChanged = true;
+                }
+                continue;
+            }
+
+            // otheriwse use normal checking
             tempData.selectedEntry[key] = (tempData.selectedEntry[key] == null) ? "" : tempData.selectedEntry[key];
             if (newEntryObj[key] !== tempData.selectedEntry[key].toString()) {
                 dataHasChanged = true;
