@@ -214,8 +214,6 @@ const addEntry = async () => {
     if (response.status) {
         mainWindow.showOutputToast("Success!", response.msg);
         reloadModule();
-    } else {
-        mainWindow.showOutputModal("Sorry!", response.msg);
     }
 }
 
@@ -289,8 +287,6 @@ const updateEntry = async () => {
         // reset selected entry
         tempData.selectedEntry = undefined;
         reloadModule();
-    } else {
-        mainWindow.showOutputModal("Sorry!", response.msg);
     }
 }
 
@@ -304,8 +300,6 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
             mainWindow.showOutputToast("Success!", response.msg);
             tempData.selectedEntry = undefined
             reloadModule();
-        } else {
-            mainWindow.showOutputModal("Sorry!", response.msg);
         }
     }
 }

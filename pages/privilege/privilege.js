@@ -270,8 +270,6 @@ const addEntry = async () => {
         mainWindow.showOutputToast("Success!", response.msg);
         reloadModule();
         setFormButtionsVisibility("edit");
-    } else {
-        mainWindow.showOutputModal("Sorry!", response.msg);
     }
 }
 
@@ -367,8 +365,6 @@ const updateEntry = async () => {
         reloadModule();
         editEntry(newEntryObj.id);
         tempData.selectedEntry = undefined;
-    } else {
-        mainWindow.showOutputModal("Sorry!", response.msg);
     }
 }
 
