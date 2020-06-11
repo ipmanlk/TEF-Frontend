@@ -316,8 +316,8 @@ const addEntry = async () => {
     // show output modal based on response
     if (response.status) {
         mainWindow.showOutputToast("Success!", response.msg);
-        showNextNumber();
         reloadModule();
+        formTabClick();
     }
 }
 
@@ -363,6 +363,9 @@ const editEntry = async (id, readOnly = false) => {
         FormUtil.setReadOnly("#mainForm", false);
         setFormButtionsVisibility("edit");
     }
+
+    // load details form nic
+    showNicDetails(entry.nic);
 }
 
 // update entry in the database
