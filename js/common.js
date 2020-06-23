@@ -41,7 +41,7 @@ class FormUtil {
         });
     }
 
-    // make an element read only
+    // make an form read only
     static setReadOnly(selector, readOnly) {
         if (readOnly) {
             $(`${selector} .form-group`).children().each((i, el) => {
@@ -49,6 +49,8 @@ class FormUtil {
                     $(el).attr("readonly", true);
                     $(el).attr("disabled", true);
                     $(el).addClass("no-outline");
+                    $(".form-group").removeClass("has-error has-success");
+                    $(".form-group").children(".form-control-feedback").remove();
                 }
             });
         } else {

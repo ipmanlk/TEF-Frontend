@@ -97,6 +97,15 @@ const formTabClick = async () => {
 
     // load initial privilege table
     reloadModuleList($("#roleId").val());
+    
+    // show hide top buttons
+    $("#btnTopAddEntry").hide();
+    $("#btnTopViewEntry").show();
+}
+
+const tableTabClick = () => {
+    $("#btnTopViewEntry").hide();
+    $("#btnTopAddEntry").show();
 }
 
 const getTableData = (responseData) => {
@@ -146,18 +155,15 @@ const registerEventListeners = () => {
     });
     //  register listeners for form tab click
     $(".nav-tabs a[href='#tabForm']").on("click", formTabClick);
+    $(".nav-tabs a[href='#tabTable']").on("click", tableTabClick);
 
     // event listeners for top action buttons
     $("#btnTopAddEntry").on("click", () => {
         $(".nav-tabs a[href='#tabForm']").click();
-        $("#btnTopAddEntry").hide();
-        $("#btnTopViewEntry").show();
     });
 
     $("#btnTopViewEntry").on("click", () => {
         $(".nav-tabs a[href='#tabTable']").click();
-        $("#btnTopViewEntry").hide();
-        $("#btnTopAddEntry").show();
     });
 
     // catch promise rejections

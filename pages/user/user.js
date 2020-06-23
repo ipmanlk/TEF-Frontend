@@ -133,6 +133,15 @@ const formTabClick = async () => {
 
     // clear muti select
     $("#roleIds").multiSelect("deselect_all");
+
+    // show hide top buttons
+    $("#btnTopAddEntry").hide();
+    $("#btnTopViewEntry").show();
+}
+
+const tableTabClick = () => {
+    $("#btnTopViewEntry").hide();
+    $("#btnTopAddEntry").show();
 }
 
 const getTableData = (responseData) => {
@@ -187,18 +196,15 @@ const registerEventListeners = () => {
 
     //  register listeners for form tab click
     $(".nav-tabs a[href='#tabForm']").on("click", formTabClick);
+    $(".nav-tabs a[href='#tabTable']").on("click", tableTabClick);
 
     // event listeners for top action buttons
     $("#btnTopAddEntry").on("click", () => {
         $(".nav-tabs a[href='#tabForm']").click();
-        $("#btnTopAddEntry").hide();
-        $("#btnTopViewEntry").show();
     });
 
     $("#btnTopViewEntry").on("click", () => {
         $(".nav-tabs a[href='#tabTable']").click();
-        $("#btnTopViewEntry").hide();
-        $("#btnTopAddEntry").show();
     });
 
     // catch promise rejections
@@ -277,7 +283,7 @@ const validateForm = async () => {
 // add new entry to the database
 const addEntry = async () => {
     const { status, data } = await validateForm();
-0
+    
     // if there are errors
     if (!status) {
         mainWindow.showOutputModal("Sorry!. Please fix these errors.", data);
@@ -324,7 +330,7 @@ const editEntry = async (id, readOnly = false) => {
     entry.userRoles.forEach(ur => {
         $("#roleIds").multiSelect("select", ur.roleId.toString());
     });
-    
+
 
     // change tab to form
     $(".nav-tabs a[href='#tabForm']").tab("show");
@@ -364,7 +370,7 @@ const updateEntry = async () => {
             // exception for roleIds
             if (key == "roleIds") {
                 const selectedEntryRoleIds = tempData.selectedEntry.userRoles.map(ur => ur.roleId.toString());
-                
+
                 if (JSON.stringify(newEntryObj["roleIds"]) !== JSON.stringify(selectedEntryRoleIds)) {
                     dataHasChanged = true;
                 }
