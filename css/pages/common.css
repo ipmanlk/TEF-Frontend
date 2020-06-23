@@ -2,6 +2,10 @@
   color: red;
 }
 
+.required-hidden {
+  display: none !important;
+}
+
 .form-control-no-border {
   border-top-style: hidden !important;
   border-right-style: hidden !important;

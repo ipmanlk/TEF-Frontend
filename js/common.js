@@ -52,7 +52,21 @@ class FormUtil {
                     $(".form-group").removeClass("has-error has-success");
                     $(".form-group").children(".form-control-feedback").remove();
                 }
+
+                // fix for empty inputs
+                if (($(el).is("input") || $(el).is("textarea")) && $(el).val().trim() == "") {
+                    try {
+                        $(el).val("Not Provided.");
+                    } catch {}
+                }
             });
+
+            // hide required labels
+            $("label span.required").addClass("required-hidden");
+
+            // hide top action buttons
+            $("#actionButtonHolder").hide();
+
         } else {
             $(`${selector} .form-group`).children().each((i, el) => {
                 if ($(el).data("editable") == true) {
@@ -60,7 +74,19 @@ class FormUtil {
                     $(el).attr("disabled", false);
                     $(el).removeClass("no-outline");
                 }
+
+                if (($(el).is("input") || $(el).is("textarea")) && $(el).val().trim() == "Not Provided.") {
+                    try {
+                        $(el).val("");
+                    } catch {}
+                }
             });
+
+            // show required labels
+            $("label span.required").removeClass("required-hidden");
+
+            // show top action buttons
+            $("#actionButtonHolder").show();
         }
     }
 
