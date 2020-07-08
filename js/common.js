@@ -173,8 +173,14 @@ class Request {
             }
 
             // send json strings on POST, PUT & DELETE requests
-            if (method == "POST" || method == "PUT" || method == "DELETE") {
+            if (method == "POST" || method == "PUT") {
                 options.data = JSON.stringify(data);
+            }
+
+            // don't send a body for delete reqeusts
+            if (method == "DELETE") {
+                delete options["data"];
+                options["url"] += `?${jQuery.param(data)}`;
             }
 
             // create a new request with options
