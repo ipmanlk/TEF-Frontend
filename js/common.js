@@ -57,7 +57,7 @@ class FormUtil {
                 if (($(el).is("input") || $(el).is("textarea")) && $(el).val().trim() == "") {
                     try {
                         $(el).val("Not Provided.");
-                    } catch {}
+                    } catch { }
                 }
             });
 
@@ -75,7 +75,7 @@ class FormUtil {
                 if (($(el).is("input") || $(el).is("textarea")) && $(el).val().trim() == "Not Provided.") {
                     try {
                         $(el).val("");
-                    } catch {}
+                    } catch { }
                 }
             });
 
@@ -91,12 +91,14 @@ class FormUtil {
         $("#tabHolder").hide();
         $(".form-control").addClass("form-control-no-border");
         $("select,.from-control").addClass("select-no-arrow");
+        $("#actionButtonHolder").hide();
         window.print();
         $("#fmButtons").show();
         $("#tabHolder").show();
         $("input[type=file]").show();
         $(".form-control").removeClass("form-control-no-border");
         $("select,.from-control").removeClass("select-no-arrow");
+        $("#actionButtonHolder").show();
         return true;
     }
 
