@@ -64,9 +64,6 @@ class FormUtil {
             // hide required labels
             $("label span.required").addClass("required-hidden");
 
-            // hide top action buttons
-            $("#actionButtonHolder").hide();
-
         } else {
             $(`${selector} .form-group`).children().each((i, el) => {
                 if ($(el).data("editable") == true) {
@@ -84,9 +81,6 @@ class FormUtil {
 
             // show required labels
             $("label span.required").removeClass("required-hidden");
-
-            // show top action buttons
-            $("#actionButtonHolder").show();
         }
     }
 
