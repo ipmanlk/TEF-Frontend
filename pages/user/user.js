@@ -122,11 +122,15 @@ const loadMoreEntries = async (searchValue, rowsCount) => {
 }
 
 const formTabClick = async () => {
+
+    if ($("#tabNavForm").text() !== "Add New") return;
+
     // when form tab is clicked, reset the form 
     resetForm();
 
     // show / hide proper button
     setFormButtionsVisibility("add");
+    setTabNavTitle("add");
 
     // enable form inputs
     FormUtil.setReadOnly("#mainForm", false);
@@ -200,6 +204,7 @@ const registerEventListeners = () => {
 
     // event listeners for top action buttons
     $("#btnTopAddEntry").on("click", () => {
+        setTabNavTitle("add");
         $(".nav-tabs a[href='#tabForm']").click();
     });
 
@@ -283,7 +288,7 @@ const validateForm = async () => {
 // add new entry to the database
 const addEntry = async () => {
     const { status, data } = await validateForm();
-    
+
     // if there are errors
     if (!status) {
         mainWindow.showOutputModal("Sorry!. Please fix these errors.", data);
@@ -341,9 +346,25 @@ const editEntry = async (id, readOnly = false) => {
     if (readOnly) {
         setFormButtionsVisibility("view");
         FormUtil.setReadOnly("#mainForm", true);
+        setTabNavTitle("view");
     } else {
         FormUtil.setReadOnly("#mainForm", false);
         setFormButtionsVisibility("edit");
+        setTabNavTitle("edit");
+    }
+}
+
+const setTabNavTitle = (action) => {
+    switch (action) {
+        case "add":
+            $("#tabNavForm").text("Add New");
+            break;
+        case "edit":
+            $("#tabNavForm").text("Edit User");
+            break;
+        case "view":
+            $("#tabNavForm").text("View User");
+            break;
     }
 }
 

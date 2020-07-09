@@ -103,6 +103,9 @@ const loadMoreEntries = async (searchValue, rowsCount) => {
 }
 
 const formTabClick = async () => {
+
+    if ($("#tabNavForm").text() !== "Add New") return;
+
     // when form tab is clicked, reset the form 
     resetForm();
 
@@ -157,6 +160,7 @@ const registerEventListeners = () => {
 
     // event listeners for top action buttons
     $("#btnTopAddEntry").on("click", () => {
+        setTabNavTitle("add");
         $(".nav-tabs a[href='#tabForm']").click();
     });
 
@@ -235,7 +239,7 @@ const editEntry = async (id, readOnly = false) => {
 
     // set entry object globally to later compare
     window.tempData.selectedEntry = entry;
-    
+
     // fill form inputs
     $("#name").val(entry.name);
 
@@ -245,6 +249,20 @@ const editEntry = async (id, readOnly = false) => {
     } else {
         FormUtil.setReadOnly("#mainForm", false);
         setFormButtionsVisibility("edit");
+    }
+}
+
+const setTabNavTitle = (action) => {
+    switch (action) {
+        case "add":
+            $("#tabNavForm").text("Add New");
+            break;
+        case "edit":
+            $("#tabNavForm").text("Edit Employee Status");
+            break;
+        case "view":
+            $("#tabNavForm").text("View Employee Status");
+            break;
     }
 }
 
@@ -321,6 +339,7 @@ const setFormButtionsVisibility = (action) => {
             $("#btnFmDelete").hide();
             $("#btnFmReset").hide();
             $("#btnFmPrint").show();
+            setTabNavTitle("view");
             break;
 
         case "edit":
@@ -329,6 +348,7 @@ const setFormButtionsVisibility = (action) => {
             if (permission[3] !== 0) $("#btnFmDelete").show();
             $("#btnFmReset").show();
             $("#btnFmPrint").hide();
+            setTabNavTitle("edit");
             break;
 
         case "add":
@@ -337,6 +357,7 @@ const setFormButtionsVisibility = (action) => {
             $("#btnFmDelete").hide();
             $("#btnFmReset").show();
             $("#btnFmPrint").hide();
+            setTabNavTitle("add");
             break;
     }
 }

@@ -103,6 +103,8 @@ const loadMoreEntries = async (searchValue, rowsCount) => {
 }
 
 const formTabClick = async () => {
+    if ($("#tabNavForm").text() !== "Add New") return;
+
     // when form tab is clicked, reset the form and get next available employee number
     resetForm();
     await showNextNumber();
@@ -186,6 +188,7 @@ const registerEventListeners = () => {
 
     // event listeners for top action buttons
     $("#btnTopAddEntry").on("click", () => {
+        setTabNavTitle("add");
         $(".nav-tabs a[href='#tabForm']").click();
     });
 
@@ -374,6 +377,20 @@ const editEntry = async (id, readOnly = false) => {
     showNicDetails(entry.nic);
 }
 
+const setTabNavTitle = (action) => {
+    switch (action) {
+        case "add":
+            $("#tabNavForm").text("Add New");
+            break;
+        case "edit":
+            $("#tabNavForm").text("Edit Employee");
+            break;
+        case "view":
+            $("#tabNavForm").text("View Employee");
+            break;
+    }
+}
+
 // update entry in the database
 const updateEntry = async () => {
     const { status, data } = await validateForm();
@@ -454,6 +471,7 @@ const setFormButtionsVisibility = (action) => {
             $("#btnFmDelete").hide();
             $("#btnFmReset").hide();
             $("#btnFmPrint").show();
+            setTabNavTitle("view");
             break;
 
         case "edit":
@@ -462,6 +480,7 @@ const setFormButtionsVisibility = (action) => {
             if (permission[3] !== 0) $("#btnFmDelete").show();
             $("#btnFmReset").show();
             $("#btnFmPrint").hide();
+            setTabNavTitle("edit");
             break;
 
         case "add":
@@ -470,6 +489,7 @@ const setFormButtionsVisibility = (action) => {
             $("#btnFmDelete").hide();
             $("#btnFmReset").show();
             $("#btnFmPrint").hide();
+            setTabNavTitle("add");
             break;
     }
 }
