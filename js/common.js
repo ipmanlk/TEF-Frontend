@@ -85,21 +85,53 @@ class FormUtil {
     }
 
     // print a form
-    static print() {
-        $("input[type=file]").hide();
-        $("#fmButtons").hide();
-        $("#tabHolder").hide();
-        $(".form-control").addClass("form-control-no-border");
-        $("select,.from-control").addClass("select-no-arrow");
-        $("#actionButtonHolder").hide();
-        window.print();
-        $("#fmButtons").show();
-        $("#tabHolder").show();
-        $("input[type=file]").show();
-        $(".form-control").removeClass("form-control-no-border");
-        $("select,.from-control").removeClass("select-no-arrow");
-        $("#actionButtonHolder").show();
-        return true;
+    static printForm(formId) {
+        let table = `<table class="table table-striped">`
+        $(`#${formId} label`).each((i, el) => {
+            let type;
+            let label, data;
+
+            const firstChild = $(el);
+            const secondChild = $(el).next();
+
+
+            if ($(secondChild).prop('nodeName') == "INPUT") {
+                type = "text";
+                label = $(firstChild).text();
+                data = $(secondChild).val();
+            }
+
+            if ($(secondChild).prop('nodeName') == "SELECT") {
+                type = "text";
+                label = $(firstChild).text();
+                data = $(`#${$(secondChild).attr("id")} option:selected`).text();
+            }
+
+            if ($(secondChild).prop('nodeName') == "IMG") {
+                type = "image";
+                label = $(firstChild).text();
+                data = `<img src="${$(secondChild).attr("src")}" width="100px"></img>`
+            }
+
+            if (!type) return;
+
+            table += `<tr>
+                        <td style="width:30%">${label.replace("*", "")}</td>
+                        <td>${data}</td>
+                    <tr>`
+        });
+
+        table += "</table>";
+
+        // create new window and print the table
+        const stylesheet = "http://localhost:3000/lib/bootstrap/css/bootstrap.min.css";
+        const win = window.open("", "Print", "width=500,height=300");
+        win.document.write(`<html><head><link rel="stylesheet" href="${stylesheet}"></head><body>${table}</body></html>`);
+        setTimeout(() => {
+            win.document.close();
+            win.print();
+            win.close();
+        }, 500);
     }
 
     // select an option in a dropdown using value
