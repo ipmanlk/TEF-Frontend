@@ -4,6 +4,20 @@
 
 $(document).ready(() => {
     loadProfile();
+
+    // event listeners for password inputs
+    $("#password,#passwordConfirm").on("keyup", function () {
+        const password = $("#password").val();
+        const passwordConfirm = $("#passwordConfirm").val();
+
+        if (password !== passwordConfirm) {
+            $("#password").parent().addClass("has-error");
+            $("#passwordConfirm").parent().addClass("has-error");
+        } else {
+            $("#password").parent().removeClass("has-error");
+            $("#passwordConfirm").parent().removeClass("has-error");
+        }
+    });
 });
 
 const getProfile = async () => {
@@ -47,7 +61,7 @@ const loadProfile = () => {
             $(el).addClass("no-outline");
         });
 
-        $("input,textarea").each(function (i, el) {
+        $("#mainForm input,textarea").each(function (i, el) {
             const elementValue = $(el).val();
             if (elementValue.trim() == "") $(el).val("Not Provided.");
         });
