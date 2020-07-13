@@ -283,22 +283,7 @@ const editEntry = async (id) => {
     // get entry data from db and show in the form
     const response = await Request.send("/api/privileges", "GET", { data: { id: id } });
     const entry = response.data;
-
-    const dropdowns = [
-        "roleId",
-    ];
-
-    // select proper options in dropdowns
-    dropdowns.forEach(elementId => {
-        $(`#${elementId}`).children("option").each(function () {
-            $(this).removeAttr("selected");
-            const optionValue = parseInt($(this).attr("value"));
-            if (optionValue == entry.id) {
-                $(this).attr("selected", "selected");
-            }
-        });
-    });
-
+    
     // clear the module list in the form
     $("#moduleTable tbody").empty();
 
@@ -340,18 +325,21 @@ const updateEntry = async () => {
 
 
     // when all permissions are removed
-    if ((selectedEntry.privileges.length > 0 && newEntryObj.privileges.length == 0 )|| selectedEntry.privileges.length == 0) {
+    if (selectedEntry.privileges.length !== newEntryObj.privileges.length) {
         dataHasChanged = true;
     } else {
         selectedEntry.privileges.every((p, index) => {
+            if (!newEntryObj.privileges[index]) {
+                dataHasChanged = true;
+                return;
+            }
             if (p.permission !== newEntryObj.privileges[index].permission) {
                 dataHasChanged = true;
-                return false;
+                return;
             }
-            return true;
         });
     }
-
+    
     // if nothing has been modifed
     if (!dataHasChanged) {
         mainWindow.showOutputModal("Sorry!.", "You haven't changed anything to update.");
