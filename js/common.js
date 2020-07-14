@@ -85,8 +85,9 @@ class FormUtil {
     }
 
     // print a form
-    static printForm(formId) {
-        let table = `<table class="table table-striped">`
+    static printForm(formId, title) {
+        let table = `<table class="table table-striped">
+        <tr><td colspan="2"><h3>${title}</h3></tr>`
         $(`#${formId} label`).each((i, el) => {
             let type;
             let label, data;
