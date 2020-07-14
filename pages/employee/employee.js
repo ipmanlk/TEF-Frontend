@@ -180,7 +180,7 @@ const registerEventListeners = () => {
     $("#btnFmUpdate").on("click", updateEntry);
     $("#btnFmDelete").on("click", () => deleteEntry());
     $("#btnFmReset").on("click", resetForm);
-    $("#btnFmPrint").on("click", () => FormUtil.printForm("mainForm"));
+    $("#btnFmPrint").on("click", () => FormUtil.printForm("mainForm", "Employee Details"));
 
     //  register listeners for form tab click
     $(".nav-tabs a[href='#tabForm']").on("click", formTabClick);
