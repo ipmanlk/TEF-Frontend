@@ -149,7 +149,8 @@ const getTableData = (responseData) => {
             "Civil Status": entry.civilStatus.name,
             "Employee Status": entry.employeeStatus.name,
             "View": `<button class="btn btn-success btn-sm" onclick="editEntry('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
-            "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`
+            "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
+            "Delete": `${entry.employeeStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
         }
     });
 }
@@ -375,6 +376,11 @@ const editEntry = async (id, readOnly = false) => {
 
     // load details form nic
     showNicDetails(entry.nic);
+
+    // check if this employee is already deleted and show / hide delete button
+    if ($("#employeeStatusId option:selected").text() == "Deleted") {
+        $("#btnFmDelete").hide();
+    }
 }
 
 const setTabNavTitle = (action) => {
