@@ -311,6 +311,10 @@ const updateEntry = async () => {
         // reset selected entry
         tempData.selectedEntry = undefined;
         reloadModule();
+
+        // change title of the tab
+        setTabNavTitle("add");
+        $(".nav-tabs a[href='#tabForm']").click();
     }
 }
 
