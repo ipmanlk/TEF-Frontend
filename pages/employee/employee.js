@@ -107,7 +107,9 @@ const formTabClick = async () => {
 
     // when form tab is clicked, reset the form and get next available employee number
     resetForm();
-    await showNextNumber();
+
+    // change employee number field text
+    $("#number").val("Employee number will be displayed after adding.");
 
     // show / hide proper button
     setFormButtionsVisibility("add");
@@ -129,12 +131,6 @@ const tableTabClick = () => {
     $("#btnTopAddEntry").show();
 }
 
-const showNextNumber = async () => {
-    const response = await Request.send("/api/employees/next_number");
-
-    // set next employee number in the form
-    $("#number").val(response.data.nextNumber);
-}
 
 const getTableData = (responseData) => {
     // parse resposne data and return in data table frendly format
@@ -270,18 +266,21 @@ const validateForm = async () => {
         if (elementId == "photo") {
             if (photo.files[0]) {
                 try {
+                    console.log("when photo is selected");
                     entry[elementId] = await ImageUtil.getBase64FromFile(photo.files[0]);
                     isValid = true;
+                    FormUtil.validateElementValue(vi);
                 } catch (error) {
                     isValid = false;
                 }
-            } else if (tempData.selectedEntry && tempData.selectedEntry.photo) {
+                continue;
+            } else if (tempData.selectedEntry !== undefined && tempData.selectedEntry.photo) {
                 // if photo is not set, check if selected entry has a photo
                 entry[elementId] = false;
                 isValid = true;
+            } else {
+                FormUtil.validateElementValue(vi);
             }
-            continue;
-
         } else {
             // if it's not a profile picture, just validate using it's value
             isValid = FormUtil.validateElementValue(vi);
@@ -326,12 +325,16 @@ const addEntry = async () => {
     // show output modal based on response
     if (response.status) {
         mainWindow.showOutputToast("Success!", response.msg);
+        mainWindow.showOutputModal("New Employee Added!", `<h5>Employee Number: ${response.data.number}</h5>`);
         reloadModule();
         formTabClick();
     }
 }
 
 const editEntry = async (id, readOnly = false) => {
+    // reset form first
+    resetForm();
+
     // get entry data from db and show in the form
     const response = await Request.send("/api/employees", "GET", { data: { id: id } });
     const entry = response.data;
