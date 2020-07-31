@@ -102,36 +102,6 @@ const loadMoreEntries = async (searchValue, rowsCount) => {
     mainTable.append(tableData);
 }
 
-const formTabClick = async () => {
-    if ($("#tabNavForm").text() !== "Add New") return;
-
-    // when form tab is clicked, reset the form and get next available employee number
-    resetForm();
-
-    // change employee number field text
-    $("#number").val("Employee number will be displayed after adding.");
-
-    // show / hide proper button
-    setFormButtionsVisibility("add");
-
-    // enable form inputs
-    FormUtil.setReadOnly("#mainForm", false);
-
-    // set date of assignment
-    $("#doassignment").val(new Date().today());
-
-
-    // show hide top buttons
-    $("#btnTopAddEntry").hide();
-    $("#btnTopViewEntry").show();
-}
-
-const tableTabClick = () => {
-    $("#btnTopViewEntry").hide();
-    $("#btnTopAddEntry").show();
-}
-
-
 const getTableData = (responseData) => {
     // parse resposne data and return in data table frendly format
     return responseData.map(entry => {
@@ -144,8 +114,8 @@ const getTableData = (responseData) => {
             "Designation": entry.designation.name,
             "Civil Status": entry.civilStatus.name,
             "Employee Status": entry.employeeStatus.name,
-            "View": `<button class="btn btn-success btn-sm" onclick="editEntry('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
-            "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
+            "View": `<button class="btn btn-success btn-sm" onclick="showEditEntryModal('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
+            "Edit": `<button class="btn btn-warning btn-sm" onclick="showEditEntryModal('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
             "Delete": `${entry.employeeStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
         }
     });
@@ -179,18 +149,9 @@ const registerEventListeners = () => {
     $("#btnFmReset").on("click", resetForm);
     $("#btnFmPrint").on("click", () => FormUtil.printForm("mainForm", "Employee Details"));
 
-    //  register listeners for form tab click
-    $(".nav-tabs a[href='#tabForm']").on("click", formTabClick);
-    $(".nav-tabs a[href='#tabTable']").on("click", tableTabClick);
-
     // event listeners for top action buttons
     $("#btnTopAddEntry").on("click", () => {
-        setTabNavTitle("add");
-        $(".nav-tabs a[href='#tabForm']").click();
-    });
-
-    $("#btnTopViewEntry").on("click", () => {
-        $(".nav-tabs a[href='#tabTable']").click();
+        showNewEntryModal();
     });
 
     // catch promise rejections
@@ -309,29 +270,48 @@ const validateForm = async () => {
     };
 }
 
-// add new entry to the database
-const addEntry = async () => {
-    const { status, data } = await validateForm();
+const setFormButtionsVisibility = (action) => {
+    let permission = tempData.permission;
 
-    // if there are errors
-    if (!status) {
-        mainWindow.showOutputModal("Sorry!. Please fix these errors.", data);
-        return;
-    }
+    switch (action) {
+        case "view":
+            $("#btnFmAdd").hide();
+            $("#btnFmUpdate").hide();
+            $("#btnFmDelete").hide();
+            $("#btnFmReset").hide();
+            $("#btnFmPrint").show();
+            break;
 
-    // get response
-    const response = await Request.send("/api/employees", "POST", { data: data });
+        case "edit":
+            $("#btnFmAdd").hide();
+            if (permission[2] !== 0) $("#btnFmUpdate").show();
+            if (permission[3] !== 0) $("#btnFmDelete").show();
+            $("#btnFmReset").show();
+            $("#btnFmPrint").hide();
+            break;
 
-    // show output modal based on response
-    if (response.status) {
-        mainWindow.showOutputToast("Success!", response.msg);
-        mainWindow.showOutputModal("New Employee Added!", `<h5>Employee Number: ${response.data.number}</h5>`);
-        reloadModule();
-        formTabClick();
+        case "add":
+            if (permission[0] !== 0) $("#btnFmAdd").show();
+            $("#btnFmUpdate").hide();
+            $("#btnFmDelete").hide();
+            $("#btnFmReset").show();
+            $("#btnFmPrint").hide();
+            break;
     }
 }
 
-const editEntry = async (id, readOnly = false) => {
+const resetForm = () => {
+    $("#mainForm").trigger("reset");
+    $(".form-group").removeClass("has-error has-success");
+    $(".form-group").children(".form-control-feedback").remove();
+    $("#photoPreview").attr("src", "../../img/avatar.png");
+}
+
+/*-------------------------------------------------------------------------------------------------------
+                                            Modals
+-------------------------------------------------------------------------------------------------------*/
+
+const showEditEntryModal = async (id, readOnly = false) => {
     // reset form first
     resetForm();
 
@@ -363,9 +343,6 @@ const editEntry = async (id, readOnly = false) => {
     $("#photoPreview").attr("src", imageURL);
     photo.files[0] = entry.photo.data;
 
-    // change tab to form
-    $(".nav-tabs a[href='#tabForm']").tab("show");
-
     // set entry object globally to later compare
     window.tempData.selectedEntry = entry;
 
@@ -384,19 +361,53 @@ const editEntry = async (id, readOnly = false) => {
     if ($("#employeeStatusId option:selected").text() == "Deleted") {
         $("#btnFmDelete").hide();
     }
+
+    $("#modalMainFormTitle").text("Edit Employee");
+    $("#modalMainForm").modal("show");
 }
 
-const setTabNavTitle = (action) => {
-    switch (action) {
-        case "add":
-            $("#tabNavForm").text("Add New");
-            break;
-        case "edit":
-            $("#tabNavForm").text("Edit Employee");
-            break;
-        case "view":
-            $("#tabNavForm").text("View Employee");
-            break;
+const showNewEntryModal = () => {
+    resetForm();
+
+    // change employee number field text
+    $("#number").val("Employee number will be displayed after adding.");
+
+    // show / hide proper button
+    setFormButtionsVisibility("add");
+
+    // enable form inputs
+    FormUtil.setReadOnly("#mainForm", false);
+
+    // set date of assignment
+    $("#doassignment").val(new Date().today());
+
+    $("#modalMainFormTitle").text("Add New Employee");
+    $("#modalMainForm").modal("show");
+}
+
+/*-------------------------------------------------------------------------------------------------------
+                                            Operations
+-------------------------------------------------------------------------------------------------------*/
+
+// add new entry to the database
+const addEntry = async () => {
+    const { status, data } = await validateForm();
+
+    // if there are errors
+    if (!status) {
+        mainWindow.showOutputModal("Sorry!. Please fix these errors.", data);
+        return;
+    }
+
+    // get response
+    const response = await Request.send("/api/employees", "POST", { data: data });
+
+    // show output modal based on response
+    if (response.status) {
+        mainWindow.showOutputToast("Success!", response.msg);
+        mainWindow.showOutputModal("New Employee Added!", `<h5>Employee Number: ${response.data.number}</h5>`);
+        reloadModule();
+        $("#modalMainForm").modal("hide");
     }
 }
 
@@ -453,9 +464,7 @@ const updateEntry = async () => {
         tempData.selectedEntry = undefined;
         reloadModule();
 
-        // change title of the tab
-        setTabNavTitle("add");
-        $(".nav-tabs a[href='#tabForm']").click();
+        $("#modalMainForm").modal("hide");
     }
 }
 
@@ -471,46 +480,4 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
             reloadModule();
         }
     }
-}
-
-const setFormButtionsVisibility = (action) => {
-    let permission = tempData.permission;
-
-    switch (action) {
-        case "view":
-            $("#btnFmAdd").hide();
-            $("#btnFmUpdate").hide();
-            $("#btnFmDelete").hide();
-            $("#btnFmReset").hide();
-            $("#btnFmPrint").show();
-            setTabNavTitle("view");
-            break;
-
-        case "edit":
-            $("#btnFmAdd").hide();
-            if (permission[2] !== 0) $("#btnFmUpdate").show();
-            if (permission[3] !== 0) $("#btnFmDelete").show();
-            $("#btnFmReset").show();
-            $("#btnFmPrint").hide();
-            setTabNavTitle("edit");
-            break;
-
-        case "add":
-            if (permission[0] !== 0) $("#btnFmAdd").show();
-            $("#btnFmUpdate").hide();
-            $("#btnFmDelete").hide();
-            $("#btnFmReset").show();
-            $("#btnFmPrint").hide();
-            setTabNavTitle("add");
-            break;
-    }
-}
-
-
-// reset form
-const resetForm = () => {
-    $("#mainForm").trigger("reset");
-    $(".form-group").removeClass("has-error has-success");
-    $(".form-group").children(".form-control-feedback").remove();
-    $("#photoPreview").attr("src", "../../img/avatar.png");
 }
