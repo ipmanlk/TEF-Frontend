@@ -1,7 +1,7 @@
 /*-------------------------------------------------------------------------------------------------------
                                           Window Data
 -------------------------------------------------------------------------------------------------------*/
-window.tempData = { selectedEntry: undefined, validationInfo: undefined, loadMore: true, permission: undefined };
+window.tempData = { selectedEntry: undefined, validationInfo: undefined, permission: undefined };
 
 
 /*-------------------------------------------------------------------------------------------------------
@@ -39,86 +39,41 @@ async function loadModule(permissionStr) {
     // save permission globally
     tempData.permission = permission;
 
-    await loadMainTable();
+    loadMainTable();
 }
 
 // reload main table data and from after making a change
-const reloadModule = async () => {
+const reloadModule = () => {
     resetForm();
-    const tableData = await getInitialTableData();
-    mainTable.reload(tableData);
-
-    // fix for additional load more requests
-    setTimeout(() => tempData.loadMore = true, 500);
+    mainTable.reload();
 }
 
 /*-------------------------------------------------------------------------------------------------------
                                             Main Table
 -------------------------------------------------------------------------------------------------------*/
-const loadMainTable = async () => {
-    const tableData = await getInitialTableData();
+const loadMainTable = () => {
 
-    // load data table
-    window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries, tempData.permission);
-}
-
-const getInitialTableData = async () => {
-    // get initial entries from the server
-    const response = await Request.send("/api/employees", "GET");
-
-    // convert response data to data table format
-    return getTableData(response.data);
-}
-
-const searchEntries = async (searchValue) => {
-    const response = await Request.send("/api/employees", "GET", {
-        data: { keyword: searchValue }
-    });
-
-    const tableData = getTableData(response.data);
-
-    // load data to global main table
-    mainTable.reload(tableData);
-}
-
-const loadMoreEntries = async (searchValue, rowsCount) => {
-
-    // check if all data has been loaded
-    if (!tempData.loadMore) return;
-
-    const response = await Request.send("/api/employees", "GET", {
-        data: { keyword: searchValue, skip: rowsCount }
-    });
-
-    // if results came empty (all loaded)
-    if (response.data.length == 0) {
-        tempData.loadMore = false;
-        return;
+    const dataBuilderFunction = (responseData) => {
+        // parse resposne data and return in data table frendly format
+        return responseData.map(entry => {
+            return {
+                "Number": entry.number,
+                "Full Name": entry.fullName,
+                "Calling Name": entry.callingName,
+                "NIC": entry.nic,
+                "Mobile": entry.mobile,
+                "Designation": entry.designation.name,
+                "Civil Status": entry.civilStatus.name,
+                "Employee Status": entry.employeeStatus.name,
+                "View": `<button class="btn btn-success btn-sm" onclick="showEditEntryModal('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
+                "Edit": `<button class="btn btn-warning btn-sm" onclick="showEditEntryModal('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
+                "Delete": `${entry.employeeStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
+            }
+        });
     }
 
-    const tableData = getTableData(response.data);
-
-    // append to global main table
-    mainTable.append(tableData);
-}
-
-const getTableData = (responseData) => {
-    // parse resposne data and return in data table frendly format
-    return responseData.map(entry => {
-        return {
-            "Number": entry.number,
-            "Full Name": entry.fullName,
-            "Calling Name": entry.callingName,
-            "NIC": entry.nic,
-            "Mobile": entry.mobile,
-            "Designation": entry.designation.name,
-            "Civil Status": entry.civilStatus.name,
-            "Employee Status": entry.employeeStatus.name,
-            "View": `<button class="btn btn-success btn-sm" onclick="showEditEntryModal('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
-            "Edit": `<button class="btn btn-warning btn-sm" onclick="showEditEntryModal('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
-            "Delete": `${entry.employeeStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
-        }
-    });
+    // load data table
+    window.mainTable = new DataTable("mainTableHolder", "/api/employees", tempData.permission, dataBuilderFunction);
 }
 
 /*-------------------------------------------------------------------------------------------------------
