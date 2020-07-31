@@ -64,7 +64,7 @@ const loadMainTable = () => {
                 "Mobile": entry.mobile,
                 "Designation": entry.designation.name,
                 "Civil Status": entry.civilStatus.name,
-                "Employee Status": entry.employeeStatus.name,
+                "Status": entry.employeeStatus.name,
                 "View": `<button class="btn btn-success btn-sm" onclick="showEditEntryModal('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
                 "Edit": `<button class="btn btn-warning btn-sm" onclick="showEditEntryModal('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
                 "Delete": `${entry.employeeStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
