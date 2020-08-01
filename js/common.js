@@ -234,7 +234,7 @@ class Form {
                 break;
 
             case "add":
-                if (this.permission[0] !== 0) $(`${this.formId} .btnFmAdd`).show();
+                if (this.permission[0] !== 0) $(`#${this.formId} .btnFmAdd`).show();
                 $(`#${this.formId} .btnFmUpdate`).hide();
                 $(`#${this.formId} .btnFmDelete`).hide();
                 $(`#${this.formId} .btnFmReset`).show();
