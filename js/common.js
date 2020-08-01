@@ -281,6 +281,36 @@ class Form {
             data: errors
         }
     }
+
+    hasDataChanged = () => {
+        const { status, data } = this.validateForm();
+
+        // if there are errors
+        if (!status) {
+            throw `Validate form returned errors! ${data}`;
+        }
+
+        // new entry object
+        let newEntryObj = data;
+        let selectedEntry = this.selectedEntry;
+
+        // check if any of the data in entry has changed
+        let dataHasChanged = false;
+
+        for (let key in newEntryObj) {
+            // compare selected entry and edited entry values
+            try {
+                selectedEntry[key] = (selectedEntry[key] == null) ? "" : selectedEntry[key];
+                if (newEntryObj[key] !== selectedEntry[key].toString()) {
+                    dataHasChanged = true;
+                }
+            } catch (error) {
+                console.log(key, error);
+            }
+        }
+
+        return dataHasChanged;
+    }
 }
 
 
