@@ -1,8 +1,174 @@
-/*-------------------------------------------------------------------------------------------------------
-                                          Window Data
--------------------------------------------------------------------------------------------------------*/
-window.tempData = { selectedEntry: undefined, validationInfo: undefined, permission: undefined };
+class employeeForm extends Form {
+    // overwrrite validate from method
+    validateForm = async () => {
+        let errors = "";
+        const entry = {};
 
+        // Loop through validation info items (vi) and check it's value using regexes
+        for (let vi of this.validationInfoObject) {
+            // element id is equal to database attribute name
+            const elementId = vi.attribute;
+
+            // validation status of the form
+            let isValid = false;
+
+            // handle profile picture validation
+            if (elementId == "photo") {
+                if ($(`#${this.formId} #photo`).prop('files')[0]) {
+                    try {
+                        console.log("when photo is selected");
+                        entry[elementId] = await ImageUtil.getBase64FromFile($(`#${this.formId} #photo`).prop('files')[0]);
+                        isValid = true;
+                        this.validateElementValue(vi);
+                    } catch (error) {
+                        isValid = false;
+                    }
+                    continue;
+                } else if (this.selectedEntry !== undefined && this.selectedEntry.photo) {
+                    // if photo is not set, check if selected entry has a photo
+                    entry[elementId] = false;
+                    isValid = true;
+                } else {
+                    this.validateElementValue(vi);
+                }
+            } else {
+                // if it's not a profile picture, just validate using it's value
+                isValid = this.validateElementValue(vi);
+            }
+
+            // check for errors and add to entry object
+            if (!isValid) {
+                errors += `${vi.error}<br/>`
+            } else {
+                entry[elementId] = $(`#${this.formId} #${elementId}`).val();
+            }
+        }
+
+        // if there aren't any errors
+        if (errors == "") {
+            return {
+                status: true,
+                data: entry
+            }
+        }
+
+        // if there are errors
+        return {
+            status: false,
+            data: errors
+        }
+    }
+
+    // overwrrite register additional event listners from method
+    registerAdditionalEventListeners() {
+        $(`#${this.formId} #photo`).on("change", (e) => {
+            let photo = e.target;
+            if (photo.files && photo.files[0]) {
+                $(`#${this.formId} #photoPreview`).attr("src", URL.createObjectURL(photo.files[0]));
+            }
+        });
+
+        $(`#${this.formId} #nic`).on("paste change keyup", (e) => {
+            const nic = e.target.value;
+            // get details from nic
+            const dateOfBirth = NIClkUtil.getDOB(nic);
+            const gender = (NIClkUtil.getGender(nic)).toString().capitalize();
+
+            // fill form elements
+            $(`#${this.formId} #dobirth`).val(dateOfBirth);
+
+            $(`#${this.formId} #genderId`).children("option").each(function () {
+                $(this).removeAttr("selected");
+
+                // get the text of current option element
+                const currentText = $(this).text();
+
+                // check if current text is equal to given text
+                if (currentText == gender) {
+                    $(this).attr("selected", "selected");
+                }
+            });
+        });
+    }
+
+    // overwrrite load entry
+    loadEntry = (entry) => {
+        this.reset();
+        this.selectedEntry = entry;
+
+        // load entry values to form
+        Object.keys(entry).forEach(key => {
+            // ignore file uploads
+            if ($(`#${this.formId} #${key}`).attr("type") == "file") return;
+
+            $(`#${this.formId} #${key}`).val(entry[key]);
+        });
+
+        // select dropdown values
+        this.dropdownIds.forEach(dropdownId => {
+            $(`#${this.formId} #${dropdownId}`).children("option").each((i, option) => {
+                $(option).removeAttr("selected");
+                // get the value of current option element
+                const currentValue = $(option).attr("value");
+                const optionValue = entry[dropdownId];
+
+                // check if current value is equal to given value
+                if (currentValue == optionValue) {
+                    $(option).attr("selected", "selected");
+                }
+            });
+        });
+
+        // set profile picture preview
+        const imageURL = ImageUtil.getURLfromBuffer(entry.photo);
+
+        console.log(imageURL);
+        $(`#${this.formId} #photoPreview`).attr("src", imageURL);
+
+        // check if this employee is already deleted and show / hide delete button
+        if ($(`#${this.formId} #employeeStatusId option:selected`).text() == "Deleted") {
+            this.hideButton(".btnFmDelete")
+        }
+
+        this.setButtionsVisibility("edit");
+    }
+
+    hasDataChanged = async () => {
+        const { status, data } = await this.validateForm();
+
+        // if there are errors
+        if (!status) {
+            throw `Validate form returned errors! ${data}`;
+        }
+
+        // new entry object
+        let newEntryObj = data;
+        const selectedEntry = this.selectedEntry;
+
+        // check if any of the data in entry has changed
+        let dataHasChanged = false;
+
+        for (let key in newEntryObj) {
+
+            // when photo hasn't changed, continue
+            if (key == "photo" && newEntryObj[key] == false) {
+                continue;
+            }
+
+            // compare selected entry and edited entry values
+            try {
+                selectedEntry[key] = (selectedEntry[key] == null) ? "" : selectedEntry[key];
+                if (newEntryObj[key] !== selectedEntry[key].toString()) {
+                    dataHasChanged = true;
+                }
+            } catch (error) {
+                console.log(key);
+            }
+        }
+
+        return dataHasChanged;
+    }
+}
 
 /*-------------------------------------------------------------------------------------------------------
                                             General
@@ -15,44 +181,14 @@ async function loadModule(permissionStr) {
         data: { module: "EMPLOYEE" }
     });
 
-    // save validation info (regexes) on global tempData
-    tempData.validationInfo = response.data;
+    const validationInfo = response.data;
 
-    await loadFormDropdowns();
     registerEventListeners();
-    FormUtil.enableRealtimeValidation(tempData.validationInfo);
 
     // create an array from permission string
     const permission = permissionStr.split("").map((p) => parseInt(p));
 
-    // show hide buttions based on permission
-    if (permission[0] == 0) {
-        $("#btnFmAdd").hide();
-    }
-    if (permission[2] == 0) {
-        $("#btnFmUpdate").hide();
-    }
-    if (permission[3] == 0) {
-        $("#btnFmDelete").hide();
-    }
-
-    // save permission globally
-    tempData.permission = permission;
-
-    loadMainTable();
-}
-
-// reload main table data and from after making a change
-const reloadModule = () => {
-    resetForm();
-    mainTable.reload();
-}
-
-/*-------------------------------------------------------------------------------------------------------
-                                            Main Table
--------------------------------------------------------------------------------------------------------*/
-const loadMainTable = () => {
-
+    // load main tbale
     const dataBuilderFunction = (responseData) => {
         // parse resposne data and return in data table frendly format
         return responseData.map(entry => {
@@ -72,38 +208,36 @@ const loadMainTable = () => {
         });
     }
 
-    // load data table
-    window.mainTable = new DataTable("mainTableHolder", "/api/employees", tempData.permission, dataBuilderFunction);
+    window.mainTable = new DataTable("mainTableHolder", "/api/employees", permission, dataBuilderFunction);
+
+    // load main form
+    window.mainForm = new employeeForm("mainForm", "Employee Details", permission, validationInfo, {
+        addEntry: addEntry,
+        deleteEntry: deleteEntry,
+        updateEntry: updateEntry
+    });
+
+    // load form dropdowns
+    mainForm.loadDropdowns([
+        { id: "designationId", route: "/api/designations" },
+        { id: "genderId", route: "/api/general?data[table]=gender" },
+        { id: "civilStatusId", route: "/api/general?data[table]=civil_status" },
+        { id: "employeeStatusId", route: "/api/employee_statuses" },
+    ]);
 }
+
+// reload main table data and from after making a change
+const reloadModule = () => {
+    mainForm.reset();
+    mainTable.reload();
+}
+
 
 /*-------------------------------------------------------------------------------------------------------
                                             Main Form
 -------------------------------------------------------------------------------------------------------*/
 
 const registerEventListeners = () => {
-
-    // disable from submissions
-    $("form").on("submit", (e) => e.preventDefault());
-
-    // show photo preview when image is selected
-    $("#photo").on("change", (event) => {
-        if (photo.files && photo.files[0]) {
-            photoPreview.src = URL.createObjectURL(event.target.files[0]);
-        }
-    });
-
-    // show date of birth when nic typed
-    $("#nic").on("paste change keyup", (e) => {
-        showNicDetails(e.target.value);
-    });
-
-    // register listeners for form buttons
-    $("#btnFmAdd").on("click", addEntry);
-    $("#btnFmUpdate").on("click", updateEntry);
-    $("#btnFmDelete").on("click", () => deleteEntry());
-    $("#btnFmReset").on("click", resetForm);
-    $("#btnFmPrint").on("click", () => FormUtil.printForm("mainForm", "Employee Details"));
-
     // event listeners for top action buttons
     $("#btnTopAddEntry").on("click", () => {
         showNewEntryModal();
@@ -115,206 +249,21 @@ const registerEventListeners = () => {
     });
 }
 
-const loadFormDropdowns = async () => {
-    // define needed attributes
-    let designations, genders, employeeStatuses, civilStatues;
-
-    // get data from the api for each dropbox
-    let response;
-    response = await Request.send("/api/designations", "GET");
-    designations = response.data;
-
-    response = await Request.send("/api/general", "GET", { data: { table: "gender" } });
-    genders = response.data;
-
-    response = await Request.send("/api/employee_statuses", "GET");
-    employeeStatuses = response.data;
-
-    response = await Request.send("/api/general", "GET", { data: { table: "civil_status" } });
-    civilStatues = response.data;
-
-    // select input ids and relevent data
-    const dropdownData = {
-        civilStatusId: civilStatues,
-        designationId: designations,
-        genderId: genders,
-        employeeStatusId: employeeStatuses
-    }
-
-    // populate select inputs with data
-    Object.keys(dropdownData).forEach(dropdownId => {
-        const selector = `#${dropdownId}`;
-        $(selector).empty();
-
-        dropdownData[dropdownId].forEach(entry => {
-            $(selector).append(`
-            <option value="${entry.id}">${entry.name}</option>
-            `);
-        });
-    })
-}
-
-const showNicDetails = (nic) => {
-    // get details from nic
-    const dateOfBirth = NIClkUtil.getDOB(nic);
-    const gender = (NIClkUtil.getGender(nic)).toString().capitalize();
-
-    // fill form elements
-    $("#dobirth").val(dateOfBirth);
-
-    // select proper option in dropdown
-    FormUtil.selectDropdownOptionByText("genderId", gender);
-}
-
-const validateForm = async () => {
-    let errors = "";
-    const entry = {};
-
-    // Loop through validation info items (vi) and check it's value using regexes
-    for (let vi of tempData.validationInfo) {
-        // element id is equal to database attribute name
-        const elementId = vi.attribute;
-
-        // validation status of the form
-        let isValid = false;
-
-        // handle profile picture validation
-        if (elementId == "photo") {
-            if (photo.files[0]) {
-                try {
-                    console.log("when photo is selected");
-                    entry[elementId] = await ImageUtil.getBase64FromFile(photo.files[0]);
-                    isValid = true;
-                    FormUtil.validateElementValue(vi);
-                } catch (error) {
-                    isValid = false;
-                }
-                continue;
-            } else if (tempData.selectedEntry !== undefined && tempData.selectedEntry.photo) {
-                // if photo is not set, check if selected entry has a photo
-                entry[elementId] = false;
-                isValid = true;
-            } else {
-                FormUtil.validateElementValue(vi);
-            }
-        } else {
-            // if it's not a profile picture, just validate using it's value
-            isValid = FormUtil.validateElementValue(vi);
-        }
-
-        // check for errors and add to entry object
-        if (!isValid) {
-            errors += `${vi.error}<br/>`
-        } else {
-            entry[elementId] = $(`#${elementId}`).val();
-        }
-    }
-
-    // if there aren't any errors
-    if (errors == "") {
-        return {
-            status: true,
-            data: entry
-        }
-    }
-
-    // if there are errors
-    return {
-        status: false,
-        data: errors
-    };
-}
-
-const setFormButtionsVisibility = (action) => {
-    let permission = tempData.permission;
-
-    switch (action) {
-        case "view":
-            $("#btnFmAdd").hide();
-            $("#btnFmUpdate").hide();
-            $("#btnFmDelete").hide();
-            $("#btnFmReset").hide();
-            $("#btnFmPrint").show();
-            break;
-
-        case "edit":
-            $("#btnFmAdd").hide();
-            if (permission[2] !== 0) $("#btnFmUpdate").show();
-            if (permission[3] !== 0) $("#btnFmDelete").show();
-            $("#btnFmReset").show();
-            $("#btnFmPrint").hide();
-            break;
-
-        case "add":
-            if (permission[0] !== 0) $("#btnFmAdd").show();
-            $("#btnFmUpdate").hide();
-            $("#btnFmDelete").hide();
-            $("#btnFmReset").show();
-            $("#btnFmPrint").hide();
-            break;
-    }
-}
-
-const resetForm = () => {
-    $("#mainForm").trigger("reset");
-    $(".form-group").removeClass("has-error has-success");
-    $(".form-group").children(".form-control-feedback").remove();
-    $("#photoPreview").attr("src", "../../img/avatar.png");
-}
-
 /*-------------------------------------------------------------------------------------------------------
                                             Modals
 -------------------------------------------------------------------------------------------------------*/
 
 const showEditEntryModal = async (id, readOnly = false) => {
-    // reset form first
-    resetForm();
-
     // get entry data from db and show in the form
     const response = await Request.send("/api/employees", "GET", { data: { id: id } });
     const entry = response.data;
 
-    // set input values
-    Object.keys(entry).forEach(key => {
-        if (key == "photo") return;
-        $(`#${key}`).val(entry[key]);
-    });
-
-    // select correct option in dorpdowns
-    const dropdowns = [
-        "civilStatusId",
-        "designationId",
-        "genderId",
-        "employeeStatusId"
-    ];
-
-    // select proper options in dropdowns
-    dropdowns.forEach(dropdownId => {
-        FormUtil.selectDropdownOptionByValue(dropdownId, entry[dropdownId]);
-    });
-
-    // set profile picture preview
-    const imageURL = ImageUtil.getURLfromBuffer(entry.photo);
-    $("#photoPreview").attr("src", imageURL);
-    photo.files[0] = entry.photo.data;
-
-    // set entry object globally to later compare
-    window.tempData.selectedEntry = entry;
+    mainForm.loadEntry(entry);
 
     if (readOnly) {
-        setFormButtionsVisibility("view");
-        FormUtil.setReadOnly("#mainForm", true);
+        mainForm.enableReadOnly();
     } else {
-        FormUtil.setReadOnly("#mainForm", false);
-        setFormButtionsVisibility("edit");
-    }
-
-    // load details form nic
-    showNicDetails(entry.nic);
-
-    // check if this employee is already deleted and show / hide delete button
-    if ($("#employeeStatusId option:selected").text() == "Deleted") {
-        $("#btnFmDelete").hide();
+        mainForm.disableReadOnly();
     }
 
     $("#modalMainFormTitle").text("Edit Employee");
@@ -322,16 +271,13 @@ const showEditEntryModal = async (id, readOnly = false) => {
 }
 
 const showNewEntryModal = () => {
-    resetForm();
+    mainForm.reset();
 
     // change employee number field text
-    $("#number").val("Employee number will be displayed after adding.");
-
-    // show / hide proper button
-    setFormButtionsVisibility("add");
+    $("#mainForm #number").val("Employee number will be displayed after adding.");
 
     // enable form inputs
-    FormUtil.setReadOnly("#mainForm", false);
+    mainForm.disableReadOnly();
 
     // set date of assignment
     $("#doassignment").val(new Date().today());
@@ -346,7 +292,7 @@ const showNewEntryModal = () => {
 
 // add new entry to the database
 const addEntry = async () => {
-    const { status, data } = await validateForm();
+    const { status, data } = await mainForm.validateForm();
 
     // if there are errors
     if (!status) {
@@ -368,7 +314,7 @@ const addEntry = async () => {
 
 // update entry in the database
 const updateEntry = async () => {
-    const { status, data } = await validateForm();
+    const { status, data } = await mainForm.validateForm();
 
     // if there are errors
     if (!status) {
@@ -376,29 +322,8 @@ const updateEntry = async () => {
         return;
     }
 
-    // new entry object
-    let newEntryObj = data;
-
-    // check if any of the data in entry has changed
-    let dataHasChanged = false;
-
-    for (let key in newEntryObj) {
-
-        // when photo hasn't changed, continue
-        if (key == "photo" && newEntryObj[key] == false) {
-            continue;
-        }
-
-        // compare selected entry and edited entry values
-        try {
-            tempData.selectedEntry[key] = (tempData.selectedEntry[key] == null) ? "" : tempData.selectedEntry[key];
-            if (newEntryObj[key] !== tempData.selectedEntry[key].toString()) {
-                dataHasChanged = true;
-            }
-        } catch (error) {
-            console.log(key);
-        }
-    }
+    const newEntryObj = data;
+    const dataHasChanged = await mainForm.hasDataChanged();
 
     // if nothing has been modifed
     if (!dataHasChanged) {
@@ -407,7 +332,7 @@ const updateEntry = async () => {
     }
 
     // set id of the newEntry object
-    newEntryObj.id = tempData.selectedEntry.id;
+    newEntryObj.id = mainForm.selectedEntry.id;
 
     // send put reqeust to update data
     const response = await Request.send("/api/employees", "PUT", { data: newEntryObj });
@@ -415,23 +340,19 @@ const updateEntry = async () => {
     // show output modal based on response
     if (response.status) {
         mainWindow.showOutputToast("Success!", response.msg);
-        // reset selected entry
-        tempData.selectedEntry = undefined;
         reloadModule();
-
         $("#modalMainForm").modal("hide");
     }
 }
 
 // delete entry from the database
-const deleteEntry = async (id = tempData.selectedEntry.id) => {
+const deleteEntry = async (id = mainForm.selectedEntry.id) => {
     const confirmation = await mainWindow.showConfirmModal("Confirmation", "Do you really need to delete this entry?");
 
     if (confirmation) {
         const response = await Request.send("/api/employees", "DELETE", { data: { id: id } });
         if (response.status) {
             mainWindow.showOutputToast("Success!", response.msg);
-            tempData.selectedEntry = undefined
             reloadModule();
         }
     }
