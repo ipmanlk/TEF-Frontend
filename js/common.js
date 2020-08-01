@@ -1,3 +1,289 @@
+class Form {
+    constructor(formId, formTitle, permission, validationInfoObject, actionBinderObject) {
+        this.formId = formId;
+        this.formTitle = formTitle;
+        this.dropdownIds = [];
+        this.selectedEntry = undefined;
+        this.permission = permission;
+        this.validationInfoObject = validationInfoObject;
+
+        // provide freedback when user interact with form elements
+        validationInfoObject.forEach(vi => {
+            $(`#${formId} #${vi.attribute}`).on("keyup change", () => {
+                this.validateElementValue(vi);
+            });
+        });
+
+        // check permissions
+        if (permission[0] == 0) {
+            $(`#${formId} .btnFmAdd`).hide();
+        }
+
+        if (permission[2] == 0) {
+            $(`#${formId} .btnFmUpdate`).hide();
+        }
+
+        if (permission[3] == 0) {
+            $(`#${formId} .btnFmDelete`).hide();
+        }
+
+        // set event listeners
+        // events: form
+        $(`#${formId}`).on("submit", (e) => e.preventDefault());
+
+        // events: buttons
+        $(`#${formId} .btnFmAdd`).on("click", actionBinderObject.addEntry);
+        $(`#${formId} .btnFmUpdate`).on("click", actionBinderObject.updateEntry);
+        $(`#${formId} .btnFmDelete`).on("click", actionBinderObject.deleteEntry);
+        $(`#${formId} .btnFmReset`).on("click", this.reset);
+        $(`#${formId} .btnFmPrint`).on("click", this.print);
+
+        this.registerAdditionalEventListeners();
+    }
+
+    registerAdditionalEventListeners() {
+    }
+
+    validateElementValue(elementValidationInfo) {
+        // create selector name for ui element id
+        const selector = `#${elementValidationInfo.attribute}`;
+
+        // get value of element id
+        const value = $(selector).val();
+
+        // create RegExp object from regex string
+        const regex = new RegExp(elementValidationInfo.regex);
+
+        // if value is optional and not set, ignore
+        if (elementValidationInfo.optional && value.trim() == "") {
+            $(selector).parent().removeClass("has-error has-success");
+            $(selector).parent().children("span").remove();
+            return true;
+        }
+
+        // check form values with each regex
+        if (!regex.test(value)) {
+            $(selector).parent().removeClass("has-success");
+            $(selector).parent().addClass("has-error");
+            $(selector).parent().children("span").remove();
+            $(selector).parent().append(`<span class="glyphicon glyphicon-remove form-control-feedback"></span>`);
+            return false;
+        } else {
+            $(selector).parent().removeClass("has-error");
+            $(selector).parent().addClass("has-success");
+            $(selector).parent().children("span").remove();
+            $(selector).parent().append(`<span class="glyphicon glyphicon-ok form-control-feedback"></span>`);
+            return true;
+        }
+    }
+
+    print = () => {
+        let table = `<table class="table table-striped">
+        <tr><td colspan="2"><h3>${this.formTitle}</h3></tr>`
+        $(`#${this.formId} label`).each((i, el) => {
+            let type;
+            let label, data;
+
+            const firstChild = $(el);
+            const secondChild = $(el).next();
+
+
+            if ($(secondChild).prop('nodeName') == "INPUT") {
+                type = "text";
+                label = $(firstChild).text();
+                data = $(secondChild).val();
+            }
+
+            if ($(secondChild).prop('nodeName') == "SELECT") {
+                type = "text";
+                label = $(firstChild).text();
+                data = $(`#${$(secondChild).attr("id")} option:selected`).text();
+            }
+
+            if ($(secondChild).prop('nodeName') == "IMG") {
+                type = "image";
+                label = $(firstChild).text();
+                data = `<img src="${$(secondChild).attr("src")}" width="100px"></img>`
+            }
+
+            if (!type) return;
+
+            table += `<tr>
+                        <td style="width:30%">${label.replace("*", "")}</td>
+                        <td>${data}</td>
+                    <tr>`
+        });
+
+        table += "</table>";
+
+        // create new window and print the table
+        const stylesheet = "http://localhost:3000/lib/bootstrap/css/bootstrap.min.css";
+        const win = window.open("", "Print", "width=500,height=300");
+        win.document.write(`<html><head><link rel="stylesheet" href="${stylesheet}"></head><body>${table}</body></html>`);
+        setTimeout(() => {
+            win.document.close();
+            win.print();
+            win.close();
+        }, 500);
+    }
+
+    reset = () => {
+        $(`#${this.formId}`).trigger("reset");
+        $(`#${this.formId} .form-group`).removeClass("has-error has-success");
+        $(`#${this.formId} .form-group`).children(".form-control-feedback").remove();
+        $(`#${this.formId} .photo-input`).attr("src", "../../img/avatar.png");
+        this.selectedEntry = undefined;
+
+        this.setButtionsVisibility("add");
+
+        this.disableReadOnly();
+    }
+
+    enableReadOnly = () => {
+        $(`#${this.formId} .form-group`).children().each((i, el) => {
+            if ($(el).data("editable") == true) {
+                $(el).attr("readonly", true);
+                $(el).attr("disabled", true);
+                $(el).addClass("no-outline");
+                $(".form-group").removeClass("has-error has-success");
+                $(".form-group").children(".form-control-feedback").remove();
+            }
+        });
+
+        this.setButtionsVisibility("view");
+    }
+
+    disableReadOnly = () => {
+        $(`#${this.formId} .form-group`).children().each((i, el) => {
+            if ($(el).data("editable") == true) {
+                $(el).attr("readonly", false);
+                $(el).attr("disabled", false);
+                $(el).removeClass("no-outline");
+            }
+        });
+    }
+
+    loadDropdowns = (dropdownInfo) => {
+        // loop through dropdown info object
+        dropdownInfo.forEach(di => {
+
+            // get dropdown data using get request
+            Request.send(di.route, "GET").then(res => {
+
+                // remove current html inside each dropbdorpdownox
+                $(`#${this.formId} #${di.id}`).empty();
+
+                // add each entry to relavent dorpdown
+                res.data.forEach(entry => {
+                    $(`#${this.formId} #${di.id}`).append(`<option value="${entry.id}">${entry.name}</option>`);
+                });
+
+                // save dorpdown id for later use
+                this.dropdownIds.push(di.id);
+            });
+        });
+    }
+
+    loadEntry = (entry) => {
+        this.reset();
+        this.selectedEntry = entry;
+
+        // load entry values to form
+        Object.keys(entry).forEach(key => {
+            // ignore file uploads
+            if ($(`#${this.formId} #${key}`).attr("type") == "file") return;
+
+            $(`#${this.formId} #${key}`).val(entry[key]);
+        });
+
+        // select dropdown values
+        this.dropdownIds.forEach(dropdownId => {
+            $(`#${this.formId} #${dropdownId}`).children("option").each((i, option) => {
+                $(option).removeAttr("selected");
+
+                // get the value of current option element
+                const currentValue = $(option).attr("value");
+                const optionValue = entry[dropdownId];
+
+                // check if current value is equal to given value
+                if (currentValue == optionValue) {
+                    $(option).attr("selected", "selected");
+                }
+            });
+        });
+
+        this.setButtionsVisibility("edit");
+    }
+
+    setButtionsVisibility = (action) => {
+        switch (action) {
+            case "view":
+                $(`#${this.formId} .btnFmAdd`).hide();
+                $(`#${this.formId} .btnFmUpdate`).hide();
+                $(`#${this.formId} .btnFmDelete`).hide();
+                $(`#${this.formId} .btnFmReset`).hide();
+                $(`#${this.formId} .btnFmPrint`).show();
+                break;
+
+            case "edit":
+                $(`#${this.formId} .btnFmAdd`).hide();
+                if (this.permission[2] !== 0) $(`#${this.formId} .btnFmUpdate`).show();
+                if (this.permission[3] !== 0) $(`#${this.formId} .btnFmDelete`).show();
+                $(`#${this.formId} .btnFmReset`).show();
+                $(`#${this.formId} .btnFmPrint`).hide();
+                break;
+
+            case "add":
+                if (this.permission[0] !== 0) $(`${this.formId} .btnFmAdd`).show();
+                $(`#${this.formId} .btnFmUpdate`).hide();
+                $(`#${this.formId} .btnFmDelete`).hide();
+                $(`#${this.formId} .btnFmReset`).show();
+                $(`#${this.formId} .btnFmPrint`).hide();
+                break;
+        }
+    }
+
+    hideButton = (selector) => {
+        $(`${this.formId} ${selector}`).hide();
+    }
+
+    validateForm = () => {
+        let errors = "";
+        const entry = {};
+
+        // Loop through validation info items (vi) and check it's value using regexes
+        for (let vi of this.validationInfoObject) {
+            // element id is equal to database attribute name
+            const elementId = vi.attribute;
+
+            // validation status of the form
+            let isValid = this.validateElementValue(vi);
+
+            // check for errors and add to entry object
+            if (!isValid) {
+                errors += `${vi.error}<br/>`
+            } else {
+                entry[elementId] = $(`#${this.formId} #${elementId}`).val();
+            }
+        }
+
+        // if there aren't any errors
+        if (errors == "") {
+            return {
+                status: true,
+                data: entry
+            }
+        }
+
+        // if there are errors
+        return {
+            status: false,
+            data: errors
+        }
+    }
+}
+
+
 class FormUtil {
     static validateElementValue(elementValidationInfo) {
         // create selector name for ui element id
