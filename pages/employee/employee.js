@@ -80,8 +80,6 @@ async function loadModule(permissionStr) {
 
     const validationInfo = response.data;
 
-    registerEventListeners();
-
     // create an array from permission string
     const permission = permissionStr.split("").map((p) => parseInt(p));
 
@@ -121,20 +119,7 @@ async function loadModule(permissionStr) {
             updateEntry: updateEntry
         }
     );
-}
 
-// reload main table data and from after making a change
-const reloadModule = () => {
-    mainForm.reset();
-    mainTable.reload();
-}
-
-
-/*-------------------------------------------------------------------------------------------------------
-                                            Main Form
--------------------------------------------------------------------------------------------------------*/
-
-const registerEventListeners = () => {
     // event listeners for top action buttons
     $("#btnTopAddEntry").on("click", () => {
         showNewEntryModal();
@@ -144,6 +129,12 @@ const registerEventListeners = () => {
     $(window).on("unhandledrejection", (event) => {
         console.error("Unhandled rejection (promise: ", event.promise, ", reason: ", event.reason, ").");
     });
+}
+
+// reload main table data and from after making a change
+const reloadModule = () => {
+    mainForm.reset();
+    mainTable.reload();
 }
 
 /*-------------------------------------------------------------------------------------------------------
