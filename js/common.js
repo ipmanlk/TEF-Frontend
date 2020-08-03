@@ -1,5 +1,5 @@
 class Form {
-    constructor(formId, formTitle, permission, validationInfoObject, actionBinderObject) {
+    constructor(formId, formTitle, permission, validationInfoObject = {}, dropdownInfoArray = [], actionBinderObject = {}) {
         this.formId = formId;
         this.formTitle = formTitle;
         this.dropdownIds = [];
@@ -11,6 +11,24 @@ class Form {
         validationInfoObject.forEach(vi => {
             $(`#${formId} #${vi.attribute}`).on("keyup change", () => {
                 this.validateElementValue(vi);
+            });
+        });
+
+        // load form dropdowns
+        dropdownInfoArray.forEach(di => {
+            // get dropdown data using get request
+            Request.send(di.route, "GET").then(res => {
+
+                // remove current html inside each dropbdorpdownox
+                $(`#${this.formId} #${di.id}`).empty();
+
+                // add each entry to relavent dorpdown
+                res.data.forEach(entry => {
+                    $(`#${this.formId} #${di.id}`).append(`<option value="${entry.id}">${entry.name}</option>`);
+                });
+
+                // save dorpdown id for later use
+                this.dropdownIds.push(di.id);
             });
         });
 
@@ -46,7 +64,7 @@ class Form {
 
     validateElementValue(elementValidationInfo) {
         // create selector name for ui element id
-        const selector = `#${elementValidationInfo.attribute}`;
+        const selector = `#${this.formId} #${elementValidationInfo.attribute}`;
 
         // get value of element id
         const value = $(selector).val();
@@ -163,58 +181,29 @@ class Form {
         });
     }
 
-    loadDropdowns = (dropdownInfo) => {
-        // loop through dropdown info object
-        dropdownInfo.forEach(di => {
-
-            // get dropdown data using get request
-            Request.send(di.route, "GET").then(res => {
-
-                // remove current html inside each dropbdorpdownox
-                $(`#${this.formId} #${di.id}`).empty();
-
-                // add each entry to relavent dorpdown
-                res.data.forEach(entry => {
-                    $(`#${this.formId} #${di.id}`).append(`<option value="${entry.id}">${entry.name}</option>`);
-                });
-
-                // save dorpdown id for later use
-                this.dropdownIds.push(di.id);
-            });
-        });
-    }
-
+    // load entry from database to the form
     loadEntry = (entry) => {
         this.reset();
         this.selectedEntry = entry;
 
         // load entry values to form
         Object.keys(entry).forEach(key => {
-            // ignore file uploads
-            if ($(`#${this.formId} #${key}`).attr("type") == "file") return;
+            // ignore dropdown values
+            if (this.dropdownIds.indexOf(key) !== -1) return;
 
+            // set value in the form input
             $(`#${this.formId} #${key}`).val(entry[key]);
         });
 
         // select dropdown values
         this.dropdownIds.forEach(dropdownId => {
-            $(`#${this.formId} #${dropdownId}`).children("option").each((i, option) => {
-                $(option).removeAttr("selected");
-
-                // get the value of current option element
-                const currentValue = $(option).attr("value");
-                const optionValue = entry[dropdownId];
-
-                // check if current value is equal to given value
-                if (currentValue == optionValue) {
-                    $(option).attr("selected", "selected");
-                }
-            });
+            this.selectDropdownOptionByValue(dropdownId, entry[dropdownId]);
         });
 
         this.setButtionsVisibility("edit");
     }
 
+    // show suitable buttions for view / edit / add
     setButtionsVisibility = (action) => {
         switch (action) {
             case "view":
@@ -243,11 +232,13 @@ class Form {
         }
     }
 
-    hideButton = (selector) => {
+    // hide an element placed within the form
+    hideElement = (selector) => {
         $(`${this.formId} ${selector}`).hide();
     }
 
-    validateForm = () => {
+    // check if form is valid. returns an object with status & data
+    validateForm = async () => {
         let errors = "";
         const entry = {};
 
@@ -257,7 +248,33 @@ class Form {
             const elementId = vi.attribute;
 
             // validation status of the form
-            let isValid = this.validateElementValue(vi);
+            let isValid = false;
+
+            // get jquery object for element with current id
+            const element = $(`#${this.formId} #${elementId}`);
+
+            // handle file uploads (base64) 
+            if (element.attr("type") == "file") {
+
+                // when file is selected
+                if (element.prop("files")[0]) {
+                    try {
+                        entry[elementId] = await ImageUtil.getBase64FromFile(element.prop("files")[0]);
+                        isValid = this.validateElementValue(vi);
+                    } catch (error) {
+                        console.log("Base64 from file error", error);
+                    }
+
+                    // if file is not set, check if selected entry (editing entry) has one
+                } else if (this.selectedEntry !== undefined && this.selectedEntry[elementId]) {
+                    entry[elementId] = false;  // set false to mark it as not changed
+                    isValid = true;
+                } else {
+                    isValid = this.validateElementValue(vi);
+                }
+            } else {
+                isValid = this.validateElementValue(vi);
+            }
 
             // check for errors and add to entry object
             if (!isValid) {
@@ -282,8 +299,9 @@ class Form {
         }
     }
 
-    hasDataChanged = () => {
-        const { status, data } = this.validateForm();
+    // check if form data has changed compared to selected entry. returns a boolean
+    hasDataChanged = async () => {
+        const { status, data } = await this.validateForm();
 
         // if there are errors
         if (!status) {
@@ -292,12 +310,19 @@ class Form {
 
         // new entry object
         let newEntryObj = data;
-        let selectedEntry = this.selectedEntry;
+        const selectedEntry = this.selectedEntry;
 
         // check if any of the data in entry has changed
         let dataHasChanged = false;
 
         for (let key in newEntryObj) {
+
+            // when file hasn't changed
+            if ($(`#${this.formId} #${key}`).attr("type") == "file" && newEntryObj[key] == false && this.selectedEntry[key] !== false) {
+                console.log(key);
+                continue;
+            }
+
             // compare selected entry and edited entry values
             try {
                 selectedEntry[key] = (selectedEntry[key] == null) ? "" : selectedEntry[key];
@@ -305,14 +330,43 @@ class Form {
                     dataHasChanged = true;
                 }
             } catch (error) {
-                console.log(key, error);
+                console.log(key);
             }
         }
 
         return dataHasChanged;
     }
-}
 
+    // select an option in a dropdown using value
+    selectDropdownOptionByValue(dropdownId, optionValue) {
+        $(`#${this.formId} #${dropdownId}`).children("option").each(function () {
+            $(this).removeAttr("selected");
+
+            // get the value of current option element
+            const currentValue = $(this).attr("value");
+
+            // check if current value is equal to given value
+            if (currentValue == optionValue) {
+                $(this).attr("selected", "selected");
+            }
+        });
+    }
+
+    // select an option in a dropdown using text
+    selectDropdownOptionByText(dropdownId, optionText) {
+        $(`#${this.formId} #${dropdownId}`).children("option").each(function () {
+            $(this).removeAttr("selected");
+
+            // get the text of current option element
+            const currentText = $(this).text();
+
+            // check if current text is equal to given text
+            if (currentText == optionText) {
+                $(this).attr("selected", "selected");
+            }
+        });
+    }
+}
 
 class FormUtil {
     static validateElementValue(elementValidationInfo) {
@@ -463,7 +517,7 @@ class FormUtil {
     }
 }
 
-class ImageUtil {
+class MiscUtil {
     static getURLfromBuffer(buffer) {
         // create image url from buffer data recived from server
         const arrayBufferView = new Uint8Array(buffer.data);
