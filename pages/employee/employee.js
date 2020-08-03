@@ -173,11 +173,8 @@ const showNewEntryModal = () => {
     // change employee number field text
     $("#mainForm #number").val("Employee number will be displayed after adding.");
 
-    // enable form inputs
-    mainForm.disableReadOnly();
-
     // set date of assignment
-    $("#doassignment").val(new Date().today());
+    $("#mainForm #doassignment").val(new Date().today());
 
     $("#modalMainFormTitle").text("Add New Employee");
     $("#modalMainForm").modal("show");
