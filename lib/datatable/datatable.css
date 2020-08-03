@@ -13,3 +13,36 @@
 .data-table tbody::-webkit-scrollbar {
   display: none;
 }
+
+.dt-sm-label {
+  font-weight: bold;
+}
+
+/* responsive table start */
+@media only screen and  (max-width: 760px) {
+  
+  .data-table tbody tr,td { 
+    display: block; 
+  }
+  
+  .data-table tbody tr {
+    margin-bottom: 10px;
+    border: 2px solid black;
+  }
+  
+  .data-table thead { 
+    display: none; 
+  }
+  
+  .data-table .dt-sm-label {
+    display: inline;
+  }
+  
+}
+@media only screen and  (min-width: 760px) {
+  .data-table .dt-sm-label {
+    display: none;
+  }
+}
+
+/* responsive table end */
