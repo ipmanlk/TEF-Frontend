@@ -1,64 +1,4 @@
 class employeeForm extends Form {
-    // overwrrite validate from method
-    validateForm = async () => {
-        let errors = "";
-        const entry = {};
-
-        // Loop through validation info items (vi) and check it's value using regexes
-        for (let vi of this.validationInfoObject) {
-            // element id is equal to database attribute name
-            const elementId = vi.attribute;
-
-            // validation status of the form
-            let isValid = false;
-
-            // handle profile picture validation
-            if (elementId == "photo") {
-                if ($(`#${this.formId} #photo`).prop('files')[0]) {
-                    try {
-                        console.log("when photo is selected");
-                        entry[elementId] = await ImageUtil.getBase64FromFile($(`#${this.formId} #photo`).prop('files')[0]);
-                        isValid = true;
-                        this.validateElementValue(vi);
-                    } catch (error) {
-                        isValid = false;
-                    }
-                    continue;
-                } else if (this.selectedEntry !== undefined && this.selectedEntry.photo) {
-                    // if photo is not set, check if selected entry has a photo
-                    entry[elementId] = false;
-                    isValid = true;
-                } else {
-                    this.validateElementValue(vi);
-                }
-            } else {
-                // if it's not a profile picture, just validate using it's value
-                isValid = this.validateElementValue(vi);
-            }
-
-            // check for errors and add to entry object
-            if (!isValid) {
-                errors += `${vi.error}<br/>`
-            } else {
-                entry[elementId] = $(`#${this.formId} #${elementId}`).val();
-            }
-        }
-
-        // if there aren't any errors
-        if (errors == "") {
-            return {
-                status: true,
-                data: entry
-            }
-        }
-
-        // if there are errors
-        return {
-            status: false,
-            data: errors
-        }
-    }
-
     // overwrrite register additional event listners from method
     registerAdditionalEventListeners() {
         $(`#${this.formId} #photo`).on("change", (e) => {
@@ -101,72 +41,29 @@ class employeeForm extends Form {
             // ignore file uploads
             if ($(`#${this.formId} #${key}`).attr("type") == "file") return;
 
+            // ignore dropdown values
+            if (this.dropdownIds.indexOf(key) !== -1) return;
+
+            // set value in the form input
             $(`#${this.formId} #${key}`).val(entry[key]);
         });
 
         // select dropdown values
         this.dropdownIds.forEach(dropdownId => {
-            $(`#${this.formId} #${dropdownId}`).children("option").each((i, option) => {
-                $(option).removeAttr("selected");
-                // get the value of current option element
-                const currentValue = $(option).attr("value");
-                const optionValue = entry[dropdownId];
-
-                // check if current value is equal to given value
-                if (currentValue == optionValue) {
-                    $(option).attr("selected", "selected");
-                }
-            });
+            this.selectDropdownOptionByValue(dropdownId, entry[dropdownId]);
         });
 
         // set profile picture preview
-        const imageURL = ImageUtil.getURLfromBuffer(entry.photo);
+        const imageURL = MiscUtil.getURLfromBuffer(entry.photo);
 
-        console.log(imageURL);
         $(`#${this.formId} #photoPreview`).attr("src", imageURL);
 
         // check if this employee is already deleted and show / hide delete button
         if ($(`#${this.formId} #employeeStatusId option:selected`).text() == "Deleted") {
-            this.hideButton(".btnFmDelete")
+            this.hideElement(".btnFmDelete")
         }
 
         this.setButtionsVisibility("edit");
-    }
-
-    hasDataChanged = async () => {
-        const { status, data } = await this.validateForm();
-
-        // if there are errors
-        if (!status) {
-            throw `Validate form returned errors! ${data}`;
-        }
-
-        // new entry object
-        let newEntryObj = data;
-        const selectedEntry = this.selectedEntry;
-
-        // check if any of the data in entry has changed
-        let dataHasChanged = false;
-
-        for (let key in newEntryObj) {
-
-            // when photo hasn't changed, continue
-            if (key == "photo" && newEntryObj[key] == false) {
-                continue;
-            }
-
-            // compare selected entry and edited entry values
-            try {
-                selectedEntry[key] = (selectedEntry[key] == null) ? "" : selectedEntry[key];
-                if (newEntryObj[key] !== selectedEntry[key].toString()) {
-                    dataHasChanged = true;
-                }
-            } catch (error) {
-                console.log(key);
-            }
-        }
-
-        return dataHasChanged;
     }
 }
 
@@ -211,19 +108,19 @@ async function loadModule(permissionStr) {
     window.mainTable = new DataTable("mainTableHolder", "/api/employees", permission, dataBuilderFunction);
 
     // load main form
-    window.mainForm = new employeeForm("mainForm", "Employee Details", permission, validationInfo, {
-        addEntry: addEntry,
-        deleteEntry: deleteEntry,
-        updateEntry: updateEntry
-    });
-
-    // load form dropdowns
-    mainForm.loadDropdowns([
-        { id: "designationId", route: "/api/designations" },
-        { id: "genderId", route: "/api/general?data[table]=gender" },
-        { id: "civilStatusId", route: "/api/general?data[table]=civil_status" },
-        { id: "employeeStatusId", route: "/api/employee_statuses" },
-    ]);
+    window.mainForm = new employeeForm("mainForm", "Employee Details", permission, validationInfo,
+        [
+            { id: "designationId", route: "/api/designations" },
+            { id: "genderId", route: "/api/general?data[table]=gender" },
+            { id: "civilStatusId", route: "/api/general?data[table]=civil_status" },
+            { id: "employeeStatusId", route: "/api/employee_statuses" },
+        ],
+        {
+            addEntry: addEntry,
+            deleteEntry: deleteEntry,
+            updateEntry: updateEntry
+        }
+    );
 }
 
 // reload main table data and from after making a change
