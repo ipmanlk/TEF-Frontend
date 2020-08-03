@@ -88,7 +88,7 @@ const loadProfile = () => {
         tempData.profile = profile;
 
         // get profile image url from buffer
-        const avatarUrl = ImageUtil.getURLfromBuffer(profile.employee.photo);
+        const avatarUrl = MiscUtil.getURLfromBuffer(profile.employee.photo);
 
         // fill profile values to inputs
         $("#number").val(profile.employee.number);
