@@ -101,9 +101,9 @@ const addEntry = async () => {
 
     // show output modal based on response
     if (response.status) {
-        mainWindow.showOutputToast("Success!", response.msg);
         reloadModule();
         $("#modalMainForm").modal("hide");
+        mainWindow.showOutputToast("Success!", response.msg);
     }
 }
 
@@ -134,9 +134,9 @@ const updateEntry = async () => {
 
     // show output modal based on response
     if (response.status) {
-        mainWindow.showOutputToast("Success!", response.msg);
         reloadModule();
         $("#modalMainForm").modal("hide");
+        mainWindow.showOutputToast("Success!", response.msg);
     }
 }
 
@@ -147,8 +147,9 @@ const deleteEntry = async (id = mainForm.selectedEntry.id) => {
     if (confirmation) {
         const response = await Request.send("/api/roles", "DELETE", { data: { id: id } });
         if (response.status) {
-            mainWindow.showOutputToast("Success!", response.msg);
             reloadModule();
+            $("#modalMainForm").modal("hide");
+            mainWindow.showOutputToast("Success!", response.msg);
         }
     }
 }

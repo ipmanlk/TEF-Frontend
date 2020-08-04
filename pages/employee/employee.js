@@ -190,10 +190,10 @@ const addEntry = async () => {
 
     // show output modal based on response
     if (response.status) {
-        mainWindow.showOutputToast("Success!", response.msg);
-        mainWindow.showOutputModal("New Employee Added!", `<h5>Employee Number: ${response.data.number}</h5>`);
         reloadModule();
         $("#modalMainForm").modal("hide");
+        mainWindow.showOutputToast("Success!", response.msg);
+        mainWindow.showOutputModal("New Employee Added!", `<h5>Employee Number: ${response.data.number}</h5>`);
     }
 }
 
@@ -224,9 +224,9 @@ const updateEntry = async () => {
 
     // show output modal based on response
     if (response.status) {
-        mainWindow.showOutputToast("Success!", response.msg);
         reloadModule();
         $("#modalMainForm").modal("hide");
+        mainWindow.showOutputToast("Success!", response.msg);
     }
 }
 
@@ -237,8 +237,9 @@ const deleteEntry = async (id = mainForm.selectedEntry.id) => {
     if (confirmation) {
         const response = await Request.send("/api/employees", "DELETE", { data: { id: id } });
         if (response.status) {
-            mainWindow.showOutputToast("Success!", response.msg);
             reloadModule();
+            $("#modalMainForm").modal("hide");
+            mainWindow.showOutputToast("Success!", response.msg);
         }
     }
 }
