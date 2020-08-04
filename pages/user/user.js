@@ -1,8 +1,57 @@
-/*-------------------------------------------------------------------------------------------------------
-                                          Window Data
--------------------------------------------------------------------------------------------------------*/
-window.tempData = { selectedEntry: undefined, validationInfo: undefined, loadMore: true, permission: undefined };
+class UserForm extends Form {
+    // overwrrite register additional event listners from method
+    registerAdditionalEventListeners() {
 
+        // load muti select dropdowns
+        $(`#${this.formId} #roleIds`).multiSelect({
+            selectableHeader: "All Roles",
+            selectionHeader: "Selected Roles",
+        });
+
+        Request.send("/api/roles", "GET").then(response => {
+            let roles = response.data;
+            // populate muti selects
+            roles.forEach((role) => {
+                $(`#${this.formId} #roleIds`).multiSelect('addOption', { value: role.id, text: role.name });
+            });
+        }).catch(e => {
+            console.log(e);
+        });
+    }
+
+    // overwrrite load entry
+    loadEntry = (entry) => {
+        this.reset();
+        this.selectedEntry = entry;
+
+        // load entry values to form
+        Object.keys(entry).forEach(key => {
+            // ignore dropdown values
+            if (this.dropdownIds.indexOf(key) !== -1) return;
+
+            // set value in the form input
+            $(`#${this.formId} #${key}`).val(entry[key]);
+        });
+
+        // select dropdown values
+        this.dropdownIds.forEach(dropdownId => {
+            this.selectDropdownOptionByValue(dropdownId, entry[dropdownId]);
+        });
+
+        // update muti select roles
+        $(`#${this.formId} #roleIds`).multiSelect("deselect_all");
+        entry.userRoles.forEach(ur => {
+            $(`#${this.formId} #roleIds`).multiSelect("select", ur.roleId.toString());
+        });
+
+        // check if this user is already deleted and show / hide delete button
+        if ($(`#${this.formId} #userStatusId option:selected`).text() == "Deleted") {
+            this.hideElement(".btnFmDelete")
+        }
+
+        this.setButtionsVisibility("edit");
+    }
+}
 
 /*-------------------------------------------------------------------------------------------------------
                                             General
@@ -15,201 +64,51 @@ async function loadModule(permissionStr) {
         data: { module: "USER" }
     });
 
-    // save validation info (regexes) on global tempData
-    tempData.validationInfo = response.data;
-
-    await loadFormDropdowns();
-    registerEventListeners();
-    FormUtil.enableRealtimeValidation(tempData.validationInfo);
-
+    const validationInfo = response.data;
 
     // create an array from permission string
     const permission = permissionStr.split("").map((p) => parseInt(p));
 
-    // show hide buttions based on permission
-    if (permission[0] == 0) {
-        $("#btnFmAdd").hide();
-    }
-    if (permission[2] == 0) {
-        $("#btnFmUpdate").hide();
-    }
-    if (permission[3] == 0) {
-        $("#btnFmDelete").hide();
-    }
 
-    // save permission globally
-    tempData.permission = permission;
+    // load main table
+    const dataBuilderFunction = (responseData) => {
+        // parse resposne data and return in data table frendly format
+        return responseData.map(entry => {
+            let roles = "";
+            entry.userRoles.forEach((ur, i) => {
+                roles += (i !== entry.userRoles.length - 1) ? ur.role.name + "," : ur.role.name;
+            });
 
-    await loadMainTable();
-}
-
-$(document).ready(() => {
-    // load muti select dropdowns
-    $("#roleIds").multiSelect({
-        selectableHeader: "All Roles",
-        selectionHeader: "Selected Roles",
-    });
-
-    Request.send("/api/roles", "GET").then(response => {
-        let roles = response.data;
-        // populate muti selects
-        roles.forEach((role) => {
-            $("#roleIds").multiSelect('addOption', { value: role.id, text: role.name });
+            return {
+                "Number": entry.employee.number,
+                "Username": entry.username,
+                "Roles": roles,
+                "Status": entry.userStatus.name,
+                "Created by": entry.employeeCreated.number,
+                "Created on": entry.docreation,
+                "Edit": `<button class="btn btn-warning btn-sm" onclick="showEditEntryModal('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
+                "Delete": `${entry.userStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
+            }
         });
-    }).catch(e => {
-        console.log(e);
-    });
-});
-
-// reload main table data and from after making a change
-const reloadModule = async () => {
-    resetForm();
-    const tableData = await getInitialTableData();
-    mainTable.reload(tableData);
-
-    // fix for additional load more requests
-    setTimeout(() => tempData.loadMore = true, 500);
-}
-
-/*-------------------------------------------------------------------------------------------------------
-                                            Main Table
--------------------------------------------------------------------------------------------------------*/
-const loadMainTable = async () => {
-    const tableData = await getInitialTableData();
-
-    // load data table
-    window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries, tempData.permission);
-}
-
-const getInitialTableData = async () => {
-    // get initial entries from the server
-    const response = await Request.send("/api/users", "GET");
-
-    // convert response data to data table format
-    return getTableData(response.data);
-}
-
-const searchEntries = async (searchValue) => {
-    const response = await Request.send("/api/users", "GET", {
-        data: { keyword: searchValue }
-    });
-
-    const tableData = getTableData(response.data);
-
-    // load data to global main table
-    mainTable.reload(tableData);
-}
-
-const loadMoreEntries = async (searchValue, rowsCount) => {
-
-    // check if all data has been loaded
-    if (!tempData.loadMore) return;
-
-    const response = await Request.send("/api/users", "GET", {
-        data: { keyword: searchValue, skip: rowsCount }
-    });
-
-    // if results came empty (all loaded)
-    if (response.data.length == 0) {
-        tempData.loadMore = false;
-        return;
     }
 
-    const tableData = getTableData(response.data);
+    window.mainTable = new DataTable("mainTableHolder", "/api/users", permission, dataBuilderFunction);
 
-    // append to global main table
-    mainTable.append(tableData);
-}
-
-const formTabClick = async () => {
-
-    if ($("#tabNavForm").text() !== "Add New") return;
-
-    // when form tab is clicked, reset the form 
-    resetForm();
-
-    // show / hide proper button
-    setFormButtionsVisibility("add");
-    setTabNavTitle("add");
-
-    // enable form inputs
-    FormUtil.setReadOnly("#mainForm", false);
-
-    // clear muti select
-    $("#roleIds").multiSelect("deselect_all");
-
-    // show hide top buttons
-    $("#btnTopAddEntry").hide();
-    $("#btnTopViewEntry").show();
-}
-
-const tableTabClick = () => {
-    $("#btnTopViewEntry").hide();
-    $("#btnTopAddEntry").show();
-}
-
-const getTableData = (responseData) => {
-    // parse resposne data and return in data table frendly format
-    return responseData.map(entry => {
-        let roles = "";
-        entry.userRoles.forEach((ur, i) => {
-            roles += (i !== entry.userRoles.length - 1) ? ur.role.name + "," : ur.role.name;
-        });
-
-        return {
-            "Number": entry.employee.number,
-            "Username": entry.username,
-            "Roles": roles,
-            "Status": entry.userStatus.name,
-            "Created by": entry.employeeCreated.number,
-            "Created on": entry.docreation,
-            "View": `<button class="btn btn-success btn-sm" onclick="editEntry('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
-            "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
-            "Delete": `${entry.userStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
+    // load main from
+    window.mainForm = new UserForm("mainForm", "User Details", permission, validationInfo,
+        [
+            { id: "userStatusId", route: "/api/general?data[table]=user_status" }
+        ],
+        {
+            addEntry: addEntry,
+            deleteEntry: deleteEntry,
+            updateEntry: updateEntry
         }
-    });
-}
-
-/*-------------------------------------------------------------------------------------------------------
-                                            Main Form
--------------------------------------------------------------------------------------------------------*/
-
-const registerEventListeners = () => {
-
-    // disable from submissions
-    $("form").on("submit", (e) => e.preventDefault());
-
-    // show photo preview when image is selected
-    $("#photo").on("change", (event) => {
-        if (photo.files && photo.files[0]) {
-            photoPreview.src = URL.createObjectURL(event.target.files[0]);
-        }
-    });
-
-    // show date of birth when nic typed
-    $("#nic").on("paste change keyup", (e) => {
-        showDateOfBirth(e.target.value);
-    });
-
-    // register listeners for form buttons
-    $("#btnFmAdd").on("click", addEntry);
-    $("#btnFmUpdate").on("click", updateEntry);
-    $("#btnFmDelete").on("click", () => deleteEntry());
-    $("#btnFmReset").on("click", resetForm);
-    $("#btnFmPrint").on("click", () => FormUtil.print());
-
-    //  register listeners for form tab click
-    $(".nav-tabs a[href='#tabForm']").on("click", formTabClick);
-    $(".nav-tabs a[href='#tabTable']").on("click", tableTabClick);
+    );
 
     // event listeners for top action buttons
     $("#btnTopAddEntry").on("click", () => {
-        setTabNavTitle("add");
-        $(".nav-tabs a[href='#tabForm']").click();
-    });
-
-    $("#btnTopViewEntry").on("click", () => {
-        $(".nav-tabs a[href='#tabTable']").click();
+        showNewEntryModal();
     });
 
     // catch promise rejections
@@ -218,76 +117,42 @@ const registerEventListeners = () => {
     });
 }
 
-const loadFormDropdowns = async () => {
-
-    // get data from the api for each dropbox
-    let response = await Request.send("/api/general", "GET", { data: { table: "user_status" } });
-    let userStatuses = response.data;
-
-    // select input ids and relevent data
-    const dropdownData = {
-        userStatusId: userStatuses
-    }
-
-    // populate select inputs with data
-    Object.keys(dropdownData).forEach(dropdownId => {
-        const selector = `#${dropdownId}`;
-        $(selector).empty();
-        dropdownData[dropdownId].forEach(entry => {
-            $(selector).append(`
-            <option value="${entry.id}">${entry.name}</option>
-            `);
-        });
-    });
+// reload main table data and from after making a change
+const reloadModule = () => {
+    mainForm.reset();
+    mainTable.reload();
 }
 
+/*-------------------------------------------------------------------------------------------------------
+                                            Main Form
+-------------------------------------------------------------------------------------------------------*/
 
-const validateForm = async () => {
-    let errors = "";
-    let entry = {};
+const showNewEntryModal = () => {
+    mainForm.reset();
+    $("#modalMainFormTitle").text("Add New User");
+    $("#modalMainForm").modal("show");
+}
 
-    // Loop through each validation info item (vi) validate it's value;
-    for (let vi of tempData.validationInfo) {
-        // element id is equal to database attribute
-        const elementId = vi.attribute;
+const showEditEntryModal = async (id, readOnly = false) => {
+    // get entry data from db and show in the form
+    const response = await Request.send("/api/users", "GET", { data: { id: id } });
+    const entry = response.data;
 
-        let isValid = false;
+    mainForm.loadEntry(entry);
 
-        isValid = FormUtil.validateElementValue(vi);
-
-        // check for errors and add to entry object
-        if (!isValid) {
-            errors += `${vi.error}<br/>`
-        } else {
-            // sepecial cases
-            if (elementId == "number") {
-                entry["employee"] = {};
-                entry["employee"]["number"] = $(`#${elementId}`).val();
-                continue;
-            }
-
-            entry[elementId] = $(`#${elementId}`).val();
-        }
+    if (readOnly) {
+        mainForm.enableReadOnly();
+    } else {
+        mainForm.disableReadOnly();
     }
 
-    // if there aren't any errors
-    if (errors == "") {
-        return {
-            status: true,
-            data: entry
-        }
-    }
-
-    // if there are errors
-    return {
-        status: false,
-        data: errors
-    };
+    $("#modalMainFormTitle").text("Edit User");
+    $("#modalMainForm").modal("show");
 }
 
 // add new entry to the database
 const addEntry = async () => {
-    const { status, data } = await validateForm();
+    const { status, data } = await mainForm.validateForm();
 
     // if there are errors
     if (!status) {
@@ -300,82 +165,15 @@ const addEntry = async () => {
 
     // show output modal based on response
     if (response.status) {
-        mainWindow.showOutputToast("Success!", response.msg);
         reloadModule();
-    }
-}
-
-const editEntry = async (id, readOnly = false) => {
-    // get entry data from db and show in the form
-    const response = await Request.send("/api/users", "GET", { data: { id: id } });
-    const entry = response.data;
-
-    // set input values
-    $("#number").val(entry.employee.number);
-    $("#username").val(entry.username);
-    $("#description").val(entry.description);
-
-    const dropdowns = [
-        "userStatusId",
-    ];
-
-    // select proper options in dropdowns
-    dropdowns.forEach(elementId => {
-        $(`#${elementId}`).children("option").each(function () {
-            $(this).removeAttr("selected");
-            const optionValue = $(this).attr("value");
-            if (optionValue == entry[elementId]) {
-                $(this).attr("selected", "selected");
-            }
-        });
-    });
-
-    // update muti select roles
-    $("#roleIds").multiSelect("deselect_all");
-    entry.userRoles.forEach(ur => {
-        $("#roleIds").multiSelect("select", ur.roleId.toString());
-    });
-
-
-    // change tab to form
-    $(".nav-tabs a[href='#tabForm']").tab("show");
-
-    // set entry object globally to later compare
-    window.tempData.selectedEntry = entry;
-
-    if (readOnly) {
-        setFormButtionsVisibility("view");
-        FormUtil.setReadOnly("#mainForm", true);
-        setTabNavTitle("view");
-    } else {
-        FormUtil.setReadOnly("#mainForm", false);
-        setFormButtionsVisibility("edit");
-        setTabNavTitle("edit");
-    }
-
-    // check if this entry is already deleted and show / hide delete button
-    if ($("#userStatusId option:selected").text() == "Deleted") {
-        $("#btnFmDelete").hide();
-    }
-}
-
-const setTabNavTitle = (action) => {
-    switch (action) {
-        case "add":
-            $("#tabNavForm").text("Add New");
-            break;
-        case "edit":
-            $("#tabNavForm").text("Edit User");
-            break;
-        case "view":
-            $("#tabNavForm").text("View User");
-            break;
+        $("#modalMainForm").modal("hide");
+        mainWindow.showOutputToast("Success!", response.msg);
     }
 }
 
 // update entry in the database
 const updateEntry = async () => {
-    const { status, data } = await validateForm();
+    const { status, data } = await mainForm.validateForm();
 
     // if there are errors
     if (!status) {
@@ -383,35 +181,8 @@ const updateEntry = async () => {
         return;
     }
 
-    // new entry object
-    let newEntryObj = data;
-
-    // check if any of the data in entry has changed
-    let dataHasChanged = false;
-
-    for (let key in newEntryObj) {
-        // compare selected entry and edited entry values
-        try {
-
-            // exception for roleIds
-            if (key == "roleIds") {
-                const selectedEntryRoleIds = tempData.selectedEntry.userRoles.map(ur => ur.roleId.toString());
-
-                if (JSON.stringify(newEntryObj["roleIds"]) !== JSON.stringify(selectedEntryRoleIds)) {
-                    dataHasChanged = true;
-                }
-                continue;
-            }
-
-            // otheriwse use normal checking
-            tempData.selectedEntry[key] = (tempData.selectedEntry[key] == null) ? "" : tempData.selectedEntry[key];
-            if (newEntryObj[key] !== tempData.selectedEntry[key].toString()) {
-                dataHasChanged = true;
-            }
-        } catch (error) {
-            console.log(key);
-        }
-    }
+    const newEntryObj = data;
+    const dataHasChanged = await mainForm.hasDataChanged();
 
     // if nothing has been modifed
     if (!dataHasChanged) {
@@ -420,71 +191,29 @@ const updateEntry = async () => {
     }
 
     // set id of the newEntry object
-    newEntryObj.id = tempData.selectedEntry.id;
+    newEntryObj.id = mainForm.selectedEntry.id;
 
     // send put reqeust to update data
     const response = await Request.send("/api/users", "PUT", { data: newEntryObj });
 
     // show output modal based on response
     if (response.status) {
-        mainWindow.showOutputToast("Success!", response.msg);
-        // reset selected entry
-        tempData.selectedEntry = undefined;
         reloadModule();
-        // change title of the tab
-        setTabNavTitle("add");
-        $(".nav-tabs a[href='#tabForm']").click();
+        $("#modalMainForm").modal("hide");
+        mainWindow.showOutputToast("Success!", response.msg);
     }
 }
 
 // delete entry from the database
-const deleteEntry = async (id = tempData.selectedEntry.id) => {
+const deleteEntry = async (id = mainForm.selectedEntry.id) => {
     const confirmation = await mainWindow.showConfirmModal("Confirmation", "Do you really need to delete this entry?");
 
     if (confirmation) {
         const response = await Request.send("/api/users", "DELETE", { data: { id: id } });
         if (response.status) {
-            mainWindow.showOutputToast("Success!", response.msg);
-            tempData.selectedEntry = undefined
             reloadModule();
+            $("#modalMainForm").modal("hide");
+            mainWindow.showOutputToast("Success!", response.msg);
         }
     }
-}
-
-const setFormButtionsVisibility = (action) => {
-    let permission = tempData.permission;
-
-    switch (action) {
-        case "view":
-            $("#btnFmAdd").hide();
-            $("#btnFmUpdate").hide();
-            $("#btnFmDelete").hide();
-            $("#btnFmReset").hide();
-            $("#btnFmPrint").show();
-            break;
-
-        case "edit":
-            $("#btnFmAdd").hide();
-            if (permission[2] !== 0) $("#btnFmUpdate").show();
-            if (permission[3] !== 0) $("#btnFmDelete").show();
-            $("#btnFmReset").show();
-            $("#btnFmPrint").hide();
-            break;
-
-        case "add":
-            if (permission[0] !== 0) $("#btnFmAdd").show();
-            $("#btnFmUpdate").hide();
-            $("#btnFmDelete").hide();
-            $("#btnFmReset").show();
-            $("#btnFmPrint").hide();
-            break;
-    }
-}
-
-// reset form
-const resetForm = () => {
-    $("#mainForm").trigger("reset");
-    $(".form-group").removeClass("has-error has-success");
-    $(".form-group").children(".form-control-feedback").remove();
-    $("#photoPreview").attr("src", "../../img/avatar.png");
 }
