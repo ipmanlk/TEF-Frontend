@@ -1,6 +1,6 @@
 class UserForm extends Form {
     // overwrrite register additional event listners from method
-    registerAdditionalEventListeners() {
+    loadAddons() {
 
         // load muti select dropdowns
         $(`#${this.formId} #roleIds`).multiSelect({

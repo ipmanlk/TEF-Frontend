@@ -56,10 +56,10 @@ class Form {
         $(`#${formId} .btnFmReset`).on("click", this.reset);
         $(`#${formId} .btnFmPrint`).on("click", this.print);
 
-        this.registerAdditionalEventListeners();
+        this.loadAddons();
     }
 
-    registerAdditionalEventListeners() {
+    loadAddons() {
     }
 
     validateElementValue(elementValidationInfo) {

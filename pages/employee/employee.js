@@ -1,6 +1,6 @@
 class employeeForm extends Form {
     // overwrrite register additional event listners from method
-    registerAdditionalEventListeners() {
+    loadAddons() {
         $(`#${this.formId} #photo`).on("change", (e) => {
             let photo = e.target;
             if (photo.files && photo.files[0]) {
