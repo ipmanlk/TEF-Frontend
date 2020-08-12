@@ -48,7 +48,7 @@ const loadMainTable = async () => {
     const tableData = await getInitialTableData();
 
     // load data table
-    window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries, tempData.permission);
+    window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries, tempData.permission, "Privileges List");
 }
 
 const getInitialTableData = async () => {

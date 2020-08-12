@@ -103,7 +103,7 @@ async function loadModule(permissionStr) {
         });
     }
 
-    window.mainTable = new DataTable("mainTableHolder", "/api/customers", permission, dataBuilderFunction);
+    window.mainTable = new DataTable("mainTableHolder", "/api/customers", permission, dataBuilderFunction, "Customer List");
 
     // load main form
     window.mainForm = new customerForm("mainForm", "Customer Details", permission, validationInfo,
