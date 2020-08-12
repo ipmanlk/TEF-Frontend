@@ -99,6 +99,10 @@ class Form {
         let table = `<table class="table table-striped">
         <tr><td colspan="2"><h3>${this.formTitle}</h3></tr>`
         $(`#${this.formId} label`).each((i, el) => {
+
+            // ignore hidden elements
+            if ($(el).parent().is(":hidden")) return;
+
             let type;
             let label, data;
 
