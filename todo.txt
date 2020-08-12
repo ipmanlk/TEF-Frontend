@@ -1,0 +1,5 @@
+* emails should be checked for uniqueness.
+* customer email exisit and that customers number display.
+* customer nic exist and that customers number display.
+* above 2 for employees too.
+* customer company mobile number rename to contact number
