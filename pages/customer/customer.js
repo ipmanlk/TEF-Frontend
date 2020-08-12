@@ -1,8 +1,71 @@
-/*-------------------------------------------------------------------------------------------------------
-                                          Window Data
--------------------------------------------------------------------------------------------------------*/
-window.tempData = { selectedEntry: undefined, validationInfo: undefined, loadMore: true, permission: undefined };
+class employeeForm extends Form {
+    // overwrrite register additional event listners from method
+    loadAddons() {
+        $(`#${this.formId} #nic`).on("paste change keyup", (e) => {
+            const nic = e.target.value;
+            // get details from nic
+            const dateOfBirth = NIClkUtil.getDOB(nic);
+            const gender = (NIClkUtil.getGender(nic)).toString().capitalize();
 
+            // fill form elements
+            $(`#${this.formId} #dobirth`).val(dateOfBirth);
+
+            // set gender
+            this.selectDropdownOptionByText("genderId", gender);
+        });
+
+
+        // hide company info initially
+        $(`#${this.formId} .company_info`).hide();
+
+        $(`#${this.formId} #customerTypeId`).on("change", (e) => {
+            // 1 = individual
+            // 2 = company
+            const val = e.target.value;
+
+            if (val == 1) {
+                $(`#${this.formId} .company_info`).fadeOut();
+            } else {
+                $(`#${this.formId} .company_info`).fadeIn();
+            }
+        });
+    }
+
+    // overwrrite load entry
+    loadEntry = (entry) => {
+        this.reset();
+        this.selectedEntry = entry;
+
+        // load entry values to form
+        Object.keys(entry).forEach(key => {
+            // ignore file uploads
+            if ($(`#${this.formId} #${key}`).attr("type") == "file") return;
+
+            // ignore dropdown values
+            if (this.dropdownIds.indexOf(key) !== -1) return;
+
+            // set value in the form input
+            $(`#${this.formId} #${key}`).val(entry[key]);
+        });
+
+        // select dropdown values
+        this.dropdownIds.forEach(dropdownId => {
+            this.selectDropdownOptionByValue(dropdownId, entry[dropdownId]);
+        });
+
+        // set profile picture preview
+        const imageURL = MiscUtil.getURLfromBuffer(entry.photo);
+
+        $(`#${this.formId} #photoPreview`).attr("src", imageURL);
+
+        // check if this employee is already deleted and show / hide delete button
+        if ($(`#${this.formId} #employeeStatusId option:selected`).text() == "Deleted") {
+            this.hideElement(".btnFmDelete")
+        }
+
+        this.setButtionsVisibility("edit");
+    }
+}
 
 /*-------------------------------------------------------------------------------------------------------
                                             General
@@ -15,169 +78,51 @@ async function loadModule(permissionStr) {
         data: { module: "CUSTOMER" }
     });
 
-    // save validation info (regexes) on global tempData
-    tempData.validationInfo = response.data;
-
-    await loadFormDropdowns();
-    registerEventListeners();
-    FormUtil.enableRealtimeValidation(tempData.validationInfo);
+    const validationInfo = response.data;
 
     // create an array from permission string
     const permission = permissionStr.split("").map((p) => parseInt(p));
 
-    // show hide buttions based on permission
-    if (permission[0] == 0) {
-        $("#btnFmAdd").hide();
-    }
-    if (permission[2] == 0) {
-        $("#btnFmUpdate").hide();
-    }
-    if (permission[3] == 0) {
-        $("#btnFmDelete").hide();
-    }
-
-    // save permission globally
-    tempData.permission = permission;
-
-    await loadMainTable();
-}
-
-// reload main table data and from after making a change
-const reloadModule = async () => {
-    resetForm();
-    const tableData = await getInitialTableData();
-    mainTable.reload(tableData);
-
-    // fix for additional load more requests
-    setTimeout(() => tempData.loadMore = true, 500);
-}
-
-/*-------------------------------------------------------------------------------------------------------
-                                            Main Table
--------------------------------------------------------------------------------------------------------*/
-const loadMainTable = async () => {
-    const tableData = await getInitialTableData();
-
-    // load data table
-    window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries, tempData.permission);
-}
-
-const getInitialTableData = async () => {
-    // get initial entries from the server
-    const response = await Request.send("/api/customers", "GET");
-
-    // convert response data to data table format
-    return getTableData(response.data);
-}
-
-const searchEntries = async (searchValue) => {
-    const response = await Request.send("/api/customers", "GET", {
-        data: { keyword: searchValue }
-    });
-
-    const tableData = getTableData(response.data);
-
-    // load data to global main table
-    mainTable.reload(tableData);
-}
-
-const loadMoreEntries = async (searchValue, rowsCount) => {
-
-    // check if all data has been loaded
-    if (!tempData.loadMore) return;
-
-    const response = await Request.send("/api/employees", "GET", {
-        data: { keyword: searchValue, skip: rowsCount }
-    });
-
-    // if results came empty (all loaded)
-    if (response.data.length == 0) {
-        tempData.loadMore = false;
-        return;
+    // load main tbale
+    const dataBuilderFunction = (responseData) => {
+        // parse resposne data and return in data table frendly format
+        return responseData.map(entry => {
+            return {
+                "Number": entry.number,
+                "Full Name": entry.fullName,
+                "Calling Name": entry.callingName,
+                "NIC": entry.nic,
+                "Mobile": entry.mobile,
+                "Designation": entry.designation.name,
+                "Civil Status": entry.civilStatus.name,
+                "Status": entry.employeeStatus.name,
+                "View": `<button class="btn btn-success btn-sm" onclick="showEditEntryModal('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
+                "Edit": `<button class="btn btn-warning btn-sm" onclick="showEditEntryModal('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
+                "Delete": `${entry.employeeStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
+            }
+        });
     }
 
-    const tableData = getTableData(response.data);
+    window.mainTable = new DataTable("mainTableHolder", "/api/employees", permission, dataBuilderFunction);
 
-    // append to global main table
-    mainTable.append(tableData);
-}
-
-const formTabClick = async () => {
-    if ($("#tabNavForm").text() !== "Add New") return;
-
-    resetForm();
-
-    // show / hide proper button
-    setFormButtionsVisibility("add");
-
-    // enable form inputs
-    FormUtil.setReadOnly("#mainForm", false);
-
-    // set date of assignment
-    $("#doregistration").val(new Date().today());
-
-    // show hide top buttons
-    $("#btnTopAddEntry").hide();
-    $("#btnTopViewEntry").show();
-}
-
-const tableTabClick = () => {
-    $("#btnTopViewEntry").hide();
-    $("#btnTopAddEntry").show();
-}
-
-const getTableData = (responseData) => {
-    // parse resposne data and return in data table frendly format
-    return responseData.map(entry => {
-        return {
-            "Name": entry.name,
-            "Mobile": entry.mobile,
-            "E-Mail": entry.email,
-            "NIC": entry.nic,
-            "Reg. Date": entry.doregistration,
-            "Added By": entry.employee.number,
-            "Customer Status": entry.customerStatus.name,
-            "View": `<button class="btn btn-success btn-sm" onclick="editEntry('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
-            "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
-            "Delete": `${entry.customerStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
+    // load main form
+    window.mainForm = new employeeForm("mainForm", "Employee Details", permission, validationInfo,
+        [
+            { id: "designationId", route: "/api/designations" },
+            { id: "genderId", route: "/api/general?data[table]=gender" },
+            { id: "civilStatusId", route: "/api/general?data[table]=civil_status" },
+            { id: "employeeStatusId", route: "/api/employee_statuses" },
+        ],
+        {
+            addEntry: addEntry,
+            deleteEntry: deleteEntry,
+            updateEntry: updateEntry
         }
-    });
-}
-
-/*-------------------------------------------------------------------------------------------------------
-                                            Main Form
--------------------------------------------------------------------------------------------------------*/
-
-const registerEventListeners = () => {
-
-    // disable from submissions
-    $("form").on("submit", (e) => e.preventDefault());
-
-
-    // show date of birth when nic typed
-    $("#nic").on("paste change keyup", (e) => {
-        showNicDetails(e.target.value);
-    });
-
-    // register listeners for form buttons
-    $("#btnFmAdd").on("click", addEntry);
-    $("#btnFmUpdate").on("click", updateEntry);
-    $("#btnFmDelete").on("click", () => deleteEntry());
-    $("#btnFmReset").on("click", resetForm);
-    $("#btnFmPrint").on("click", () => FormUtil.printForm("mainForm", "Customer Details"));
-
-    //  register listeners for form tab click
-    $(".nav-tabs a[href='#tabForm']").on("click", formTabClick);
-    $(".nav-tabs a[href='#tabTable']").on("click", tableTabClick);
+    );
 
     // event listeners for top action buttons
     $("#btnTopAddEntry").on("click", () => {
-        setTabNavTitle("add");
-        $(".nav-tabs a[href='#tabForm']").click();
-    });
-
-    $("#btnTopViewEntry").on("click", () => {
-        $(".nav-tabs a[href='#tabTable']").click();
+        showNewEntryModal();
     });
 
     // catch promise rejections
@@ -186,90 +131,53 @@ const registerEventListeners = () => {
     });
 }
 
-const loadFormDropdowns = async () => {
-    // define needed attributes
-    let customerStatus, genders;
-
-    // get data from the api for each dropbox
-    let response;
-
-    response = await Request.send("/api/general", "GET", { data: { table: "customer_status" } });
-    customerStatus = response.data;
-
-    response = await Request.send("/api/general", "GET", { data: { table: "gender" } });
-    genders = response.data;
-
-    // select input ids and relevent data
-    const dropdownData = {
-        customerStatusId: customerStatus,
-        genderId: genders,
-    }
-
-    // populate select inputs with data
-    Object.keys(dropdownData).forEach(dropdownId => {
-        const selector = `#${dropdownId}`;
-        $(selector).empty();
-
-        dropdownData[dropdownId].forEach(entry => {
-            $(selector).append(`
-            <option value="${entry.id}">${entry.name}</option>
-            `);
-        });
-    })
+// reload main table data and from after making a change
+const reloadModule = () => {
+    mainForm.reset();
+    mainTable.reload();
 }
 
-const showNicDetails = (nic) => {
-    // get details from nic
-    const dateOfBirth = NIClkUtil.getDOB(nic);
-    const gender = (NIClkUtil.getGender(nic)).toString().capitalize();
+/*-------------------------------------------------------------------------------------------------------
+                                            Modals
+-------------------------------------------------------------------------------------------------------*/
 
-    // fill form elements
-    $("#dobirth").val(dateOfBirth);
+const showEditEntryModal = async (id, readOnly = false) => {
+    // get entry data from db and show in the form
+    const response = await Request.send("/api/employees", "GET", { data: { id: id } });
+    const entry = response.data;
 
-    // select proper option in dropdown
-    FormUtil.selectDropdownOptionByText("genderId", gender);
-}
+    mainForm.loadEntry(entry);
 
-const validateForm = async () => {
-    let errors = "";
-    const entry = {};
-
-    // Loop through validation info items (vi) and check it's value using regexes
-    for (let vi of tempData.validationInfo) {
-        // element id is equal to database attribute name
-        const elementId = vi.attribute;
-
-        // validation status of the form
-        let isValid = false;
-
-        isValid = FormUtil.validateElementValue(vi);
-
-        // check for errors and add to entry object
-        if (!isValid) {
-            errors += `${vi.error}<br/>`
-        } else {
-            entry[elementId] = $(`#${elementId}`).val();
-        }
+    if (readOnly) {
+        mainForm.enableReadOnly();
+    } else {
+        mainForm.disableReadOnly();
     }
 
-    // if there aren't any errors
-    if (errors == "") {
-        return {
-            status: true,
-            data: entry
-        }
-    }
-
-    // if there are errors
-    return {
-        status: false,
-        data: errors
-    };
+    $("#modalMainFormTitle").text("Edit Customer");
+    $("#modalMainForm").modal("show");
 }
+
+const showNewEntryModal = () => {
+    mainForm.reset();
+
+    // change employee number field text
+    $("#mainForm #number").val("Customer number will be displayed after adding.");
+
+    // set date of assignment
+    $("#mainForm #doregistration").val(new Date().today());
+
+    $("#modalMainFormTitle").text("Add New Customer");
+    $("#modalMainForm").modal("show");
+}
+
+/*-------------------------------------------------------------------------------------------------------
+                                            Operations
+-------------------------------------------------------------------------------------------------------*/
 
 // add new entry to the database
 const addEntry = async () => {
-    const { status, data } = await validateForm();
+    const { status, data } = await mainForm.validateForm();
 
     // if there are errors
     if (!status) {
@@ -278,77 +186,20 @@ const addEntry = async () => {
     }
 
     // get response
-    const response = await Request.send("/api/customers", "POST", { data: data });
+    const response = await Request.send("/api/employees", "POST", { data: data });
 
     // show output modal based on response
     if (response.status) {
-        mainWindow.showOutputToast("Success!", response.msg);
         reloadModule();
-        formTabClick();
-    }
-}
-
-const editEntry = async (id, readOnly = false) => {
-    // get entry data from db and show in the form
-    const response = await Request.send("/api/customers", "GET", { data: { id: id } });
-    const entry = response.data;
-
-    // set input values
-    Object.keys(entry).forEach(key => {
-        $(`#${key}`).val(entry[key]);
-    });
-
-    // select correct option in dorpdowns
-    const dropdowns = [
-        "genderId",
-        "customerStatusId"
-    ];
-
-    // select proper options in dropdowns
-    dropdowns.forEach(dropdownId => {
-        FormUtil.selectDropdownOptionByValue(dropdownId, entry[dropdownId]);
-    });
-
-    // change tab to form
-    $(".nav-tabs a[href='#tabForm']").tab("show");
-
-    // set entry object globally to later compare
-    window.tempData.selectedEntry = entry;
-
-    if (readOnly) {
-        setFormButtionsVisibility("view");
-        FormUtil.setReadOnly("#mainForm", true);
-    } else {
-        FormUtil.setReadOnly("#mainForm", false);
-        setFormButtionsVisibility("edit");
-    }
-
-    // load details form nic
-    showNicDetails(entry.nic);
-
-    // check if this customer is already deleted and show / hide delete button
-    if ($("#customerStatusId option:selected").text() == "Deleted") {
-        $("#btnFmDelete").hide();
-    }
-}
-
-const setTabNavTitle = (action) => {
-    switch (action) {
-        case "add":
-            $("#tabNavForm").text("Add New");
-            break;
-        case "edit":
-            $("#tabNavForm").text("Edit Employee");
-            break;
-        case "view":
-            $("#tabNavForm").text("View Employee");
-            break;
+        $("#modalMainForm").modal("hide");
+        mainWindow.showOutputToast("Success!", response.msg);
+        mainWindow.showOutputModal("New Employee Added!", `<h5>Employee Number: ${response.data.number}</h5>`);
     }
 }
 
 // update entry in the database
 const updateEntry = async () => {
-    const { status, data } = await validateForm();
+    const { status, data } = await mainForm.validateForm();
 
     // if there are errors
     if (!status) {
@@ -356,23 +207,8 @@ const updateEntry = async () => {
         return;
     }
 
-    // new entry object
-    let newEntryObj = data;
-
-    // check if any of the data in entry has changed
-    let dataHasChanged = false;
-
-    for (let key in newEntryObj) {
-        // compare selected entry and edited entry values
-        try {
-            tempData.selectedEntry[key] = (tempData.selectedEntry[key] == null) ? "" : tempData.selectedEntry[key];
-            if (newEntryObj[key] !== tempData.selectedEntry[key].toString()) {
-                dataHasChanged = true;
-            }
-        } catch (error) {
-            console.log(key);
-        }
-    }
+    const newEntryObj = data;
+    const dataHasChanged = await mainForm.hasDataChanged();
 
     // if nothing has been modifed
     if (!dataHasChanged) {
@@ -381,76 +217,29 @@ const updateEntry = async () => {
     }
 
     // set id of the newEntry object
-    newEntryObj.id = tempData.selectedEntry.id;
+    newEntryObj.id = mainForm.selectedEntry.id;
 
     // send put reqeust to update data
-    const response = await Request.send("/api/customers", "PUT", { data: newEntryObj });
+    const response = await Request.send("/api/employees", "PUT", { data: newEntryObj });
 
     // show output modal based on response
     if (response.status) {
-        mainWindow.showOutputToast("Success!", response.msg);
-        // reset selected entry
-        tempData.selectedEntry = undefined;
         reloadModule();
-
-        // change title of the tab
-        setTabNavTitle("add");
-        $(".nav-tabs a[href='#tabForm']").click();
+        $("#modalMainForm").modal("hide");
+        mainWindow.showOutputToast("Success!", response.msg);
     }
 }
 
 // delete entry from the database
-const deleteEntry = async (id = tempData.selectedEntry.id) => {
+const deleteEntry = async (id = mainForm.selectedEntry.id) => {
     const confirmation = await mainWindow.showConfirmModal("Confirmation", "Do you really need to delete this entry?");
 
     if (confirmation) {
-        const response = await Request.send("/api/customers", "DELETE", { data: { id: id } });
+        const response = await Request.send("/api/employees", "DELETE", { data: { id: id } });
         if (response.status) {
-            mainWindow.showOutputToast("Success!", response.msg);
-            tempData.selectedEntry = undefined
             reloadModule();
+            $("#modalMainForm").modal("hide");
+            mainWindow.showOutputToast("Success!", response.msg);
         }
     }
-}
-
-const setFormButtionsVisibility = (action) => {
-    let permission = tempData.permission;
-
-    switch (action) {
-        case "view":
-            $("#btnFmAdd").hide();
-            $("#btnFmUpdate").hide();
-            $("#btnFmDelete").hide();
-            $("#btnFmReset").hide();
-            $("#btnFmPrint").show();
-            setTabNavTitle("view");
-            break;
-
-        case "edit":
-            $("#btnFmAdd").hide();
-            if (permission[2] !== 0) $("#btnFmUpdate").show();
-            if (permission[3] !== 0) $("#btnFmDelete").show();
-            $("#btnFmReset").show();
-            $("#btnFmPrint").hide();
-            setTabNavTitle("edit");
-            break;
-
-        case "add":
-            if (permission[0] !== 0) $("#btnFmAdd").show();
-            $("#btnFmUpdate").hide();
-            $("#btnFmDelete").hide();
-            $("#btnFmReset").show();
-            $("#btnFmPrint").hide();
-            setTabNavTitle("add");
-            break;
-    }
-}
-
-
-// reset form
-const resetForm = () => {
-    $("#mainForm").trigger("reset");
-    $(".form-group").removeClass("has-error has-success");
-    $(".form-group").children(".form-control-feedback").remove();
-    $("#photoPreview").attr("src", "../../img/avatar.png");
 }

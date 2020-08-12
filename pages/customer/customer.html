@@ -12,109 +12,117 @@
 <body>
 	<div class="container-fluid" style="margin-top: 20px; margin-bottom:100px;">
 
-		<div id="actionButtonHolder" class="row" style="margin-bottom: 20px;">
+		<div id="actionButtonHolder" class="row" style="margin-bottom: 20px; padding-left: 35px;">
 			<div class="col-md-12">
 				<button id="btnTopAddEntry" class="btn btn-primary">
 					<i class="glyphicon glyphicon-plus-sign" aria-hidden="true"></i>
-					Add New Entry
-				</button>
-				<button id="btnTopViewEntry" class="btn btn-primary" style="display: none;">
-					<i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i>
-					View Entries
+					Add New Customer
 				</button>
 			</div>
 		</div>
 
-		<ul id="tabHolder" class="nav nav-tabs">
-			<li class="active"><a data-toggle="tab" href="#tabTable">Customer</a></li>
-			<li><a id="tabNavForm" data-toggle="tab" href="#tabForm">Add New</a></li>
-		</ul>
+		<div id="mainTableHolder" class="container-fluid" style="margin-top:30px">
 
-		<div class="tab-content">
+		</div>
 
-			<div id="tabTable" class="tab-pane fade in active">
-				<div id="mainTableHolder" class="container-fluid" style="margin-top:30px">
+		<div class="modal fade" id="modalMainForm" role="dialog">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content" style="margin-bottom: 100px;">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title" id="modalMainFormTitle">Modal Header</h4>
+					</div>
+					<div class="modal-body">
+						<form id="mainForm">
+							<div class="form-group has-feedback">
+								<label for="number">Customer Number: <span class="required">*</span></label>
+								<input type="text" class="form-control" id="number" placeholder="Enter Number"
+									name="number" disabled>
+							</div>
+							<div class="form-group has-feedback">
+								<label for="customerTypeId">Customer Type: <span class="required">*</span></label>
+								<select name="customerTypeId" id="customerTypeId" class="form-control">
+									<option value="1">Individual</option>
+									<option value="2">Company</option>
+								</select>
+							</div>
+							<div class="form-group has-feedback company_info">
+								<label for="cpname">Compnay Name: <span class="required">*</span></label>
+								<input type="text" class="form-control" id="cpname" placeholder="Enter Company Name"
+									name="cpname" data-editable="true">
+							</div>
+							<div class="form-group has-feedback company_info">
+								<label for="cpmobile">Company Mobile: <span class="required">*</span></label>
+								<input type="text" class="form-control" id="cpmobile"
+									placeholder="Enter Company Mobile Number" name="cpmobile" data-editable="true">
+							</div>
+							<div class="form-group has-feedback">
+								<label for="cname">Customer Name: <span class="required">*</span></label>
+								<input type="text" class="form-control" id="cname" placeholder="Enter Customer Name"
+									name="fullName" data-editable="true">
+							</div>
+							<div class="form-group has-feedback">
+								<label for="nic">NIC: <span class="required">*</span></label>
+								<input type="text" class="form-control" id="nic" placeholder="Enter NIC" name="nic"
+									data-editable="true">
+							</div>
+							<div class="form-group has-feedback">
+								<label for="genderId">Gender: <span class="required">*</span></label>
+								<select name="genderId" id="genderId" class="form-control" disabled>
+									<option value="1">Male</option>
+									<option value="2">Female</option>
+								</select>
+							</div>
+							<div class="form-group has-feedback">
+								<label for="address">Address: <span class="required">*</span></label>
+								<textarea class="form-control" name="address" id="address" cols="30" rows="3"
+									placeholder="Enter your address here" data-editable="true"></textarea>
+							</div>
+							<div class="form-group has-feedback">
+								<label for="cmobile">Mobile: <span class="required">*</span></label>
+								<input type="text" class="form-control" id="cmobile" placeholder="Enter Mobile Number"
+									name="cmobile" data-editable="true">
+							</div>
+							<div class="form-group has-feedback">
+								<label for="email">E-Mail: <span class="required">*</span></label>
+								<input type="text" class="form-control" id="email" placeholder="Enter E-Mail Address"
+									name="email" data-editable="true">
+							</div>
+							<div class="form-group has-feedback">
+								<label for="description">Description: </label>
+								<textarea class="form-control" name="description" id="description" cols="30" rows="3"
+									data-editable="true" placeholder="Enter Customer Description Here"></textarea>
+							</div>
+							<div class="form-group has-feedback">
+								<label for="doregistration">Registration Date: <span class="required">*</span></label>
+								<input type="date" class="form-control" id="doregistration" name="doregistration"
+									disabled>
+							</div>
+							<div class="form-group has-feedback">
+								<label for="customerStatusId">Customer Status: <span class="required">*</span></label>
+								<select name="customerStatusId" id="customerStatusId" class="form-control"
+									data-editable="true">
+									<option value="1">Active</option>
+									<option value="2">Terminated</option>
+								</select>
+							</div>
 
+							<div id="fmButtons">
+								<button class="btnFmAdd btn btn-success">Add</button>
+								<button class="btnFmUpdate btn btn-warning">Update</button>
+								<button class="btnFmPrint btn btn-info">Print</button>
+								<button class="btnFmReset btn btn-primary"
+									style="float: right; margin-left: 10px;">Reset</button>
+								<button class="btnFmDelete btn btn-danger" style="float: right;">Delete</button>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<!-- <button id="btnModalYes" type="button" class="btn btn-danger" style="float:left">Yes</button>
+            <button id="btnModalNo" type="button" class="btn btn-default" data-dismiss="modal">No</button> -->
+					</div>
 				</div>
 			</div>
-
-			<div id="tabForm" class="tab-pane fade">
-				<!-- <div id="form" class="tab-pane fade in active"> -->
-				<div class="container-fluid" style="margin-top:30px">
-					<form id="mainForm">
-						<div class="form-group has-feedback">
-							<label for="name">Name: <span class="required">*</span></label>
-							<input type="text" class="form-control" id="name" placeholder="Enter Customer Name"
-								name="name">
-						</div>
-						<div class="form-group has-feedback">
-							<label for="nic">NIC: <span class="required">*</span></label>
-							<input type="text" class="form-control" id="nic" placeholder="Enter NIC" name="nic"
-								data-editable="true">
-						</div>
-						<div class="form-group has-feedback">
-							<label for="genderId">Gender: <span class="required">*</span></label>
-							<select name="genderId" id="genderId" class="form-control" disabled>
-								<option value="1">Male</option>
-								<option value="2">Female</option>
-							</select>
-						</div>
-
-						<div class="form-group has-feedback">
-							<label for="address">Address: <span class="required">*</span></label>
-							<textarea class="form-control" name="address" id="address" cols="30" rows="3"
-								placeholder="Enter your address here" data-editable="true"></textarea>
-						</div>
-
-						<div class="form-group has-feedback">
-							<label for="email">Email: <span class="required">*</span></label>
-							<input type="text" class="form-control" id="email" placeholder="Enter E-Mail here"
-								name="email" data-editable="true">
-						</div>
-
-						<div class="form-group has-feedback">
-							<label for="mobile">Mobile: <span class="required">*</span></label>
-							<input type="text" class="form-control" id="mobile" placeholder="Enter Mobile Number"
-								name="mobile" data-editable="true">
-						</div>
-						<div class="form-group has-feedback">
-							<label for="land">Land:</label>
-							<input type="text" class="form-control" id="land" placeholder="Enter Land Here" name="land"
-								data-editable="true">
-						</div>
-						<div class="form-group has-feedback">
-							<label for="description">Description: </label>
-							<textarea class="form-control" name="description" id="description" cols="30" rows="3"
-								data-editable="true"></textarea>
-						</div>
-
-						<div class="form-group has-feedback">
-							<label for="doregistration">Registered Date:</label>
-							<input type="text" class="form-control" id="doregistration" disabled>
-						</div>
-
-						<div class="form-group has-feedback">
-							<label for="customerStatusId">Customer Status: <span class="required">*</span></label>
-							<select name="customerStatusId" id="customerStatusId" class="form-control"
-								data-editable="true">
-								<option value="1">Active</option>
-								<option value="2">Terminated</option>
-							</select>
-						</div>
-
-						<div id="fmButtons">
-							<button id="btnFmAdd" class="btn btn-success">Add</button>
-							<button id="btnFmUpdate" class="btn btn-warning">Update</button>
-							<button id="btnFmPrint" class="btn btn-info">Print</button>
-							<button id="btnFmReset" class="btn btn-primary"
-								style="float: right; margin-left: 10px;">Reset</button>
-							<button id="btnFmDelete" class="btn btn-danger" style="float: right;">Delete</button>
-						</div>
-					</form>
-				</div>
-
-			</div>
-
 		</div>
 	</div>
 
@@ -123,7 +131,7 @@
 	<script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="../../lib/niclk/niclk.js"></script>
 
-	<script src="../../lib/datatable/datatable.js"></script>
+	<script src="../../lib/datatable/datatable.v2.js"></script>
 
 
 	<!-- common stuff -->
