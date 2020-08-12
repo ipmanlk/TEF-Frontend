@@ -1,14 +1,10 @@
-class employeeForm extends Form {
+class customerForm extends Form {
     // overwrrite register additional event listners from method
     loadAddons() {
         $(`#${this.formId} #nic`).on("paste change keyup", (e) => {
             const nic = e.target.value;
             // get details from nic
-            const dateOfBirth = NIClkUtil.getDOB(nic);
             const gender = (NIClkUtil.getGender(nic)).toString().capitalize();
-
-            // fill form elements
-            $(`#${this.formId} #dobirth`).val(dateOfBirth);
 
             // set gender
             this.selectDropdownOptionByText("genderId", gender);
@@ -18,13 +14,18 @@ class employeeForm extends Form {
         // hide company info initially
         $(`#${this.formId} .company_info`).hide();
 
+        // when customer type select is changed, show hide components
         $(`#${this.formId} #customerTypeId`).on("change", (e) => {
             // 1 = individual
             // 2 = company
             const val = e.target.value;
-
             if (val == 1) {
                 $(`#${this.formId} .company_info`).fadeOut();
+
+                // reset company name value
+                $(`#${this.formId} #cpname`).val("");
+                $(`#${this.formId} #cpmobile`).val("");
+
             } else {
                 $(`#${this.formId} .company_info`).fadeIn();
             }
@@ -38,9 +39,6 @@ class employeeForm extends Form {
 
         // load entry values to form
         Object.keys(entry).forEach(key => {
-            // ignore file uploads
-            if ($(`#${this.formId} #${key}`).attr("type") == "file") return;
-
             // ignore dropdown values
             if (this.dropdownIds.indexOf(key) !== -1) return;
 
@@ -53,17 +51,20 @@ class employeeForm extends Form {
             this.selectDropdownOptionByValue(dropdownId, entry[dropdownId]);
         });
 
-        // set profile picture preview
-        const imageURL = MiscUtil.getURLfromBuffer(entry.photo);
-
-        $(`#${this.formId} #photoPreview`).attr("src", imageURL);
-
-        // check if this employee is already deleted and show / hide delete button
-        if ($(`#${this.formId} #employeeStatusId option:selected`).text() == "Deleted") {
+        // check if this customer is already deleted and show / hide delete button
+        if ($(`#${this.formId} #customerStatusId option:selected`).text() == "Deleted") {
             this.hideElement(".btnFmDelete")
         }
 
         this.setButtionsVisibility("edit");
+
+        // show hide customer type components
+        const customerTypeId = $(`#${this.formId} #customerTypeId`).val();
+        if (customerTypeId == 1) {
+            $(`#${this.formId} .company_info`).fadeOut();
+        } else {
+            $(`#${this.formId} .company_info`).fadeIn();
+        }
     }
 }
 
@@ -89,29 +90,27 @@ async function loadModule(permissionStr) {
         return responseData.map(entry => {
             return {
                 "Number": entry.number,
-                "Full Name": entry.fullName,
-                "Calling Name": entry.callingName,
-                "NIC": entry.nic,
-                "Mobile": entry.mobile,
-                "Designation": entry.designation.name,
-                "Civil Status": entry.civilStatus.name,
-                "Status": entry.employeeStatus.name,
+                "Name": entry.cname,
+                "Type": entry.customerType.name,
+                "Mobile": entry.cmobile,
+                "E-Mail": entry.email,
+                "To Be Paid": entry.toBePaid,
+                "Status": entry.customerStatus.name,
                 "View": `<button class="btn btn-success btn-sm" onclick="showEditEntryModal('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
                 "Edit": `<button class="btn btn-warning btn-sm" onclick="showEditEntryModal('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
-                "Delete": `${entry.employeeStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
+                "Delete": `${entry.customerStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
             }
         });
     }
 
-    window.mainTable = new DataTable("mainTableHolder", "/api/employees", permission, dataBuilderFunction);
+    window.mainTable = new DataTable("mainTableHolder", "/api/customers", permission, dataBuilderFunction);
 
     // load main form
-    window.mainForm = new employeeForm("mainForm", "Employee Details", permission, validationInfo,
+    window.mainForm = new customerForm("mainForm", "Customer Details", permission, validationInfo,
         [
-            { id: "designationId", route: "/api/designations" },
+            { id: "customerStatusId", route: "/api/general?data[table]=customer_status" },
+            { id: "customerTypeId", route: "/api/general?data[table]=customer_type" },
             { id: "genderId", route: "/api/general?data[table]=gender" },
-            { id: "civilStatusId", route: "/api/general?data[table]=civil_status" },
-            { id: "employeeStatusId", route: "/api/employee_statuses" },
         ],
         {
             addEntry: addEntry,
@@ -143,7 +142,7 @@ const reloadModule = () => {
 
 const showEditEntryModal = async (id, readOnly = false) => {
     // get entry data from db and show in the form
-    const response = await Request.send("/api/employees", "GET", { data: { id: id } });
+    const response = await Request.send("/api/customers", "GET", { data: { id: id } });
     const entry = response.data;
 
     mainForm.loadEntry(entry);
@@ -161,7 +160,7 @@ const showEditEntryModal = async (id, readOnly = false) => {
 const showNewEntryModal = () => {
     mainForm.reset();
 
-    // change employee number field text
+    // change customer number field text
     $("#mainForm #number").val("Customer number will be displayed after adding.");
 
     // set date of assignment
@@ -186,14 +185,14 @@ const addEntry = async () => {
     }
 
     // get response
-    const response = await Request.send("/api/employees", "POST", { data: data });
+    const response = await Request.send("/api/customers", "POST", { data: data });
 
     // show output modal based on response
     if (response.status) {
         reloadModule();
         $("#modalMainForm").modal("hide");
         mainWindow.showOutputToast("Success!", response.msg);
-        mainWindow.showOutputModal("New Employee Added!", `<h5>Employee Number: ${response.data.number}</h5>`);
+        mainWindow.showOutputModal("New Customer Added!", `<h5>Customer Number: ${response.data.number}</h5>`);
     }
 }
 
@@ -220,7 +219,7 @@ const updateEntry = async () => {
     newEntryObj.id = mainForm.selectedEntry.id;
 
     // send put reqeust to update data
-    const response = await Request.send("/api/employees", "PUT", { data: newEntryObj });
+    const response = await Request.send("/api/customers", "PUT", { data: newEntryObj });
 
     // show output modal based on response
     if (response.status) {
@@ -235,7 +234,7 @@ const deleteEntry = async (id = mainForm.selectedEntry.id) => {
     const confirmation = await mainWindow.showConfirmModal("Confirmation", "Do you really need to delete this entry?");
 
     if (confirmation) {
-        const response = await Request.send("/api/employees", "DELETE", { data: { id: id } });
+        const response = await Request.send("/api/customers", "DELETE", { data: { id: id } });
         if (response.status) {
             reloadModule();
             $("#modalMainForm").modal("hide");
