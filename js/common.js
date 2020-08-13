@@ -3,6 +3,7 @@ class Form {
         this.formId = formId;
         this.formTitle = formTitle;
         this.dropdownIds = [];
+        this.dropdownInfoArray = dropdownInfoArray;
         this.selectedEntry = undefined;
         this.permission = permission;
         this.validationInfoObject = validationInfoObject;
@@ -52,7 +53,7 @@ class Form {
         // events: buttons
         $(`#${formId} .btnFmAdd`).on("click", actionBinderObject.addEntry);
         $(`#${formId} .btnFmUpdate`).on("click", actionBinderObject.updateEntry);
-        $(`#${formId} .btnFmDelete`).on("click", actionBinderObject.deleteEntry);
+        $(`#${formId} .btnFmDelete`).on("click", () => { actionBinderObject.deleteEntry(this.selectedEntry.id) });
         $(`#${formId} .btnFmReset`).on("click", this.reset);
         $(`#${formId} .btnFmPrint`).on("click", this.print);
 
@@ -205,40 +206,55 @@ class Form {
         });
 
         this.setButtionsVisibility("edit");
+
+        // show, hide delete buttion based on status field 
+        const statusFields = this.dropdownInfoArray.filter(di => di.statusField);
+
+        if (statusFields.length == 1) {
+            const dropdownId = statusFields[0].id;
+            if ($(`#${this.formId} #${dropdownId} option:selected`).text() == "Deleted") {
+                this.hideElement(".btnFmDelete");
+            }
+        }
     }
 
     // show suitable buttions for view / edit / add
     setButtionsVisibility = (action) => {
         switch (action) {
             case "view":
-                $(`#${this.formId} .btnFmAdd`).hide();
-                $(`#${this.formId} .btnFmUpdate`).hide();
-                $(`#${this.formId} .btnFmDelete`).hide();
-                $(`#${this.formId} .btnFmReset`).hide();
-                $(`#${this.formId} .btnFmPrint`).show();
+                this.hideElement(".btnFmAdd");
+                this.hideElement(".btnFmUpdate");
+                this.hideElement(".btnFmDelete");
+                this.hideElement(".btnFmReset");
+                this.showElement(".btnFmPrint");
                 break;
 
             case "edit":
-                $(`#${this.formId} .btnFmAdd`).hide();
-                if (this.permission[2] !== 0) $(`#${this.formId} .btnFmUpdate`).show();
-                if (this.permission[3] !== 0) $(`#${this.formId} .btnFmDelete`).show();
-                $(`#${this.formId} .btnFmReset`).show();
-                $(`#${this.formId} .btnFmPrint`).hide();
+                this.hideElement(".btnFmAdd");
+                this.hideElement(".btnFmPrint");
+                if (this.permission[2] !== 0) this.showElement(".btnFmUpdate");
+                if (this.permission[3] !== 0) this.showElement(".btnFmDelete");
+                this.showElement(".btnFmReset");
                 break;
 
             case "add":
-                if (this.permission[0] !== 0) $(`#${this.formId} .btnFmAdd`).show();
-                $(`#${this.formId} .btnFmUpdate`).hide();
-                $(`#${this.formId} .btnFmDelete`).hide();
-                $(`#${this.formId} .btnFmReset`).show();
-                $(`#${this.formId} .btnFmPrint`).hide();
+                this.hideElement(".btnFmUpdate");
+                this.hideElement(".btnFmDelete");
+                this.hideElement(".btnFmPrint");
+                if (this.permission[0] !== 0) this.showElement(".btnFmAdd");
+                this.showElement(".btnFmReset");
                 break;
         }
     }
 
     // hide an element placed within the form
     hideElement = (selector) => {
-        $(`${this.formId} ${selector}`).hide();
+        $(`#${this.formId} ${selector}`).hide();
+    }
+
+    // show an element placed within the form
+    showElement = (selector) => {
+        $(`#${this.formId} ${selector}`).show();
     }
 
     // check if form is valid. returns an object with status & data
