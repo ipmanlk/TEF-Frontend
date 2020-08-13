@@ -118,7 +118,7 @@
 
   <!-- modal for showing outputs -->
   <div class="modal fade" id="modalOutput" role="dialog">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog" id="modalOutputCss">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -184,7 +184,7 @@
 
         // get data from the response
         const data = response.data;
-        
+
         // show avatar on dhashboard side menu
         const avatarUrl = MiscUtil.getURLfromBuffer(data.employee.photo);
 
@@ -206,7 +206,7 @@
         // build privileges from the response and update UI
 
         Object.keys(data.privileges).forEach(moduleName => {
-          const permission =data.privileges[moduleName];
+          const permission = data.privileges[moduleName];
           tempData.privileges[moduleName] = permission;
 
           // update ui
@@ -217,7 +217,7 @@
             }
           });
         });
-  
+
 
 
         // save privilages for later use
@@ -265,7 +265,8 @@
     }
 
     // controls modal for showing various outputs
-    const showOutputModal = (title, body) => {
+    const showOutputModal = (title, body, size = "sm") => {
+      $("#modalOutputCss").addClass(`modal-${size}`);
       $("#modalOutputTitle").text(title);
       $("#modalOutputBody").html("Unknown");
       $("#modalOutputBody").html(body);

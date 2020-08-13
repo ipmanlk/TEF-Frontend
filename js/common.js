@@ -590,7 +590,15 @@ class Request {
 
                     // show error modal when status of the response is false
                     try {
-                        mainWindow.showOutputModal("Error", `${res.msg}<br/><br/>Route: ${options.url}`);
+                        let outputMsg;
+
+                        if (res.type == "input") {
+                            outputMsg = `${res.msg}`;
+                            mainWindow.showOutputModal("Error", outputMsg, "sm");
+                        } else {
+                            outputMsg = `${res.msg}<br/><br/><h4>Log:</h4><div class="well">Route: ${options.url} <br><br>Response: ${JSON.stringify(res)}</div>`;
+                            mainWindow.showOutputModal("Error", outputMsg, "lg");
+                        }
 
                         // check if this is an authentication error (when logged out)
                         if (res.type == "auth") {
