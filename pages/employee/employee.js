@@ -15,7 +15,7 @@ class employeeForm extends Form {
             const gender = (NIClkUtil.getGender(nic)).toString().capitalize();
 
             // fill form elements
-            $(`#${this.formId} #dobirth`).val(dateOfBirth);
+            $(`#${this.formId} #birthDate`).val(dateOfBirth);
 
             $(`#${this.formId} #genderId`).children("option").each(function () {
                 $(this).removeAttr("selected");
@@ -165,7 +165,7 @@ const showNewEntryModal = () => {
     $("#mainForm #number").val("Employee number will be displayed after adding.");
 
     // set date of assignment
-    $("#mainForm #doassignment").val(new Date().today());
+    $("#mainForm #addedDate").val(new Date().today());
 
     $("#modalMainFormTitle").text("Add New Employee");
     $("#modalMainForm").modal("show");
