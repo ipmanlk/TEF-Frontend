@@ -104,6 +104,10 @@ const getRoutes = () => {
             title: "Customer View",
             path: "./pages/customer/customer.html"
         },
+        "material": {
+            title: "Material View",
+            path: "./pages/material/material.html"
+        },
         "noauth": {
             title: "Auth Failure",
             path: "./pages/noauth.html"
