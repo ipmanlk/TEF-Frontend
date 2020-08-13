@@ -284,7 +284,11 @@ class Form {
             if (!isValid) {
                 errors += `${vi.error}<br/>`
             } else {
-                entry[elementId] = $(`#${this.formId} #${elementId}`).val();
+                // ignore if input is a file (base64 is already set above)
+                if ((element.attr("type") == "file")) continue;
+
+                // set values for entry object
+                entry[elementId] = element.val().trim() == "" ? null : element.val();
             }
         }
 
