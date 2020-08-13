@@ -90,10 +90,9 @@ async function loadModule(permissionStr) {
         return responseData.map(entry => {
             return {
                 "Number": entry.number,
-                "Name": entry.cname,
+                "Name": entry.customerName,
                 "Type": entry.customerType.name,
-                "Mobile": entry.cmobile,
-                "E-Mail": entry.email,
+                "Mobile": entry.customerMobile,
                 "To Be Paid": entry.toBePaid,
                 "Status": entry.customerStatus.name,
                 "View": `<button class="btn btn-success btn-sm" onclick="showEditEntryModal('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
@@ -164,7 +163,7 @@ const showNewEntryModal = () => {
     $("#mainForm #number").val("Customer number will be displayed after adding.");
 
     // set date of assignment
-    $("#mainForm #doregistration").val(new Date().today());
+    $("#mainForm #addedDate").val(new Date().today());
 
     $("#modalMainFormTitle").text("Add New Customer");
     $("#modalMainForm").modal("show");
