@@ -154,7 +154,7 @@ class Form {
         $(`#${this.formId}`).trigger("reset");
         $(`#${this.formId} .form-group`).removeClass("has-error has-success");
         $(`#${this.formId} .form-group`).children(".form-control-feedback").remove();
-        $(`#${this.formId} .photo-input`).attr("src", "../../img/avatar.png");
+        $(`#${this.formId} .photo-input`).attr("src", "../../img/placeholder.png");
         this.selectedEntry = undefined;
 
         this.setButtionsVisibility("add");
