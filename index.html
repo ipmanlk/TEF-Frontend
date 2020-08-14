@@ -15,10 +15,10 @@
 <body>
   <aside class="side-nav" id="show-side-navigation1">
     <i class="fa fa-bars close-aside hidden-sm hidden-md hidden-lg" data-close="show-side-navigation1"></i>
-    <div class="heading">
+    <div class="heading" onclick="loadRoute('dashboard')">
       <img id="imgAvatar" src="./img/avatar.png" alt="">
       <div class="info">
-        <h3><a id="txtEmployeeName" href="./?page=profile">Jhon Doe</a></h3>
+        <h3><a id="txtEmployeeName">Jhon Doe</a></h3>
         <p id="txtEmployeeRole">Unknown</p>
       </div>
     </div>
@@ -28,18 +28,10 @@
     <ul class="categories">
       <li>
         <i class="fa fa-home fa-fw" aria-hidden="true">
-
         </i>
-        <span onclick="loadRoute('dashboard')">Home</span>
-        <!-- <ul class="side-nav-dropdown">
-          <li><a href="#">Lorem ipsum</a></li>
-          <li><a href="#">ipsum dolor</a></li>
-          <li><a href="#">dolor ipsum</a></li>
-          <li><a href="#">amet consectetur</a></li>
-          <li><a href="#">ipsum dolor sit</a></li>
-        </ul> -->
+        <span onclick="loadRoute('dashboard')">Dashboard</span>
       </li>
-      <li><i class="fa fa-user fa-fw"></i><a href="">Admin</a>
+      <li><i class="fa fa-user fa-fw"></i><a>Admin</a>
         <ul class="side-nav-dropdown">
           <li>
             <a onclick="loadRoute('employee')" class="EMPLOYEE LEFTMENU-ITEM">Employee</a>
@@ -61,19 +53,33 @@
           </li>
         </ul>
       </li>
-      <li><i class="fa fa-archive fa-fw"></i><a href="#">Product</a>
+      <li><i class="fa fa-archive fa-fw"></i><a>Product</a>
         <ul class="side-nav-dropdown">
-          <li><a href="#" class="PRODUCT LEFTMENU-ITEM">Product</a></li>
-          <li><a href="#" class="ITEM LEFTMENU-ITEM">Item Package</a></li>
+          <li>
+            <a class="PRODUCT LEFTMENU-ITEM">Product</a>
+          </li>
+          <li>
+            <a class="ITEM LEFTMENU-ITEM">Item Package</a>
+          </li>
         </ul>
       </li>
-      <li><i class="fa fa-shopping-cart fa-fw"></i><a href="#">Purchase</a>
+      <li><i class="fa fa-shopping-cart fa-fw"></i><a>Purchase</a>
         <ul class="side-nav-dropdown">
-          <li><a href="#" class="PURCHASE_ORDER LEFTMENU-ITEM">Purchase Order</a></li>
-          <li><a href="#" class="GRN LEFTMENU-ITEM">GRN</a></li>
-          <li><a href="#" class="SUPPLIER LEFTMENU-ITEM">Supplier</a></li>
-          <li><a href="#" class="METERIAL LEFTMENU-ITEM">Meterial</a></li>
-          <li><a href="#" class="INVOICE LEFTMENU-ITEM">Invoice</a></li>
+          <li>
+            <a class="PURCHASE_ORDER LEFTMENU-ITEM">Purchase Order</a>
+          </li>
+          <li>
+            <a class="GRN LEFTMENU-ITEM">GRN</a>
+          </li>
+          <li>
+            <a class="SUPPLIER LEFTMENU-ITEM">Supplier</a>
+          </li>
+          <li>
+            <a onclick="loadRoute('material')" class="MATERIAL LEFTMENU-ITEM">Meterial</a>
+          </li>
+          <li>
+            <a class="INVOICE LEFTMENU-ITEM">Invoice</a>
+          </li>
         </ul>
       </li>
     </ul>
@@ -86,8 +92,8 @@
             data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
             <i class="fa fa-align-right"></i>
           </button>
-          <a class="navbar-brand">Two Elephants Fireworks | <span id="txtNavbarTitle"
-              class="main-color">Dashboard</span></a>
+          <a class="navbar-brand"><span onclick="loadRoute('dashboard')">Two Elephants Fireworks</span> | <span
+              id="txtNavbarTitle" class="main-color">Dashboard</span></a>
         </div>
         <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
@@ -204,11 +210,9 @@
 
 
         // build privileges from the response and update UI
-
         Object.keys(data.privileges).forEach(moduleName => {
           const permission = data.privileges[moduleName];
           tempData.privileges[moduleName] = permission;
-
           // update ui
           $(".LEFTMENU-ITEM").each((i, menuItem) => {
             if ($(menuItem).hasClass(moduleName)) {
@@ -217,7 +221,6 @@
             }
           });
         });
-
 
 
         // save privilages for later use
