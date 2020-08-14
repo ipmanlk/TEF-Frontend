@@ -125,7 +125,7 @@ const reloadModule = () => {
 const showNewEntryModal = () => {
     mainForm.reset();
     // set currently logged in employee number
-    $("#mainForm #createdNumber").val(mainWindow.tempData.profile.employee.number);
+    $("#mainForm #createdEmployeeNumber").val(mainWindow.tempData.profile.employee.number);
     $("#modalMainFormTitle").text("Add New User");
     $("#modalMainForm").modal("show");
 }
