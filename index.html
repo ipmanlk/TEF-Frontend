@@ -194,6 +194,8 @@
         // show avatar on dhashboard side menu
         const avatarUrl = MiscUtil.getURLfromBuffer(data.employee.photo);
 
+        // set global object
+        tempData.profile = data;
 
         // show employee details
         $("#txtEmployeeName").text(data.employee.fullName);
