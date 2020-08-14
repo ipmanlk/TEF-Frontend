@@ -44,11 +44,6 @@ class UserForm extends Form {
             $(`#${this.formId} #roleIds`).multiSelect("select", ur.roleId.toString());
         });
 
-        // check if this user is already deleted and show / hide delete button
-        if ($(`#${this.formId} #userStatusId option:selected`).text() == "Deleted") {
-            this.hideElement(".btnFmDelete")
-        }
-
         this.setButtionsVisibility("edit");
     }
 }
@@ -97,7 +92,7 @@ async function loadModule(permissionStr) {
     // load main from
     window.mainForm = new UserForm("mainForm", "User Details", permission, validationInfo,
         [
-            { id: "userStatusId", route: "/api/general?data[table]=user_status" }
+            { id: "userStatusId", route: "/api/general?data[table]=user_status", statusField: true }
         ],
         {
             addEntry: addEntry,
@@ -129,6 +124,8 @@ const reloadModule = () => {
 
 const showNewEntryModal = () => {
     mainForm.reset();
+    // set currently logged in employee number
+    $("#mainForm #createdNumber").val(mainWindow.tempData.profile.employee.number);
     $("#modalMainFormTitle").text("Add New User");
     $("#modalMainForm").modal("show");
 }
