@@ -279,7 +279,7 @@ class Form {
                 // when file is selected
                 if (element.prop("files")[0]) {
                     try {
-                        entry[elementId] = await ImageUtil.getBase64FromFile(element.prop("files")[0]);
+                        entry[elementId] = await MiscUtil.getBase64FromFile(element.prop("files")[0]);
                         isValid = this.validateElementValue(vi);
                     } catch (error) {
                         console.log("Base64 from file error", error);
@@ -341,20 +341,26 @@ class Form {
 
         for (let key in newEntryObj) {
 
+            const isFileInput = $(`#${this.formId} #${key}`).attr("type") == "file";
+
             // when file hasn't changed
-            if ($(`#${this.formId} #${key}`).attr("type") == "file" && newEntryObj[key] == false && this.selectedEntry[key] !== false) {
-                console.log(key);
+            if (isFileInput && newEntryObj[key] == false && this.selectedEntry[key] !== false) {
+                console.log("File hasn't changed: ", key);
                 continue;
             }
 
             // compare selected entry and edited entry values
             try {
+                // if selected entry has null values, change them to empty strings
                 selectedEntry[key] = (selectedEntry[key] == null) ? "" : selectedEntry[key];
+                // if new entry obj has null values, change them to empty strings
+                newEntryObj[key] = (newEntryObj[key] == null) ? "" : newEntryObj[key];
+                // compare values in objects
                 if (newEntryObj[key] !== selectedEntry[key].toString()) {
                     dataHasChanged = true;
                 }
             } catch (error) {
-                console.log(key);
+                console.log("Compare error!. Key: ", key);
             }
         }
 
