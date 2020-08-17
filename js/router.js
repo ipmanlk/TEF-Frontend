@@ -112,6 +112,10 @@ const getRoutes = () => {
             title: "Product View",
             path: "./pages/product/product.html"
         },
+        "product_package": {
+            title: "Product Package View",
+            path: "./pages/product_package/product_package.html"
+        },
         "noauth": {
             title: "Auth Failure",
             path: "./pages/noauth.html"
