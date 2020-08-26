@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>TwoElephantFireworks - Supplier</title>
+	<link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../../lib/datatable/datatable.css" />
+	<link rel="stylesheet" type="text/css" href="../../css/pages/common.css" />
+
+	<style>
+		.image-upload label {
+			display: block;
+		}
+
+		.image-upload img {
+			display: inline-block;
+			height: 100px;
+			width: 100px;
+			background-color: black;
+			border-radius: 100px;
+		}
+
+		.image-upload input {
+			margin-top: 10px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container-fluid" style="margin-top: 20px; margin-bottom:100px;">
+
+		<div id="actionButtonHolder" class="row" style="margin-bottom: 20px; padding-left: 35px;">
+			<div class="col-md-12">
+				<button id="btnTopAddEntry" class="btn btn-primary">
+					<i class="glyphicon glyphicon-plus-sign" aria-hidden="true"></i>
+					Add New Supplier
+				</button>
+			</div>
+		</div>
+
+		<div id="mainTableHolder" class="container-fluid" style="margin-top:30px">
+
+		</div>
+
+		<div class="modal fade" id="modalMainForm" role="dialog">
+			<div class="modal-dialog modal-lg">
+				<div class="modal-content" style="margin-bottom: 100px;">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title" id="modalMainFormTitle">Modal Header</h4>
+					</div>
+					<div class="modal-body">
+						<form id="mainForm">
+							<div class="form-group has-feedback">
+								<label for="code">Supplier Code: </label>
+								<input type="text" class="form-control" id="code" name="code" disabled>
+							</div>
+
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group has-feedback">
+										<label for="companyName">Company Name: <span class="required">*</span></label>
+										<input type="text" class="form-control" id="companyName" placeholder="Radya Enterprises"
+											name="companyName" data-editable="true">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group has-feedback">
+										<label for="companyMobile">Company Contact Number: <span class="required">*</span></label>
+										<input type="text" class="form-control" id="companyMobile" placeholder="0714487569"
+											name="companyMobile" data-editable="true">
+									</div>
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group has-feedback">
+										<label for="email">Company E-Mail: <span class="required">*</span></label>
+										<input type="text" class="form-control" id="email" placeholder="companymail@sample.com"
+											name="email" data-editable="true">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group has-feedback">
+										<label for="regNumber">Company Registration Number: <span
+												class="required">*</span></label>
+										<input type="text" class="form-control" id="regNumber" placeholder="RE/12/322"
+											name="regNumber" data-editable="true">
+									</div>
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col-md-4">
+									<div class="form-group has-feedback">
+										<label for="personName">Person Name: <span class="required">*</span></label>
+										<input type="text" class="form-control" id="personName" placeholder="Kasun Mendis"
+											name="personName" data-editable="true">
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-group has-feedback">
+										<label for="personMobile">Person Contact Number: <span class="required">*</span></label>
+										<input type="text" class="form-control" id="personMobile" placeholder="0714487569"
+											name="personMobile" data-editable="true">
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-group has-feedback">
+										<label for="nic">NIC: <span class="required">*</span></label>
+										<input type="text" class="form-control" id="nic" placeholder="980512324V or 1234567890"
+											name="nic" data-editable="true">
+									</div>
+								</div>
+							</div>
+
+
+							<div class="form-group has-feedback image-upload">
+								<label for="photo">Photo: <span class="required">*</span></label>
+								<img class="photo-input" id="photoPreview" src="../../img/product.png">
+								<input type="file" class="form-control" id="photo" name="photo" data-editable="true">
+							</div>
+
+							<div class="form-group has-feedback">
+								<label for="address">Address: <span class="required">*</span></label>
+								<textarea class="form-control" name="address" id="address" cols="30" rows="3"
+									placeholder="80/1, Colombo Rd., Nugegoda." data-editable="true"></textarea>
+							</div>
+
+							<div class="form-group has-feedback">
+								<label for="description">Description: </label>
+								<textarea class="form-control" name="description" id="description" cols="30" rows="3"
+									data-editable="true" placeholder="One of the major suppliers in colombo area."></textarea>
+							</div>
+
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group has-feedback">
+										<label for="addedDate">Added Date: </label>
+										<input type="date" class="form-control" id="addedDate" name="addedDate" disabled>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group has-feedback">
+										<label for="supplierStatusId">Supplier Status: <span class="required">*</span></label>
+										<select name="supplierStatusId" id="supplierStatusId" class="form-control"
+											data-editable="true">
+											<option value="1">Active</option>
+											<option value="2">Terminated</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="form-group has-feedback">
+								<label for="createdEmployeeNumber">Created Employee Number: </label>
+								<input type="text" class="form-control" id="createdEmployeeNumber" name="createdEmployeeNumber"
+									disabled>
+							</div>
+							<div id="fmButtons">
+								<button class="btnFmAdd btn btn-success">Add</button>
+								<button class="btnFmUpdate btn btn-warning">Update</button>
+								<button class="btnFmPrint btn btn-info">Print</button>
+								<button class="btnFmReset btn btn-primary"
+									style="float: right; margin-left: 10px;">Reset</button>
+								<button class="btnFmDelete btn btn-danger" style="float: right;">Delete</button>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<!-- <button id="btnModalYes" type="button" class="btn btn-danger" style="float:left">Yes</button>
+            <button id="btnModalNo" type="button" class="btn btn-default" data-dismiss="modal">No</button> -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- libs -->
+	<script src="../../lib/jquery/jquery.min.js"></script>
+	<script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="../../lib/niclk/niclk.js"></script>
+
+	<script src="../../lib/datatable/datatable.v2.js"></script>
+
+
+	<!-- common stuff -->
+	<script src="../../js/common.js"></script>
+
+	<!-- main js -->
+	<script src="supplier.js"></script>
+</body>
+
+</html>
