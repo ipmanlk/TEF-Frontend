@@ -120,6 +120,10 @@ const getRoutes = () => {
             title: "Supplier View",
             path: "./pages/supplier/supplier.html"
         },
+        "supplier_material": {
+            title: "Supplier Material View",
+            path: "./pages/supplier_material/supplier_material.html"
+        },
         "noauth": {
             title: "Auth Failure",
             path: "./pages/noauth.html"
