@@ -53,6 +53,10 @@ async function loadModule(permissionStr) {
         showNewEntryModal();
     });
 
+    $("#btnTopSupplierMaterial").click(() => {
+        mainWindow.showViewModal("/?page=supplier_material", "50vh");
+    });
+
     // catch promise rejections
     $(window).on("unhandledrejection", (event) => {
         console.error("Unhandled rejection (promise: ", event.promise, ", reason: ", event.reason, ").");
