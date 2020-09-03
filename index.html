@@ -143,6 +143,19 @@
     </div>
   </div>
 
+  <!-- modal for showing different pages -->
+  <div class="modal fade" id="modalView" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body" id="modalOutputBody">
+          <iframe id="modalViewIframe" frameborder="0" style="width: 100%; height: 100%"></iframe>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- modal for confirming -->
   <div class="modal fade" id="modalConfirm" role="dialog">
@@ -279,6 +292,13 @@
       $("#modalOutputBody").html("Unknown");
       $("#modalOutputBody").html(body);
       $("#modalOutput").modal();
+    }
+
+    // controls modal for showing different views inside iframe
+    const showViewModal = (src, height = "100vh") => {
+      $("#modalViewIframe").attr("src", src);
+      $("#modalViewIframe").css("min-height", height);
+      $("#modalView").modal();
     }
 
     // controls toast for showing various outputs

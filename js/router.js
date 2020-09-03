@@ -43,6 +43,7 @@ const updateRouteInfo = () => {
         showOutputModal,
         showConfirmModal,
         showOutputToast,
+        showViewModal,
         tempData,
         loadRoute
     }
