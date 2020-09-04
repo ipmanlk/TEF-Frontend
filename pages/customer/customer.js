@@ -19,16 +19,7 @@ class customerForm extends Form {
             // 1 = individual
             // 2 = company
             const val = e.target.value;
-            if (val == 1) {
-                $(`#${this.formId} .company_info`).fadeOut();
-
-                // reset company name value
-                $(`#${this.formId} #cpname`).val("");
-                $(`#${this.formId} #cpmobile`).val("");
-
-            } else {
-                $(`#${this.formId} .company_info`).fadeIn();
-            }
+            this.updateFormUI(val);
         });
     }
 
@@ -60,10 +51,23 @@ class customerForm extends Form {
 
         // show hide customer type components
         const customerTypeId = $(`#${this.formId} #customerTypeId`).val();
+        this.updateFormUI(customerTypeId);
+    }
+
+    updateFormUI(customerTypeId) {
         if (customerTypeId == 1) {
             $(`#${this.formId} .company_info`).fadeOut();
+
+            // reset company name value
+            $(`#${this.formId} #cpname`).val("");
+            $(`#${this.formId} #cpmobile`).val("");
+
+            $(`#${this.formId} label[for=customerName]`).text("Customer Name: ");
+            $(`#${this.formId} label[for=email]`).text("E-Mail: ");
         } else {
             $(`#${this.formId} .company_info`).fadeIn();
+            $(`#${this.formId} label[for=customerName]`).text("Contact Person Name: ");
+            $(`#${this.formId} label[for=email]`).text("Company E-Mail: ");
         }
     }
 }
