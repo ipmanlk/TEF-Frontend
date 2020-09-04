@@ -165,8 +165,7 @@ class Form {
     enableReadOnly = () => {
         $(`#${this.formId} .form-group`).children().each((i, el) => {
             if ($(el).data("editable") == true) {
-                $(el).attr("readonly", true);
-                $(el).attr("disabled", true);
+                $(el).css("pointer-events", "none");
                 $(el).addClass("no-outline");
                 $(".form-group").removeClass("has-error has-success");
                 $(".form-group").children(".form-control-feedback").remove();
@@ -179,8 +178,7 @@ class Form {
     disableReadOnly = () => {
         $(`#${this.formId} .form-group`).children().each((i, el) => {
             if ($(el).data("editable") == true) {
-                $(el).attr("readonly", false);
-                $(el).attr("disabled", false);
+                $(el).css("pointer-events", "inherit");
                 $(el).removeClass("no-outline");
             }
         });
