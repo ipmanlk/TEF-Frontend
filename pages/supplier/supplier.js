@@ -1,46 +1,3 @@
-class supplierForm extends Form {
-    // overwrrite register additional event listners from method
-    loadAddons() {
-        $(`#${this.formId} #photo`).on("change", (e) => {
-            let photo = e.target;
-            if (photo.files && photo.files[0]) {
-                $(`#${this.formId} #photoPreview`).attr("src", URL.createObjectURL(photo.files[0]));
-            }
-        });
-    }
-
-    // overwrrite load entry
-    loadEntry = (entry) => {
-        this.reset();
-        this.selectedEntry = entry;
-
-        // load entry values to form
-        Object.keys(entry).forEach(key => {
-            // ignore file uploads
-            if ($(`#${this.formId} #${key}`).attr("type") == "file") return;
-
-            // ignore dropdown values
-            if (this.dropdownIds.indexOf(key) !== -1) return;
-
-            // set value in the form input
-            $(`#${this.formId} #${key}`).val(entry[key]);
-        });
-
-        // select dropdown values
-        this.dropdownIds.forEach(dropdownId => {
-            this.selectDropdownOptionByValue(dropdownId, entry[dropdownId]);
-        });
-
-        // set profile picture preview
-        const imageURL = MiscUtil.getURLfromBuffer(entry.photo);
-
-        $(`#${this.formId} #photoPreview`).attr("src", imageURL);
-
-
-        this.setButtionsVisibility("edit");
-    }
-}
-
 /*-------------------------------------------------------------------------------------------------------
                                             General
 -------------------------------------------------------------------------------------------------------*/
@@ -77,7 +34,7 @@ async function loadModule(permissionStr) {
     window.mainTable = new DataTable("mainTableHolder", "/api/suppliers", permission, dataBuilderFunction, "Supplier List");
 
     // load main form
-    window.mainForm = new supplierForm("mainForm", "Supplier Details", permission, validationInfo,
+    window.mainForm = new Form("mainForm", "Supplier Details", permission, validationInfo,
         [
             { id: "supplierStatusId", route: "/api/general?data[table]=supplier_status" },
         ],
