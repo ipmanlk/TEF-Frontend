@@ -108,28 +108,35 @@ class Form {
             let label, data;
 
             const firstChild = $(el);
-            const secondChild = $(el).next();
+            let secondChild = $(el).next();
 
+            // fix for required input labels
+            if (secondChild.prop('nodeName') == "SPAN" && secondChild.text().trim() == "*") {
+                secondChild = $(el).next().next();
+            }
 
-            if ($(secondChild).prop('nodeName') == "INPUT") {
+            if (secondChild.prop('nodeName') == "INPUT") {
                 type = "text";
-                label = $(firstChild).text();
-                data = $(secondChild).val();
+                label = firstChild.text();
+                data = secondChild.val();
             }
 
             if ($(secondChild).prop('nodeName') == "SELECT") {
                 type = "text";
-                label = $(firstChild).text();
-                data = $(`#${$(secondChild).attr("id")} option:selected`).text();
+                label = firstChild.text();
+                data = $(`#${secondChild.attr("id")} option:selected`).text();
             }
 
             if ($(secondChild).prop('nodeName') == "IMG") {
                 type = "image";
-                label = $(firstChild).text();
-                data = `<img src="${$(secondChild).attr("src")}" width="100px"></img>`
+                label = firstChild.text();
+                data = `<img src="${secondChild.attr("src")}" width="100px"></img>`
             }
 
             if (!type) return;
+
+            // fix for empty data items
+            if (data.trim() == "") data = "Not Provided";
 
             table += `<tr>
                         <td style="width:30%">${label.replace("*", "")}</td>
@@ -474,7 +481,7 @@ class FormUtil {
             const firstChild = $(el);
             const secondChild = $(el).next();
 
-
+            console.log($(secondChild).prop('id'));
             if ($(secondChild).prop('nodeName') == "INPUT") {
                 type = "text";
                 label = $(firstChild).text();
