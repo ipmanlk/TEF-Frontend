@@ -170,25 +170,15 @@ class Form {
     }
 
     enableReadOnly = () => {
-        $(`#${this.formId} .form-group`).children().each((i, el) => {
-            if ($(el).data("editable") == true) {
-                $(el).css("pointer-events", "none");
-                $(el).addClass("no-outline");
-                $(".form-group").removeClass("has-error has-success");
-                $(".form-group").children(".form-control-feedback").remove();
-            }
-        });
-
+        $(`#${this.formId} .form-group`).removeClass("has-error has-success");
+        $(`#${this.formId} .form-group`).children(".form-control-feedback").remove();
+        $(`#${this.formId} .form-group`).addClass("read-only no-outline");
         this.setButtionsVisibility("view");
     }
 
     disableReadOnly = () => {
-        $(`#${this.formId} .form-group`).children().each((i, el) => {
-            if ($(el).data("editable") == true) {
-                $(el).css("pointer-events", "inherit");
-                $(el).removeClass("no-outline");
-            }
-        });
+        console.log("readonly disabled");
+        $(`#${this.formId} .form-group`).removeClass("read-only no-outline");
     }
 
     // load entry from database to the form

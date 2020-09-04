@@ -26,3 +26,7 @@
   text-indent: 1px;
   text-overflow: "";
 }
+
+.read-only {
+  pointer-events: none;
+}
