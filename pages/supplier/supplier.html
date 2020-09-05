@@ -60,39 +60,36 @@
 								<label for="code">Supplier Code: </label>
 								<input type="text" class="form-control" id="code" name="code" disabled>
 							</div>
-
-							<div class="row">
-								<div class="col-md-6">
+							<div class="form-group has-feedback">
+								<label for="supplierTypeId">Supplier Type: <span class="required">*</span></label>
+								<select name="supplierTypeId" id="supplierTypeId" class="form-control"
+									data-editable="true">
+									<option value="1">Active</option>
+									<option value="2">Terminated</option>
+								</select>
+							</div>
+							<div class="row company_info">
+								<div class="col-md-4">
 									<div class="form-group has-feedback">
-										<label for="companyName">Company Name: <span class="required">*</span></label>
+										<label for="companyName">Company Name: </label><span class="required"> *</span>
 										<input type="text" class="form-control" id="companyName"
 											placeholder="Radya Enterprises" name="companyName" data-editable="true">
 									</div>
 								</div>
-								<div class="col-md-6">
+								<div class="col-md-4">
 									<div class="form-group has-feedback">
-										<label for="companyMobile">Company Contact Number: <span
-												class="required">*</span></label>
+										<label for="companyMobile">Company Contact Number: </label><span
+										class="required"> *</span>
 										<input type="text" class="form-control" id="companyMobile"
 											placeholder="0714487569" name="companyMobile" data-editable="true">
 									</div>
 								</div>
-							</div>
-
-							<div class="row">
-								<div class="col-md-6">
+								<div class="col-md-4">
 									<div class="form-group has-feedback">
-										<label for="email">Company E-Mail: <span class="required">*</span></label>
-										<input type="text" class="form-control" id="email"
-											placeholder="companymail@sample.com" name="email" data-editable="true">
-									</div>
-								</div>
-								<div class="col-md-6">
-									<div class="form-group has-feedback">
-										<label for="regNumber">Company Registration Number: <span
-												class="required">*</span></label>
-										<input type="text" class="form-control" id="regNumber" placeholder="RE/12/322"
-											name="regNumber" data-editable="true">
+										<label for="companyRegNumber">Company Registration Number: </label><span
+										class="required"> *</span>
+										<input type="text" class="form-control" id="companyRegNumber"
+											placeholder="RE/12/322" name="companyRegNumber" data-editable="true">
 									</div>
 								</div>
 							</div>
@@ -100,22 +97,23 @@
 							<div class="row">
 								<div class="col-md-4">
 									<div class="form-group has-feedback">
-										<label for="personName">Person Name: <span class="required">*</span></label>
+										<label for="personName">Contact Person Name: </label><span
+										class="required"> *</span>
 										<input type="text" class="form-control" id="personName"
 											placeholder="Kasun Mendis" name="personName" data-editable="true">
 									</div>
 								</div>
 								<div class="col-md-4">
 									<div class="form-group has-feedback">
-										<label for="personMobile">Person Contact Number: <span
-												class="required">*</span></label>
+										<label for="personMobile">Contact Person Mobile: </label><span
+										class="required"> *</span>
 										<input type="text" class="form-control" id="personMobile"
 											placeholder="0714487569" name="personMobile" data-editable="true">
 									</div>
 								</div>
 								<div class="col-md-4">
 									<div class="form-group has-feedback">
-										<label for="nic">NIC: <span class="required">*</span></label>
+										<label for="nic">Contact Person NIC: </label><span class="required"> *</span>
 										<input type="text" class="form-control" id="nic"
 											placeholder="980512324V or 1234567890" name="nic" data-editable="true">
 									</div>
@@ -123,7 +121,13 @@
 							</div>
 
 							<div class="form-group has-feedback">
-								<label for="address">Address: <span class="required">*</span></label>
+								<label for="email">Company E-Mail: </label><span class="required"> *</span>
+								<input type="text" class="form-control" id="email" placeholder="companymail@sample.com"
+									name="email" data-editable="true">
+							</div>
+
+							<div class="form-group has-feedback">
+								<label for="address">Address: <span class="required"> *</span></label>
 								<textarea class="form-control" name="address" id="address" cols="30" rows="3"
 									placeholder="80/1, Colombo Rd., Nugegoda." data-editable="true"></textarea>
 							</div>

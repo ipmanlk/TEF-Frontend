@@ -1,3 +1,70 @@
+class SupplierForm extends Form {
+    // overwrrite register additional event listners from method
+    loadAddons() {
+        // hide company info initially
+        $(`#${this.formId} .company_info`).hide();
+
+        // when supplier type select is changed, show hide components
+        $(`#${this.formId} #supplierTypeId`).on("change", (e) => {
+            // 1 = individual
+            // 2 = company
+            const val = e.target.value;
+            this.updateFormUI(val);
+        });
+    }
+
+    // overwrrite load entry
+    loadEntry = (entry) => {
+        this.reset();
+        this.selectedEntry = entry;
+
+        // load entry values to form
+        Object.keys(entry).forEach(key => {
+            // ignore dropdown values
+            if (this.dropdownIds.indexOf(key) !== -1) return;
+
+            // set value in the form input
+            $(`#${this.formId} #${key}`).val(entry[key]);
+        });
+
+        // select dropdown values
+        this.dropdownIds.forEach(dropdownId => {
+            this.selectDropdownOptionByValue(dropdownId, entry[dropdownId]);
+        });
+
+
+        this.setButtionsVisibility("edit");
+
+        // show hide customer type components
+        const supplierTypeId = $(`#${this.formId} #supplierTypeId`).val();
+        this.updateFormUI(supplierTypeId);
+    }
+
+    updateFormUI(supplierTypeId) {
+        if (supplierTypeId == 1) {
+            $(`#${this.formId} .company_info`).fadeOut();
+
+            // reset company name value
+            $(`#${this.formId} #companyName`).val("");
+            $(`#${this.formId} #companyMobile`).val("");
+            $(`#${this.formId} #companyRegNumber`).val("");
+
+            $(`#${this.formId} label[for=personName]`).text("Supplier Name: ");
+            $(`#${this.formId} label[for=personMobile]`).text("Supplier Contact Number: ");
+            $(`#${this.formId} label[for=nic]`).text("Supplier NIC: ");
+            $(`#${this.formId} label[for=email]`).text("Supplier E-Mail: ");
+
+
+        } else {
+            $(`#${this.formId} .company_info`).fadeIn();
+            $(`#${this.formId} label[for=personName]`).text("Contact Person Name: ");
+            $(`#${this.formId} label[for=personMobile]`).text("Contact Person Mobile: ");
+            $(`#${this.formId} label[for=nic]`).text("Contact Person NIC: ");
+            $(`#${this.formId} label[for=email]`).text("Company E-Mail: ");
+        }
+    }
+}
+
 /*-------------------------------------------------------------------------------------------------------
                                             General
 -------------------------------------------------------------------------------------------------------*/
@@ -34,9 +101,10 @@ async function loadModule(permissionStr) {
     window.mainTable = new DataTable("mainTableHolder", "/api/suppliers", permission, dataBuilderFunction, "Supplier List");
 
     // load main form
-    window.mainForm = new Form("mainForm", "Supplier Details", permission, validationInfo,
+    window.mainForm = new SupplierForm("mainForm", "Supplier Details", permission, validationInfo,
         [
-            { id: "supplierStatusId", route: "/api/general?data[table]=supplier_status" },
+            { id: "supplierStatusId", route: "/api/general?data[table]=supplier_status", statusField: true },
+            { id: "supplierTypeId", "route": "/api/general?data[table]=supplier_type" }
         ],
         {
             addEntry: addEntry,
