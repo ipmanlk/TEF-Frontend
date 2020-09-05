@@ -78,6 +78,12 @@ const showNewEntryModal = () => {
     $("#mainForm #code").val("Code will be displayed after adding.");
     // set date of adding
     $("#mainForm #addedDate").val(new Date().today());
+
+    // set created employee number
+    const employeeNumber = mainWindow.tempData.profile.employee.number;
+    const employeeFullName = mainWindow.tempData.profile.employee.fullName;
+    $("#mainForm #createdEmployee").val(`${employeeNumber} (${employeeFullName})`);
+
     $("#modalMainFormTitle").text("Add New Material");
     $("#modalMainForm").modal("show");
 }
