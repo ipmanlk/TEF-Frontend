@@ -31,7 +31,9 @@ const loadFormDropdowns = async () => {
     $("#materialIds").empty();
 
     suppliers.forEach(sup => {
-        $("#supplierId").append(`<option data-tokens="${sup.code} - ${sup.companyName}" value="${sup.id}">${sup.code} - ${sup.companyName}</option>`);
+        // show company name for companies and person name for individuals
+        let name = sup.companyName ? sup.companyName : sup.personName;
+        $("#supplierId").append(`<option data-tokens="${sup.code} - ${name}" value="${sup.id}">${sup.code} - ${name}</option>`);
     });
 
     materials.forEach(mat => {
