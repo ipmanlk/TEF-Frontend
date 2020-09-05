@@ -167,7 +167,9 @@ const showNewEntryModal = () => {
     $("#mainForm #number").val("Customer number will be displayed after adding.");
 
     // set created employee number
-    $("#mainForm #createdEmployeeNumber").val(mainWindow.tempData.profile.employee.number);
+    const employeeNumber = mainWindow.tempData.profile.employee.number;
+    const employeeFullName = mainWindow.tempData.profile.employee.fullName;
+    $("#mainForm #createdEmployee").val(`${employeeNumber} (${employeeFullName})`);
 
     // set date of assignment
     $("#mainForm #addedDate").val(new Date().today());
