@@ -42,12 +42,16 @@ class customerForm extends Form {
             this.selectDropdownOptionByValue(dropdownId, entry[dropdownId]);
         });
 
-        // check if this customer is already deleted and show / hide delete button
-        if ($(`#${this.formId} #customerStatusId option:selected`).text() == "Deleted") {
-            this.hideElement(".btnFmDelete")
-        }
-
         this.setButtionsVisibility("edit");
+
+        // show, hide delete buttion based on status field 
+        const statusFields = this.dropdownInfoArray.filter(di => di.statusField);
+        if (statusFields.length == 1) {
+            const dropdownId = statusFields[0].id;
+            if ($(`#${this.formId} #${dropdownId} option:selected`).text() == "Deleted") {
+                this.hideElement(".btnFmDelete");
+            }
+        }
 
         // show hide customer type components
         const customerTypeId = $(`#${this.formId} #customerTypeId`).val();
@@ -111,7 +115,7 @@ async function loadModule(permissionStr) {
     // load main form
     window.mainForm = new customerForm("mainForm", "Customer Details", permission, validationInfo,
         [
-            { id: "customerStatusId", route: "/api/general?data[table]=customer_status" },
+            { id: "customerStatusId", route: "/api/general?data[table]=customer_status", statusField: true },
             { id: "customerTypeId", route: "/api/general?data[table]=customer_type" },
             { id: "genderId", route: "/api/general?data[table]=gender" },
         ],
