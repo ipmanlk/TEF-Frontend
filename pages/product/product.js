@@ -10,7 +10,7 @@ class productForm extends Form {
     }
 
     // overwrrite load entry
-    loadEntry = (entry) => {
+    loadEntry(entry) {
         this.reset();
         this.selectedEntry = entry;
 

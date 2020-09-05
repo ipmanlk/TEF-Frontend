@@ -96,7 +96,7 @@ class Form {
         }
     }
 
-    print = () => {
+    print() {
         let table = `<table class="table table-striped">
         <tr><td colspan="2"><h3>${this.formTitle}</h3></tr>`
         $(`#${this.formId} label`).each((i, el) => {
@@ -157,7 +157,7 @@ class Form {
         }, 500);
     }
 
-    reset = () => {
+    reset() {
         $(`#${this.formId}`).trigger("reset");
         $(`#${this.formId} .form-group`).removeClass("has-error has-success");
         $(`#${this.formId} .form-group`).children(".form-control-feedback").remove();
@@ -169,20 +169,20 @@ class Form {
         this.disableReadOnly();
     }
 
-    enableReadOnly = () => {
+    enableReadOnly() {
         $(`#${this.formId} .form-group`).removeClass("has-error has-success");
         $(`#${this.formId} .form-group`).children(".form-control-feedback").remove();
         $(`#${this.formId} .form-group`).addClass("read-only no-outline");
         this.setButtionsVisibility("view");
     }
 
-    disableReadOnly = () => {
+    disableReadOnly() {
         console.log("readonly disabled");
         $(`#${this.formId} .form-group`).removeClass("read-only no-outline");
     }
 
     // load entry from database to the form
-    loadEntry = (entry) => {
+    loadEntry(entry) {
         this.reset();
         this.selectedEntry = entry;
 
@@ -214,7 +214,7 @@ class Form {
     }
 
     // show suitable buttions for view / edit / add
-    setButtionsVisibility = (action) => {
+    setButtionsVisibility(action) {
         switch (action) {
             case "view":
                 this.hideElement(".btnFmAdd");
@@ -243,17 +243,17 @@ class Form {
     }
 
     // hide an element placed within the form
-    hideElement = (selector) => {
+    hideElement(selector) {
         $(`#${this.formId} ${selector}`).hide();
     }
 
     // show an element placed within the form
-    showElement = (selector) => {
+    showElement(selector) {
         $(`#${this.formId} ${selector}`).show();
     }
 
     // check if form is valid. returns an object with status & data
-    validateForm = async () => {
+    async validateForm() {
         let errors = "";
         const entry = {};
 
@@ -299,7 +299,12 @@ class Form {
                 if ((element.attr("type") == "file")) continue;
 
                 // set values for entry object
-                entry[elementId] = element.val().trim() == "" ? null : element.val();
+                if (Array.isArray(element.val())) {
+                    // multiselect value is an array
+                    entry[elementId] = element.val();
+                } else {
+                    entry[elementId] = element.val().trim() == "" ? null : element.val();
+                }
             }
         }
 
@@ -319,7 +324,7 @@ class Form {
     }
 
     // check if form data has changed compared to selected entry. returns a boolean
-    hasDataChanged = async () => {
+    async hasDataChanged() {
         const { status, data } = await this.validateForm();
 
         // if there are errors
