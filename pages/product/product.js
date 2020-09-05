@@ -80,7 +80,7 @@ async function loadModule(permissionStr) {
     // load main form
     window.mainForm = new productForm("mainForm", "Product Details", permission, validationInfo,
         [
-            { id: "categoryId", route: "/api/general?data[table]=category" },
+            { id: "categoryId", route: "/api/general?data[table]=product_category" },
             { id: "riskCategoryId", route: "/api/general?data[table]=risk_category" },
             { id: "unitTypeId", route: "/api/general?data[table]=unit_type" },
             { id: "productStatusId", route: "/api/general?data[table]=product_status", statusField: true },
@@ -135,6 +135,11 @@ const showNewEntryModal = () => {
 
     // change Product code field text
     $("#mainForm #code").val("Product code will be displayed after adding.");
+
+    // set created employee number
+    const employeeNumber = mainWindow.tempData.profile.employee.number;
+    const employeeFullName = mainWindow.tempData.profile.employee.fullName;
+    $("#mainForm #createdEmployee").val(`${employeeNumber} (${employeeFullName})`);
 
     // set date of assignment
     $("#mainForm #addedDate").val(new Date().today());
