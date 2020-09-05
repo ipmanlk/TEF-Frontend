@@ -32,8 +32,17 @@ class SupplierForm extends Form {
             this.selectDropdownOptionByValue(dropdownId, entry[dropdownId]);
         });
 
-
         this.setButtionsVisibility("edit");
+
+
+        // show, hide delete buttion based on status field 
+        const statusFields = this.dropdownInfoArray.filter(di => di.statusField);
+        if (statusFields.length == 1) {
+            const dropdownId = statusFields[0].id;
+            if ($(`#${this.formId} #${dropdownId} option:selected`).text() == "Deleted") {
+                this.hideElement(".btnFmDelete");
+            }
+        }
 
         // show hide customer type components
         const supplierTypeId = $(`#${this.formId} #supplierTypeId`).val();
