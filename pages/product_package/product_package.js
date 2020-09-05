@@ -36,6 +36,8 @@ class productPackageForm extends Form {
 
         $(`#${this.formId} #photoPreview`).attr("src", imageURL);
 
+        // select product code
+        $("#productCode").selectpicker("val", entry.productCode);
 
         this.setButtionsVisibility("edit");
     }
@@ -48,7 +50,7 @@ class productPackageForm extends Form {
 async function loadModule(permissionStr) {
 
     // get regexes for validation and store on window tempData
-    const response = await Request.send("/api/regexes", "GET", {
+    let response = await Request.send("/api/regexes", "GET", {
         data: { module: "PRODUCT_PACKAGE" }
     });
 
@@ -82,7 +84,7 @@ async function loadModule(permissionStr) {
     window.mainForm = new productPackageForm("mainForm", "Product Package Details", permission, validationInfo,
         [
             { id: "productPackageTypeId", route: "/api/general?data[table]=product_package_type" },
-            { id: "productPackageStatusId", route: "/api/general?data[table]=product_package_status" },
+            { id: "productPackageStatusId", route: "/api/general?data[table]=product_package_status", statusField: true },
             { id: "unitTypeId", route: "/api/general?data[table]=unit_type" },
         ],
         {
@@ -96,6 +98,17 @@ async function loadModule(permissionStr) {
     $("#btnTopAddEntry").on("click", () => {
         showNewEntryModal();
     });
+
+    // load product codes dropdown
+    response = await Request.send("/api/products?data[limit]=0", "GET");
+    const products = response.data;
+
+    products.forEach(product => {
+        $("#productCode").append(`<option data-tokens="${product.code} - ${product.name}" value="${product.code}">${product.code} - ${product.name}</option>`)
+    });
+
+    // init bootstrap-select
+    $("#productCode").selectpicker();
 
     // catch promise rejections
     $(window).on("unhandledrejection", (event) => {

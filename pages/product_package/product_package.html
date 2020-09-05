@@ -6,6 +6,7 @@
   <title>TwoElephantFireworks - Product Package</title>
   <link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="../../lib/datatable/datatable.css" />
+  <link rel="stylesheet" type="text/css" href="../../lib/bootstrap-select/css/bootstrap-select.min.css" />
   <link rel="stylesheet" type="text/css" href="../../css/pages/common.css" />
 
   <style>
@@ -58,7 +59,9 @@
               </div>
               <div class="form-group has-feedback">
                 <label for="productCode">Product Code: </label>
-                <input type="text" class="form-control" id="productCode" productCode="code" data-editable="true">
+                <br>
+                <select id="productCode" class="form-control" title="PRO202000000" data-live-search="true" >
+                </select>
               </div>
               <div class="form-group has-feedback">
                 <label for="name">Name: <span class="required">*</span></label>
@@ -182,6 +185,7 @@
   <!-- libs -->
   <script src="../../lib/jquery/jquery.min.js"></script>
   <script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
+  <script src="../../lib/bootstrap-select/js/bootstrap-select.min.js"></script>
 
   <script src="../../lib/datatable/datatable.v2.js"></script>
 
