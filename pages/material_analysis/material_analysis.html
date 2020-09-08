@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>TwoElephantFireworks - Material Analysis</title>
+  <link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../lib/datatable/datatable.css" />
+  <link rel="stylesheet" type="text/css" href="../../lib/bootstrap-select/css/bootstrap-select.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../css/pages/common.css" />
+</head>
+
+<body>
+  <div class="container" style="margin-top: 20px; margin-bottom: 100px">
+    <!-- <div id="actionButtonHolder" class="row" style="margin-bottom: 20px;">
+			<div class="col-md-12">
+				<button id="btnTopAddSupplier" class="btn btn-primary">
+					<i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i>
+					Supplier View
+				</button>
+				<button id="btnTopAddMaterial" class="btn btn-primary">
+					<i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i>
+					Material View
+				</button>
+			</div>
+		</div> -->
+
+    <form id="mainForm">
+      <div class="form-group has-feedback">
+        <label for="productId">Product: <span class="required">*</span></label>
+        <br />
+        <select id="productId" class="form-control" data-live-search="true">
+          <option data-tokens="ketchup mustard" value="1">
+            Hot Dog, Fries and a Soda
+          </option>
+          <option data-tokens="mustard">Burger, Shake and a Smile</option>
+          <option data-tokens="frosting">
+            Sugar, Spice and all things nice
+          </option>
+        </select>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-group has-feedback">
+            <label for="materialId">Material: <span class="required">*</span></label>
+            <br />
+            <select id="materialId" class="form-control" data-live-search="true">
+              <option data-tokens="ketchup mustard" value="1">
+                Hot Dog, Fries and a Soda
+              </option>
+              <option data-tokens="mustard" value="2">
+                Burger, Shake and a Smile
+              </option>
+              <option data-tokens="frosting" value="3">
+                Sugar, Spice and all things nice
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group has-feedback">
+            <label for="amount">Amount: <span class="required">*</span></label>
+            <input type="text" class="form-control" id="amount" placeholder="20.00" name="amount"
+              data-editable="true" />
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group has-feedback">
+            <label for="unitTypeId">Unit Type: <span class="required">*</span></label>
+            <select name="unitTypeId" id="unitTypeId" class="form-control" data-editable="true">
+              <option value="1">Married</option>
+              <option value="2">Not Married</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="form-group">
+            <label style="color: white">button</label>
+            <button id="btnAddToMaterialTable" class="btn btn-primary btn-block">
+              Add to List
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="materialTable">Required Materials List: </label>
+        <table id="materialTable" class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Mateiral Name</th>
+              <th>Amount</th>
+              <th>Unit Type</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div id="fmButtons">
+        <button class="btnFmUpdate btn btn-warning">Update</button>
+        <button class="btnFmReset btn btn-danger" style="float: right">
+          Clear All
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- libs -->
+  <script src="../../lib/jquery/jquery.min.js"></script>
+  <script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
+  <script src="../../lib/bootstrap-select/js/bootstrap-select.min.js"></script>
+  <script src="../../lib/datatable/datatable.v2.js"></script>
+
+  <!-- common stuff -->
+  <script src="../../js/common.js"></script>
+
+  <!-- main js -->
+  <script src="./material_analysis.js"></script>
+</body>
+
+</html>
