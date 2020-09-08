@@ -51,11 +51,25 @@ class Form {
         $(`#${formId}`).on("submit", (e) => e.preventDefault());
 
         // events: buttons
-        $(`#${formId} .btnFmAdd`).on("click", actionBinderObject.addEntry);
-        $(`#${formId} .btnFmUpdate`).on("click", actionBinderObject.updateEntry);
-        $(`#${formId} .btnFmDelete`).on("click", () => { actionBinderObject.deleteEntry(this.selectedEntry.id) });
-        $(`#${formId} .btnFmReset`).on("click", this.reset);
-        $(`#${formId} .btnFmPrint`).on("click", this.print);
+        $(`#${formId} .btnFmAdd`).on("click", () => {
+            actionBinderObject.addEntry.call(this);
+        });
+
+        $(`#${formId} .btnFmUpdate`).on("click", () => {
+            actionBinderObject.updateEntry.call(this);
+        });
+
+        $(`#${formId} .btnFmDelete`).on("click", () => {
+            actionBinderObject.deleteEntry.call(this, this.selectedEntry.id);
+        });
+
+        $(`#${formId} .btnFmReset`).on("click", () => {
+            this.reset.call(this);
+        });
+
+        $(`#${formId} .btnFmPrint`).on("click", () => {
+            this.print.call(this);
+        });
 
         this.loadAddons();
     }
