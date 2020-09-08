@@ -63,16 +63,46 @@ class customerForm extends Form {
             $(`#${this.formId} .company_info`).fadeOut();
 
             // reset company name value
-            $(`#${this.formId} #cpname`).val("");
-            $(`#${this.formId} #cpmobile`).val("");
+            $(`#${this.formId} #companyName`).val("");
+            $(`#${this.formId} #companyMobile`).val("");
 
             $(`#${this.formId} label[for=customerName]`).text("Customer Name: ");
             $(`#${this.formId} label[for=email]`).text("E-Mail: ");
+            $(`#${this.formId} #lblEmailRequired`).hide();
+
+            // update validation info
+            this.setValidationAttributesOptional(["companyName", "companyMobile", "email"]);
+
         } else {
             $(`#${this.formId} .company_info`).fadeIn();
             $(`#${this.formId} label[for=customerName]`).text("Contact Person Name: ");
             $(`#${this.formId} label[for=email]`).text("Company E-Mail: ");
+            $(`#${this.formId} #lblEmailRequired`).show();
+
+            // update validation info
+            this.setValidationAttributesRequired(["companyName", "companyMobile", "email"]);
         }
+    }
+
+
+    // update form input event listeners
+    updateFormInputEventListeners() {
+        this.validationInfoObject.forEach(vi => {
+            // remove existing listeners
+            $(`#${this.formId} #${vi.attribute}`).off();
+            // add new listener
+            $(`#${this.formId} #${vi.attribute}`).on("keyup change", () => {
+                this.validateElementValue(vi);
+            });
+        });
+
+        // when supplier type select is changed, show hide components
+        $(`#${this.formId} #customerTypeId`).on("change", (e) => {
+            // 1 = individual
+            // 2 = company
+            const val = e.target.value;
+            this.updateFormUI(val);
+        });
     }
 }
 
@@ -130,6 +160,9 @@ async function loadModule(permissionStr) {
     $("#btnTopAddEntry").on("click", () => {
         showNewEntryModal();
     });
+
+    // update ui initially to an individual
+    mainForm.updateFormUI(1);
 
     // catch promise rejections
     $(window).on("unhandledrejection", (event) => {
