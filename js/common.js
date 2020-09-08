@@ -410,6 +410,40 @@ class Form {
             }
         });
     }
+
+    // set attributes in validation info object as required
+    setValidationAttributesRequired(attributues = []) {
+        this.validationInfoObject.forEach(vi => {
+            if (attributues.includes(vi.attribute)) {
+                delete vi.optional;
+            }
+        });
+
+        this.updateFormInputEventListeners();
+    }
+
+    // set attributes in validation info object as optional
+    setValidationAttributesOptional(attributues = []) {
+        this.validationInfoObject.forEach(vi => {
+            if (attributues.includes(vi.attribute)) {
+                vi["optional"] = true;
+            }
+        });
+
+        this.updateFormInputEventListeners();
+    }
+
+    // update form input event listeners
+    updateFormInputEventListeners() {
+        this.validationInfoObject.forEach(vi => {
+            // remove existing listeners
+            $(`#${this.formId} #${vi.attribute}`).off();
+            // add new listener
+            $(`#${this.formId} #${vi.attribute}`).on("keyup change", () => {
+                this.validateElementValue(vi);
+            });
+        });
+    }
 }
 
 class FormUtil {
