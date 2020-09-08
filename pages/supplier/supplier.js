@@ -62,6 +62,7 @@ class SupplierForm extends Form {
             $(`#${this.formId} label[for=personMobile]`).text("Supplier Contact Number: ");
             $(`#${this.formId} label[for=nic]`).text("Supplier NIC: ");
             $(`#${this.formId} label[for=email]`).text("Supplier E-Mail: ");
+            $(`#${this.formId} #lblEmailRequired`).hide();
 
 
         } else {
@@ -70,6 +71,7 @@ class SupplierForm extends Form {
             $(`#${this.formId} label[for=personMobile]`).text("Contact Person Mobile: ");
             $(`#${this.formId} label[for=nic]`).text("Contact Person NIC: ");
             $(`#${this.formId} label[for=email]`).text("Company E-Mail: ");
+            $(`#${this.formId} #lblEmailRequired`).show();
         }
     }
 }
@@ -130,6 +132,10 @@ async function loadModule(permissionStr) {
     $("#btnTopSupplierMaterial").click(() => {
         mainWindow.showViewModal("/?page=supplier_material", "50vh");
     });
+
+
+    // set initial form fields to individual type
+    mainForm.updateFormUI(1);
 
     // catch promise rejections
     $(window).on("unhandledrejection", (event) => {
