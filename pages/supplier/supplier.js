@@ -64,6 +64,8 @@ class SupplierForm extends Form {
             $(`#${this.formId} label[for=email]`).text("Supplier E-Mail: ");
             $(`#${this.formId} #lblEmailRequired`).hide();
 
+            // update validation info
+            this.setValidationAttributesOptional(["companyName", "companyMobile", "companyRegNumber", "email"]);
 
         } else {
             $(`#${this.formId} .company_info`).fadeIn();
@@ -72,7 +74,30 @@ class SupplierForm extends Form {
             $(`#${this.formId} label[for=nic]`).text("Contact Person NIC: ");
             $(`#${this.formId} label[for=email]`).text("Company E-Mail: ");
             $(`#${this.formId} #lblEmailRequired`).show();
+
+            // update validation info
+            this.setValidationAttributesRequired(["companyName", "companyMobile", "companyRegNumber", "email"]);
         }
+    }
+
+    // update form input event listeners
+    updateFormInputEventListeners() {
+        this.validationInfoObject.forEach(vi => {
+            // remove existing listeners
+            $(`#${this.formId} #${vi.attribute}`).off();
+            // add new listener
+            $(`#${this.formId} #${vi.attribute}`).on("keyup change", () => {
+                this.validateElementValue(vi);
+            });
+        });
+
+        // when supplier type select is changed, show hide components
+        $(`#${this.formId} #supplierTypeId`).on("change", (e) => {
+            // 1 = individual
+            // 2 = company
+            const val = e.target.value;
+            this.updateFormUI(val);
+        });
     }
 }
 
