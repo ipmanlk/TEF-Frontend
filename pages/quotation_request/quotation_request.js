@@ -30,20 +30,27 @@ async function loadModule(permissionStr) {
 
 const loadFormDropdowns = async () => {
   // define needed attributes
-  let response, suppliers;
+  let response, suppliers, quotationRequestStatuses;
 
   // get data from the api for each dropbox
   response = await Request.send("/api/suppliers?data[limit]=0", "GET");
   suppliers = response.data;
 
+  response = await Request.send("/api/general?data[table]=quotation_request_status", "GET");
+  quotationRequestStatuses = response.data;
+
   // clean existing options and append new data
   $("#supplierId").empty();
-
+  $("#quotationRequestStatusId").empty();
 
   suppliers.forEach(sup => {
     // show company name for companies and person name for individuals
     let name = sup.companyName ? sup.companyName : sup.personName;
     $("#supplierId").append(`<option data-tokens="${sup.code} - ${name}" value="${sup.id}">${name} (${sup.code})</option>`);
+  });
+
+  quotationRequestStatuses.forEach(qs => {
+    $("#quotationRequestStatusId").append(`<option value="${qs.id}">${qs.name}</option>`);
   });
 
   // init bootstrap-select
@@ -72,10 +79,33 @@ const registerEventListeners = () => {
     updateEntry();
   });
 
+  $(".btnFmAdd").on("click", (e) => {
+    e.preventDefault();
+    addEntry();
+  });
+
   $("#supplierId").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
     const selectedSupplierId = e.target.value;
     showSupplierMaterials(selectedSupplierId);
   });
+}
+
+
+/*-------------------------------------------------------------------------------------------------------
+                                          Entry Related Reqeusts
+-------------------------------------------------------------------------------------------------------*/
+const addEntry = async () => {
+  const formData = getFormData();
+
+  console.log(formData);
+  // send post reqeust to save data
+  const response = await Request.send("/api/quotation_requests", "POST", { data: formData });
+
+  // show output modal based on response
+  if (response.status) {
+    mainWindow.showOutputToast("Success!", response.msg);
+    mainWindow.showOutputModal("Quatation request created!.", `<h4>Request Number: ${response.data.qrnumber}</h4>`);
+  }
 }
 
 
@@ -97,9 +127,9 @@ const getFormData = () => {
   $("#materialTable tbody tr").each((i, tr) => {
     const tds = $(tr).children("td");
     const tdMaterialId = $(tds[0]).data("material-id");
-    const requested = $(tds[1]).children().first().is(":checked");
-    const accepted = $(tds[2]).children().first().is(":checked");
-    const received = $(tds[3]).children().first().is(":checked");
+    const requested = $(tds[1]).children().first().is(":checked") ? 1 : 0;
+    const accepted = $(tds[2]).children().first().is(":checked") ? 1 : 0;
+    const received = $(tds[3]).children().first().is(":checked") ? 1 : 0;
     requestMaterials.push({
       materialId: tdMaterialId,
       requested,
