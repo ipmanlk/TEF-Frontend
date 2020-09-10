@@ -593,6 +593,35 @@ class FormUtil {
             }
         });
     }
+
+    // show hide approrpiate buttons
+    static setButtionsVisibility(formId, permission = [], action) {
+        switch (action) {
+            case "view":
+                $(`#${formId} .btnFmAdd`).hide();
+                $(`#${formId} .btnFmUpdate`).hide();
+                $(`#${formId} .btnFmDelete`).hide();
+                $(`#${formId} .btnFmReset`).hide();
+                $(`#${formId} .btnFmPrint`).show();
+                break;
+
+            case "edit":
+                $(`#${formId} .btnFmAdd`).hide();
+                $(`#${formId} .btnFmPrint`).show();
+                if (permission[2] !== 0) $(`#${formId} .btnFmUpdate`).show();
+                if (permission[3] !== 0) $(`#${formId} .btnFmDelete`).show();
+                $(`#${formId} .btnFmReset`).show();
+                break;
+
+            case "add":
+                $(`#${formId} .btnFmUpdate`).hide();
+                $(`#${formId} .btnFmDelete`).hide();
+                $(`#${formId} .btnFmPrint`).hide();
+                $(`#${formId} .btnFmReset`).show();
+                if (permission[0] !== 0) $(`#${formId} .btnFmAdd`).show();
+                break;
+        }
+    }
 }
 
 class MiscUtil {

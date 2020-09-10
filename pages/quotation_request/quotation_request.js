@@ -1,6 +1,7 @@
 const tempData = {
   validationInfo: null,
-  selectedEntry: null
+  selectedEntry: null,
+  permission: null,
 };
 
 /*-------------------------------------------------------------------------------------------------------
@@ -23,16 +24,11 @@ async function loadModule(permissionStr) {
 
   // create an array from permission string
   const permission = permissionStr.split("").map((p) => parseInt(p));
-
+  tempData.permission = permission;
   if (permission[0] == 0) {
-    $(".btnFmAdd").hide();
+    $("#btnTopAddEntry").hide();
   }
-  if (permission[2] == 0) {
-    $(".btnFmUpdate").hide();
-  }
-  if (permission[3] == 0) {
-    $(".btnFmDelete").hide();
-  }
+
 
   // load main table
   const dataBuilderFunction = (responseData) => {
@@ -142,9 +138,10 @@ const addEntry = async () => {
 
   // show output modal based on response
   if (response.status) {
+    $("#modalMainForm").modal("hide");
+    mainTable.reload();
     mainWindow.showOutputToast("Success!", response.msg);
     mainWindow.showOutputModal("Quatation request created!.", `<h4>Request Number: ${response.data.qrnumber}</h4>`);
-
   }
 }
 
@@ -184,6 +181,52 @@ const loadEntry = async (id) => {
     `);
   });
 
+  // save globally
+  tempData.selectedEntry = entry;
+
+  // hide from deleted button when deleted
+  if ($("#mainForm #quotationRequestStatusId option:selected").text() == "Deleted") {
+    $(".btnFmDelete").hide();
+  }
+}
+
+const updateEntry = async () => {
+  const { status, data } = validateForm();
+
+  // set entry id
+  data["id"] = tempData.selectedEntry.id;
+
+  if (!status) {
+    mainWindow.showOutputModal("Sorry!. Please fix these problems first.", data);
+    return;
+  }
+
+  // send post reqeust to save data
+  const response = await Request.send("/api/quotation_requests", "PUT", { data: data });
+
+  // show output modal based on response
+  if (response.status) {
+    $("#modalMainForm").modal("hide");
+    mainTable.reload();
+    mainWindow.showOutputToast("Success!", response.msg);
+  }
+}
+
+
+const deleteEntry = async (id = tempData.selectedEntry.id) => {
+  // get confirmation
+  const confirmation = await mainWindow.showConfirmModal("Confirmation", "Do you really need to delete this entry?");
+  if (!confirmation) return;
+
+  // send post reqeust to save data
+  const response = await Request.send(`/api/quotation_requests?data[id]=${id}`, "DELETE");
+
+  // show output modal based on response
+  if (response.status) {
+    $("#modalMainForm").modal("hide");
+    mainTable.reload();
+    mainWindow.showOutputToast("Success!", response.msg);
+  }
 }
 
 
@@ -193,6 +236,7 @@ const loadEntry = async (id) => {
 const getFormData = () => {
   // data from basic input fields
   const data = {
+    "qrnumber": $("#qrnumber").val(),
     "addedDate": $("#addedDate").val(),
     "dueDate": $("#dueDate").val(),
     "supplierId": $("#supplierId").val(),
@@ -265,12 +309,12 @@ const validateForm = () => {
 
 const reloadModule = () => {
   $("#dueDate").val("");
+  $("#description").val("");
   $("#materialId").selectpicker('deselectAll');
   $("#materialId").selectpicker('refresh');
   $("#supplierId").selectpicker('deselectAll');
   $("#supplierId").selectpicker('refresh');
   $("#materialTable tbody").empty();
-  $("#modalMainForm").modal("hide");
 }
 
 /*-------------------------------------------------------------------------------------------------------
@@ -357,6 +401,8 @@ const showNewEntryModal = () => {
   // reset form values
   reloadModule();
 
+  FormUtil.setButtionsVisibility("mainForm", tempData.permission, "add");
+
   // set created employee number
   const employeeNumber = mainWindow.tempData.profile.employee.number;
   const employeeFullName = mainWindow.tempData.profile.employee.fullName;
@@ -375,4 +421,11 @@ const showEditEntryModal = (id, readOnly = false) => {
   loadEntry(id);
   $("#modalMainFormTitle").text("Edit Material");
   $("#modalMainForm").modal("show");
+
+  if (readOnly) {
+    FormUtil.setButtionsVisibility("mainForm", tempData.permission, "view");
+  } else {
+    FormUtil.setButtionsVisibility("mainForm", tempData.permission, "edit");
+  }
 }
+
