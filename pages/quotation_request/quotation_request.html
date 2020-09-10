@@ -11,122 +11,146 @@
 </head>
 
 <body>
-  <div class="container" style="margin-top: 20px; margin-bottom: 100px">
-    <!-- <div id="actionButtonHolder" class="row" style="margin-bottom: 20px;">
-			<div class="col-md-12">
-				<button id="btnTopAddSupplier" class="btn btn-primary">
-					<i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i>
-					Supplier View
-				</button>
-				<button id="btnTopAddMaterial" class="btn btn-primary">
-					<i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i>
-					Material View
-				</button>
-			</div>
-		</div> -->
+  <div class="container-fluid" style="margin-top: 20px; margin-bottom: 100px">
 
-    <form id="mainForm">
-      <div class="form-group has-feedback">
-        <label for="qrnumber">Request Number: <span class="required">*</span></label>
-        <input type="text" class="form-control" id="qrnumber" name="qrnumber" disabled>
+    <div id="actionButtonHolder" class="row" style="margin-bottom: 20px; padding-left: 35px;">
+      <div class="col-md-12">
+        <button id="btnTopAddEntry" class="btn btn-primary">
+          <i class="glyphicon glyphicon-plus-sign" aria-hidden="true"></i>
+          Create New Quotation Request
+        </button>
       </div>
-      <div class="row">
-        <div class="col-md-6">
-          <div class="form-group has-feedback">
-            <label for="addedDate">Request Date: <span class="required">*</span></label>
-            <input type="date" class="form-control" id="addedDate" name="addedDate" data-editable="true" disabled/>
+    </div>
+
+    <!-- load table with previous quotations -->
+    <div id="mainTableHolder" class="container-fluid" style="margin-top:30px">
+
+    </div>
+
+    <!-- modal with main form -->
+    <div class="modal fade" id="modalMainForm" role="dialog">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="margin-bottom: 100px;">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" id="modalMainFormTitle">Modal Header</h4>
           </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form-group has-feedback">
-            <label for="dueDate">Request Due Date: <span class="required">*</span></label>
-            <input type="date" class="form-control" id="dueDate" name="dueDate" data-editable="true" />
-          </div>
-        </div>
-      </div>
+          <div class="modal-body">
 
-      <div class="form-group">
-        <label for="supplierId">Supplier: <span class="required">*</span></label>
-        <select name="supplierId" id="supplierId" class="form-control" data-editable="true" data-live-search="true">
-          <option value="1">Male</option>
-          <option value="2">Female</option>
-        </select>
-      </div>
-
-      <div class="form-group has-feedback">
-        <label for="description">Description: </label>
-        <textarea class="form-control" name="description" id="description" cols="30" rows="3" data-editable="true"
-          placeholder="We need more information about your items."></textarea>
-      </div>
-
-      <div class="panel panel-default">
-        <div class="panel-heading">Request Materials</div>
-        <div class="panel-body">
-
-          <div class="row">
-            <div class="col-md-8">
+            <form id="mainForm">
               <div class="form-group has-feedback">
-                <label for="materialId">Materials: <span class="required">*</span></label>
-                <select name="materialId" id="materialId" class="form-control" data-editable="true"
+                <label for="qrnumber">Request Number: <span class="required">*</span></label>
+                <input type="text" class="form-control" id="qrnumber" name="qrnumber" disabled>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group has-feedback">
+                    <label for="addedDate">Request Date: <span class="required">*</span></label>
+                    <input type="date" class="form-control" id="addedDate" name="addedDate" data-editable="true"
+                      disabled />
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group has-feedback">
+                    <label for="dueDate">Request Due Date: <span class="required">*</span></label>
+                    <input type="date" class="form-control" id="dueDate" name="dueDate" data-editable="true" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="supplierId">Supplier: <span class="required">*</span></label>
+                <select name="supplierId" id="supplierId" class="form-control" data-editable="true"
                   data-live-search="true">
-                  <option value="1">Married</option>
-                  <option value="2">Not Married</option>
+                  <option value="1">Male</option>
+                  <option value="2">Female</option>
                 </select>
               </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-group">
-                <label style="color: white;">-</label>
-                <button id="btnAddToMaterialTable" class="btn btn-primary btn-block">Add To List</button>
+
+              <div class="form-group has-feedback">
+                <label for="description">Description: </label>
+                <textarea class="form-control" name="description" id="description" cols="30" rows="3"
+                  data-editable="true" placeholder="We need more information about your items."></textarea>
               </div>
-            </div>
-          </div>
 
-          <div class="form-group">
-            <table id="materialTable" class="table table-bordered">
-              <thead>
-                <tr>
-                  <th>Material Name</th>
-                  <th>Requested</th>
-                  <th>Accepted</th>
-                  <th>Received</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-              </tbody>
-            </table>
-          </div>
+              <div class="panel panel-default">
+                <div class="panel-heading">Request Materials</div>
+                <div class="panel-body">
 
+                  <div class="row">
+                    <div class="col-md-8">
+                      <div class="form-group has-feedback">
+                        <label for="materialId">Materials: <span class="required">*</span></label>
+                        <select name="materialId" id="materialId" class="form-control" data-editable="true"
+                          data-live-search="true">
+                          <option value="1">Married</option>
+                          <option value="2">Not Married</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label style="color: white;">-</label>
+                        <button id="btnAddToMaterialTable" class="btn btn-primary btn-block">Add To List</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <table id="materialTable" class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Material Name</th>
+                          <th>Requested</th>
+                          <th>Accepted</th>
+                          <th>Received</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group has-feedback">
+                    <label for="createdEmployee">Requester: </label>
+                    <input type="text" class="form-control" id="createdEmployee" name="createdEmployee" disabled>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group has-feedback">
+                    <label for="quotationRequestStatusId">Request Status: <span class="required">*</span></label>
+                    <select name="quotationRequestStatusId" id="quotationRequestStatusId" class="form-control">
+                      <option value="1">Male</option>
+                      <option value="2">Female</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div id="fmButtons">
+                <button class="btnFmAdd btn btn-success">Add</button>
+                <button class="btnFmUpdate btn btn-warning">Update</button>
+                <button class="btnFmReset btn btn-primary" style="float: right; margin-left: 10px;">Reset</button>
+                <button class="btnFmDelete btn btn-danger" style="float: right;">Delete</button>
+              </div>
+            </form>
+
+          </div>
+          <div class="modal-footer">
+            <!-- <button id="btnModalYes" type="button" class="btn btn-danger" style="float:left">Yes</button>
+    <button id="btnModalNo" type="button" class="btn btn-default" data-dismiss="modal">No</button> -->
+          </div>
         </div>
       </div>
+    </div>
 
-      <div class="row">
-        <div class="col-md-6">
-          <div class="form-group has-feedback">
-            <label for="createdEmployee">Requester: </label>
-            <input type="text" class="form-control" id="createdEmployee" name="createdEmployee" disabled>
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="form-group has-feedback">
-            <label for="quotationRequestStatusId">Request Status: <span class="required">*</span></label>
-            <select name="quotationRequestStatusId" id="quotationRequestStatusId" class="form-control">
-              <option value="1">Male</option>
-              <option value="2">Female</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div id="fmButtons">
-        <button class="btnFmAdd btn btn-success">Add</button>
-        <button class="btnFmUpdate btn btn-warning">Update</button>
-        <button class="btnFmReset btn btn-primary" style="float: right; margin-left: 10px;">Reset</button>
-        <button class="btnFmDelete btn btn-danger" style="float: right;">Delete</button>
-      </div>
-    </form>
   </div>
 
   <!-- libs -->

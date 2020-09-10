@@ -1,8 +1,23 @@
+const tempData = {
+  validationInfo: null,
+  selectedEntry: null
+};
+
 /*-------------------------------------------------------------------------------------------------------
                                             General
 -------------------------------------------------------------------------------------------------------*/
 
 async function loadModule(permissionStr) {
+
+  // get regexes for validation and store on window tempData
+  const response = await Request.send("/api/regexes", "GET", {
+    data: { module: "QUOTATION_REQUEST" }
+  });
+
+  tempData.validationInfo = response.data;
+
+  FormUtil.enableRealtimeValidation(tempData.validationInfo);
+
   await loadFormDropdowns();
   registerEventListeners();
 
@@ -19,13 +34,24 @@ async function loadModule(permissionStr) {
     $(".btnFmDelete").hide();
   }
 
-  // set created employee name and number
-  const employeeNumber = mainWindow.tempData.profile.employee.number;
-  const employeeFullName = mainWindow.tempData.profile.employee.fullName;
-  $("#mainForm #createdEmployee").val(`${employeeFullName} (${employeeNumber})`);
+  // load main table
+  const dataBuilderFunction = (responseData) => {
+    // parse resposne data and return in data table frendly format
+    return responseData.map(entry => {
+      return {
+        "Number": entry.qrnumber,
+        "Supplier": entry.supplier.companyName ? entry.supplier.companyName : entry.supplier.personName,
+        "Added Date": entry.addedDate,
+        "Due Date": entry.dueDate,
+        "Status": entry.quotationRequestStatus.name,
+        "View": `<button class="btn btn-success btn-sm" onclick="showEditEntryModal('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
+        "Edit": `<button class="btn btn-warning btn-sm" onclick="showEditEntryModal('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
+        "Delete": `${entry.quotationRequestStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
+      }
+    });
+  }
 
-  // set date of adding
-  $("#mainForm #addedDate").val(new Date().today());
+  window.mainTable = new DataTable("mainTableHolder", "/api/quotation_requests", permission, dataBuilderFunction, "Quatation Request List");
 }
 
 const loadFormDropdowns = async () => {
@@ -61,7 +87,7 @@ const loadFormDropdowns = async () => {
   showSupplierMaterials(suppliers[0].id);
 }
 
-// event listeners for form inputs
+// event listeners for form inputs and buttons
 const registerEventListeners = () => {
   $("#btnAddToMaterialTable").on("click", (e) => {
     e.preventDefault();
@@ -70,8 +96,7 @@ const registerEventListeners = () => {
 
   $(".btnFmReset").on("click", (e) => {
     e.preventDefault();
-    $("#materialTable tbody").empty();
-    $("#amount").val("");
+    reloadModule();
   });
 
   $(".btnFmUpdate").on("click", (e) => {
@@ -84,6 +109,16 @@ const registerEventListeners = () => {
     addEntry();
   });
 
+  $(".btnFmDelete").on("click", (e) => {
+    e.preventDefault();
+    deleteEntry();
+  });
+
+  $("#btnTopAddEntry").on("click", (e) => {
+    e.preventDefault();
+    showNewEntryModal();
+  });
+
   $("#supplierId").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
     const selectedSupplierId = e.target.value;
     showSupplierMaterials(selectedSupplierId);
@@ -92,20 +127,63 @@ const registerEventListeners = () => {
 
 
 /*-------------------------------------------------------------------------------------------------------
-                                          Entry Related Reqeusts
+                                Entry Related Requests (POST, PUT, DELETE)
 -------------------------------------------------------------------------------------------------------*/
 const addEntry = async () => {
-  const formData = getFormData();
+  const { status, data } = validateForm();
 
-  console.log(formData);
+  if (!status) {
+    mainWindow.showOutputModal("Sorry!. Please fix these problems first.", data);
+    return;
+  }
+
   // send post reqeust to save data
-  const response = await Request.send("/api/quotation_requests", "POST", { data: formData });
+  const response = await Request.send("/api/quotation_requests", "POST", { data: data });
 
   // show output modal based on response
   if (response.status) {
     mainWindow.showOutputToast("Success!", response.msg);
     mainWindow.showOutputModal("Quatation request created!.", `<h4>Request Number: ${response.data.qrnumber}</h4>`);
+
   }
+}
+
+const loadEntry = async (id) => {
+  // reset form data
+  reloadModule();
+
+  // get entry data from db and show in the form
+  const response = await Request.send("/api/quotation_requests", "GET", { data: { id: id } });
+  const entry = response.data;
+
+  // fill form inputs
+  $("#qrnumber").val(entry.qrnumber);
+  $("#addedDate").val(entry.addedDate);
+  $("#dueDate").val(entry.dueDate);
+  $("#description").val(entry.description);
+  $("#createdEmployee").val(entry.createdEmployee);
+
+  // select dropdowns
+  FormUtil.selectDropdownOptionByValue("quotationRequestStatusId", entry.quotationRequestStatus.id);
+
+  // select multi select dropdown values
+  $("#supplierId").selectpicker("val", entry.supplier.id);
+
+  // load material table
+  entry.quotationRequestMaterials.forEach(qrm => {
+    $("#materialTable tbody").append(`
+    <tr>
+        <td data-material-id="${qrm.material.id}">${qrm.material.name} (${qrm.material.code})</td>
+        <td><input type="checkbox" value="" class="chkRequested" ${qrm.requested ? "checked" : ""}></td>
+        <td><input type="checkbox" value="" class="chkAccepted" ${qrm.accepted ? "checked" : ""}></td>
+        <td><input type="checkbox" value="" class="chkReceived" ${qrm.received ? "checked" : ""}></td>
+        <td>
+            <button onClick="removeFromMaterialTable(this)" class="btn btn-danger btn-xs">Delete</button>
+        </td>
+    </tr>
+    `);
+  });
+
 }
 
 
@@ -144,6 +222,57 @@ const getFormData = () => {
   return data;
 }
 
+const validateForm = () => {
+  // store error msgs
+  let errors = "";
+
+  // validate regular inputs
+  tempData.validationInfo.forEach(vi => {
+    // validate each field
+    FormUtil.validateElementValue(vi);
+    // get element values
+    const value = $(`#${vi.attribute}`).val();
+    // regex
+    const regex = new RegExp(vi.regex);
+    // ignore empty optional values
+    if (vi.optional && value.trim() == "") return;
+
+    if (!regex.test(value)) {
+      errors += `${vi.error}<br/>`
+    }
+  });
+
+  // validate mini table
+  const formData = getFormData();
+  const requestMaterials = formData.requestMaterials;
+
+  if (requestMaterials.length == 0) {
+    errors += "Please select at least one material!.";
+  }
+
+  if (errors == "") {
+    return {
+      status: true,
+      data: formData
+    }
+  }
+
+  return {
+    status: false,
+    data: errors
+  }
+}
+
+const reloadModule = () => {
+  $("#dueDate").val("");
+  $("#materialId").selectpicker('deselectAll');
+  $("#materialId").selectpicker('refresh');
+  $("#supplierId").selectpicker('deselectAll');
+  $("#supplierId").selectpicker('refresh');
+  $("#materialTable tbody").empty();
+  $("#modalMainForm").modal("hide");
+}
+
 /*-------------------------------------------------------------------------------------------------------
                                             Supplier Materials
 -------------------------------------------------------------------------------------------------------*/
@@ -163,7 +292,6 @@ const showSupplierMaterials = async (supplierId) => {
   // init selectpicker again for materials
   $("#materialId").selectpicker();
 }
-
 
 /*-------------------------------------------------------------------------------------------------------
                                            Material Table
@@ -213,9 +341,38 @@ const addToMaterialTable = () => {
           <button onClick="removeFromMaterialTable(this)" class="btn btn-danger btn-xs">Delete</button>
       </td>
   </tr>
-`);
+  `);
 }
 
 const removeFromMaterialTable = (button) => {
   $(button).parent().parent().remove();
+}
+
+
+/*-------------------------------------------------------------------------------------------------------
+                                            Modals
+-------------------------------------------------------------------------------------------------------*/
+
+const showNewEntryModal = () => {
+  // reset form values
+  reloadModule();
+
+  // set created employee number
+  const employeeNumber = mainWindow.tempData.profile.employee.number;
+  const employeeFullName = mainWindow.tempData.profile.employee.fullName;
+  $("#mainForm #createdEmployee").val(`${employeeNumber} (${employeeFullName})`);
+  // set modal title
+  $("#modalMainFormTitle").text("Create new quotation request");
+  // set date of adding
+  $("#mainForm #addedDate").val(new Date().today());
+  // empty qrnumber
+  $("#mainForm #qrnumber").val("Request number will be displayed after adding.");
+  // show modal
+  $("#modalMainForm").modal("show");
+}
+
+const showEditEntryModal = (id, readOnly = false) => {
+  loadEntry(id);
+  $("#modalMainFormTitle").text("Edit Material");
+  $("#modalMainForm").modal("show");
 }
