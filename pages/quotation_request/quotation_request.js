@@ -92,7 +92,7 @@ const registerEventListeners = () => {
 
   $(".btnFmReset").on("click", (e) => {
     e.preventDefault();
-    reloadModule();
+    resetForm();
   });
 
   $(".btnFmUpdate").on("click", (e) => {
@@ -139,16 +139,13 @@ const addEntry = async () => {
   // show output modal based on response
   if (response.status) {
     $("#modalMainForm").modal("hide");
-    mainTable.reload();
+    reloadModule();
     mainWindow.showOutputToast("Success!", response.msg);
     mainWindow.showOutputModal("Quatation request created!.", `<h4>Request Number: ${response.data.qrnumber}</h4>`);
   }
 }
 
 const loadEntry = async (id) => {
-  // reset form data
-  reloadModule();
-
   // get entry data from db and show in the form
   const response = await Request.send("/api/quotation_requests", "GET", { data: { id: id } });
   const entry = response.data;
@@ -170,6 +167,7 @@ const loadEntry = async (id) => {
   entry.quotationRequestMaterials.forEach(qrm => {
     $("#materialTable tbody").append(`
     <tr>
+        <td></td>
         <td data-material-id="${qrm.material.id}">${qrm.material.name} (${qrm.material.code})</td>
         <td><input type="checkbox" value="" class="chkRequested" ${qrm.requested ? "checked" : ""}></td>
         <td><input type="checkbox" value="" class="chkAccepted" ${qrm.accepted ? "checked" : ""}></td>
@@ -180,6 +178,9 @@ const loadEntry = async (id) => {
     </tr>
     `);
   });
+
+  // update index values
+  updateMaterialTableIndex();
 
   // save globally
   tempData.selectedEntry = entry;
@@ -207,7 +208,7 @@ const updateEntry = async () => {
   // show output modal based on response
   if (response.status) {
     $("#modalMainForm").modal("hide");
-    mainTable.reload();
+    reloadModule();
     mainWindow.showOutputToast("Success!", response.msg);
   }
 }
@@ -224,7 +225,7 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
   // show output modal based on response
   if (response.status) {
     $("#modalMainForm").modal("hide");
-    mainTable.reload();
+    reloadModule();
     mainWindow.showOutputToast("Success!", response.msg);
   }
 }
@@ -248,10 +249,10 @@ const getFormData = () => {
   const requestMaterials = [];
   $("#materialTable tbody tr").each((i, tr) => {
     const tds = $(tr).children("td");
-    const tdMaterialId = $(tds[0]).data("material-id");
-    const requested = $(tds[1]).children().first().is(":checked") ? 1 : 0;
-    const accepted = $(tds[2]).children().first().is(":checked") ? 1 : 0;
-    const received = $(tds[3]).children().first().is(":checked") ? 1 : 0;
+    const tdMaterialId = $(tds[1]).data("material-id");
+    const requested = $(tds[2]).children().first().is(":checked") ? 1 : 0;
+    const accepted = $(tds[3]).children().first().is(":checked") ? 1 : 0;
+    const received = $(tds[4]).children().first().is(":checked") ? 1 : 0;
     requestMaterials.push({
       materialId: tdMaterialId,
       requested,
@@ -308,6 +309,11 @@ const validateForm = () => {
 }
 
 const reloadModule = () => {
+  resetForm();
+  mainTable.reload();
+}
+
+const resetForm = () => {
   $("#dueDate").val("");
   $("#description").val("");
   $("#materialId").selectpicker('deselectAll');
@@ -315,6 +321,8 @@ const reloadModule = () => {
   $("#supplierId").selectpicker('deselectAll');
   $("#supplierId").selectpicker('refresh');
   $("#materialTable tbody").empty();
+  $("#mainForm *").removeClass("has-error has-success");
+  $("#mainForm .form-control-feedback").remove();
 }
 
 /*-------------------------------------------------------------------------------------------------------
@@ -360,7 +368,7 @@ const addToMaterialTable = () => {
   let isDuplicate = false;
   $("#materialTable tbody tr").each((i, tr) => {
     const tds = $(tr).children("td");
-    const tdMaterialId = $(tds[0]).data("material-id");
+    const tdMaterialId = $(tds[1]).data("material-id");
     if (materialId == tdMaterialId) {
       isDuplicate = true;
     }
@@ -377,6 +385,7 @@ const addToMaterialTable = () => {
   // add row to table
   $("#materialTable tbody").append(`
   <tr>
+      <td></td>
       <td data-material-id="${materialId}">${materialName}</td>
       <td><input type="checkbox" value="" class="chkRequested"></td>
       <td><input type="checkbox" value="" class="chkAccepted"></td>
@@ -386,10 +395,23 @@ const addToMaterialTable = () => {
       </td>
   </tr>
   `);
+
+  updateMaterialTableIndex();
+}
+
+
+// updates index column of the mateiral table
+const updateMaterialTableIndex = () => {
+  $("#materialTable tbody tr").each((index, tr) => {
+    const indexTd = $(tr).children().first();
+    indexTd.html(index + 1);
+  });
 }
 
 const removeFromMaterialTable = (button) => {
   $(button).parent().parent().remove();
+
+  updateMaterialTableIndex();
 }
 
 
@@ -399,7 +421,7 @@ const removeFromMaterialTable = (button) => {
 
 const showNewEntryModal = () => {
   // reset form values
-  reloadModule();
+  resetForm();
 
   FormUtil.setButtionsVisibility("mainForm", tempData.permission, "add");
 
@@ -418,6 +440,7 @@ const showNewEntryModal = () => {
 }
 
 const showEditEntryModal = (id, readOnly = false) => {
+  resetForm();
   loadEntry(id);
   $("#modalMainFormTitle").text("Edit Material");
   $("#modalMainForm").modal("show");
