@@ -35,7 +35,6 @@
         </div>
     </div>
 
-    <script src="./js/Request.js"></script>
     <script src="./lib/particles/particles.min.js"></script>
     <script src="./lib/jquery/jquery.min.js"></script>
     <script src="./lib/login/js/login.js"></script>
@@ -50,19 +49,37 @@
 
         const logIn = () => {
             if (!checkStuff()) return;
-            Request.send("/api/login", "POST", {
-                data: {
-                    username: $("#username").val(),
-                    password: $("#password").val()
+
+            // create http request
+            const request = $.ajax({
+                url: "/api/login",
+                contentType: "application/json; charset=utf-8",
+                method: "POST",
+                dataType: "json",
+                data: JSON.stringify({
+                    data: {
+                        username: $("#username").val(),
+                        password: $("#password").val()
+                    }
+                })
+            });
+
+            // when request is completed
+            request.done(function (res) {
+                if (res.status) {
+                    window.location = "./index.html";
+                } else {
+                    msg.style.display = "block";
+                    msg.innerHTML = res.msg;
                 }
-            }).then(res => {
-                window.location = "./index.html";
-            }).catch(e => {
-                msg.style.display = 'block';
-                msg.innerHTML = "Invalid Credentials!";
+            });
+
+            // when server is unreachable or request failed
+            request.fail(function () {
+                msg.style.display = "block";
+                msg.innerHTML = "Unable to contact the server!.";
             });
         }
-
     </script>
 
 </body>
