@@ -110,6 +110,11 @@ const registerEventListeners = () => {
     deleteEntry();
   });
 
+  $(".btnFmPrint").on("click", (e) => {
+    e.preventDefault();
+    printEntry();
+  });
+
   $("#btnTopAddEntry").on("click", (e) => {
     e.preventDefault();
     showNewEntryModal();
@@ -123,7 +128,7 @@ const registerEventListeners = () => {
 
 
 /*-------------------------------------------------------------------------------------------------------
-                                Entry Related Requests (POST, PUT, DELETE)
+                                Entry Related Requests (POST, PUT, DELETE, PRINT)
 -------------------------------------------------------------------------------------------------------*/
 const addEntry = async () => {
   const { status, data } = validateForm();
@@ -230,6 +235,11 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
   }
 }
 
+const printEntry = () => {
+  const pdfHTML = getQuotationRequestPdf(tempData.selectedEntry);
+  const win = window.open("", "Print", "width=1000,height=600");
+  win.document.write(pdfHTML);
+}
 
 /*-------------------------------------------------------------------------------------------------------
                                           Main Form
