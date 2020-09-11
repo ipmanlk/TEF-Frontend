@@ -236,9 +236,7 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
 }
 
 const printEntry = () => {
-  const pdfHTML = getQuotationRequestPdf(tempData.selectedEntry);
-  const win = window.open("", "Print", "width=1000,height=600");
-  win.document.write(pdfHTML);
+  printQuotationRequest(tempData.selectedEntry);
 }
 
 /*-------------------------------------------------------------------------------------------------------

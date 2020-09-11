@@ -1,15 +1,4 @@
-const getQuotationRequestPdf = (selectedEntry) => {
-  let materialRows = "";
-  selectedEntry.quotationRequestMaterials.forEach((rm, index) => {
-    materialRows += `
-      <tr>
-        <td>${index + 1}</td>
-        <td>${rm.material.name}</td>
-      </tr>
-    `
-  });
-  return `
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -17,10 +6,10 @@ const getQuotationRequestPdf = (selectedEntry) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quotation Request</title>
   <!-- libs -->
-  <link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="./quotation_request_pdf.css">
+  <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="./print_template/quotation_request_print.css">
 <style>
-  
+
 </style>
 
 </head>
@@ -30,7 +19,7 @@ const getQuotationRequestPdf = (selectedEntry) => {
       <div class="row">
         <div class="col-xs-7">
           <h1>Quotation Request<small> For Materials</small></h1>
-          <h4 class="text-muted">NO: ${selectedEntry.qrnumber}| Date: ${selectedEntry.addedDate}</h4>
+          <h4 class="text-muted">NO: #{qrnumber} | Date: #{addedDate}</h4>
         </div>
         <div class="col-xs-5">
           <div class="media">
@@ -75,13 +64,13 @@ const getQuotationRequestPdf = (selectedEntry) => {
             <div class="panel-body">
               <dl class="dl-horizontal">
                 <dt>Name</dt>
-                <dd>${selectedEntry.supplier.companyName}</dd>
+                <dd>#{supplierCompanyName}</dd>
                 <dt>Address</dt>
-                <dd>${selectedEntry.supplier.address}</dd>
+                <dd>#{supplierAddress}</dd>
                 <dt>Phone</dt>
-                <dd>${selectedEntry.supplier.companyMobile}</dd>
+                <dd>#{supplierCompanyMobile}</dd>
                 <dt>Email</dt>
-                <dd>${selectedEntry.supplier.email}</dd>
+                <dd>#{supplierEmail}</dd>
                 <dt>&nbsp;</dt>
                 <dd>&nbsp;</dd>
             </div>
@@ -100,7 +89,7 @@ const getQuotationRequestPdf = (selectedEntry) => {
             </tr>
           </thead>
           <tbody>
-              ${materialRows}
+              #{materialRows}
           </tbody>
         </table>
       </div>
@@ -112,7 +101,7 @@ const getQuotationRequestPdf = (selectedEntry) => {
               <i>Comments / Notes</i>
             </div>
             <div class="panel-body">
-              ${selectedEntry.description.trim() == "" ? "None" : selectedEntry.description}
+              #{description}
             </div>
           </div>
         </div>
@@ -122,9 +111,7 @@ const getQuotationRequestPdf = (selectedEntry) => {
 
 
   <!-- libs -->
-  <script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
+  <script src="/lib/bootstrap/js/bootstrap.min.js"></script>
 </body>
 
 </html>
-  `
-}
