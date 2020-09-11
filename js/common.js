@@ -607,7 +607,7 @@ class FormUtil {
 
             case "edit":
                 $(`#${formId} .btnFmAdd`).hide();
-                $(`#${formId} .btnFmPrint`).show();
+                $(`#${formId} .btnFmPrint`).hide();
                 if (permission[2] !== 0) $(`#${formId} .btnFmUpdate`).show();
                 if (permission[3] !== 0) $(`#${formId} .btnFmDelete`).show();
                 $(`#${formId} .btnFmReset`).show();
@@ -621,6 +621,14 @@ class FormUtil {
                 if (permission[0] !== 0) $(`#${formId} .btnFmAdd`).show();
                 break;
         }
+    }
+
+    static enableReadOnly(formId) {
+        $(`#${formId} .form-group`).addClass("read-only");
+    }
+
+    static disableReadOnly(formId) {
+        $(`#${formId} .form-group`).removeClass("read-only");
     }
 }
 

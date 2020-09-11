@@ -423,8 +423,10 @@ const showEditEntryModal = (id, readOnly = false) => {
   $("#modalMainForm").modal("show");
 
   if (readOnly) {
+    FormUtil.enableReadOnly("mainForm");
     FormUtil.setButtionsVisibility("mainForm", tempData.permission, "view");
   } else {
+    FormUtil.disableReadOnly("mainForm");
     FormUtil.setButtionsVisibility("mainForm", tempData.permission, "edit");
   }
 }
