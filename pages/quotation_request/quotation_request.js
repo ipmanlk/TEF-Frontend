@@ -80,7 +80,9 @@ const loadFormDropdowns = async () => {
   $("#materialId").selectpicker();
 
   // select initial value
-  showSupplierMaterials(suppliers[0].id);
+  if (suppliers[0]) {
+    showSupplierMaterials(suppliers[0].id);
+  }
 }
 
 // event listeners for form inputs and buttons
