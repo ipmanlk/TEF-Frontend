@@ -394,8 +394,14 @@ const addToModuleList = (moduleId, permission = "0000") => {
     const moduleName = $(`#moduleId option[value=${moduleId}]`).text();
 
     // check if module is already in the list
-    if ($("#moduleTable tbody").html().indexOf(`${moduleName}`) > -1) {
-        window.alert("You can't add same one twice");
+    let isFound = false;
+    $("#moduleTable tbody tr").each((i, tr) => {
+        const mname = $(tr).children().first().next().text();
+        if (mname == moduleName) isFound = true;
+    });
+
+    if (isFound) {
+        window.alert("You can't add same module twice!");
         return;
     }
 
