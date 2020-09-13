@@ -14,7 +14,7 @@ async function loadModule(permissionStr) {
 
   // get regexes for validation and store on window tempData
   const response = await Request.send("/api/regexes", "GET", {
-    data: { module: "QUOTATION_REQUEST" }
+    data: { module: "QUOTATION" }
   });
 
   tempData.validationInfo = response.data;
@@ -30,7 +30,6 @@ async function loadModule(permissionStr) {
   if (permission[0] == 0) {
     $("#btnTopAddEntry").hide();
   }
-
 
   // load main table
   const dataBuilderFunction = (responseData) => {
@@ -54,21 +53,21 @@ async function loadModule(permissionStr) {
 
 const loadFormDropdowns = async () => {
   // define needed attributes
-  let response, suppliers, quotationRequestStatuses, unitTypes;
+  let response, suppliers, quotationStatus, unitTypes;
 
   // get data from the api for each dropbox
   response = await Request.send("/api/suppliers?data[limit]=0", "GET");
   suppliers = response.data;
 
-  response = await Request.send("/api/general?data[table]=quotation_request_status", "GET");
-  quotationRequestStatuses = response.data;
+  response = await Request.send("/api/general?data[table]=quotation_status", "GET");
+  quotationStatus = response.data;
 
   response = await Request.send("/api/general?data[table]=unit_type", "GET");
   unitTypes = response.data;
 
   // clean existing options and append new data
   $("#supplierId").empty();
-  $("#quotationRequestStatusId").empty();
+  $("#quotationStatusId").empty();
   $("#unitTypeId").empty();
 
 
@@ -78,8 +77,8 @@ const loadFormDropdowns = async () => {
     $("#supplierId").append(`<option data-tokens="${sup.code} - ${name}" value="${sup.id}">${name} (${sup.code})</option>`);
   });
 
-  quotationRequestStatuses.forEach(qs => {
-    $("#quotationRequestStatusId").append(`<option value="${qs.id}">${qs.name}</option>`);
+  quotationStatus.forEach(qs => {
+    $("#quotationStatusId").append(`<option value="${qs.id}">${qs.name}</option>`);
   });
 
   unitTypes.forEach(ut => {
@@ -96,7 +95,7 @@ const loadFormDropdowns = async () => {
   // load initial values
   if (suppliers[0]) {
     await showSupplierQuotationRequests(suppliers[0].id);
-    await showQuotationRequestMaterials($("#qrnumber").val());
+    await showQuotationRequestMaterials($("#quotationRequestId").val());
   } else {
     // pass -1 to clear select (combo) boxes
     await showSupplierQuotationRequests(-1);
@@ -146,7 +145,7 @@ const registerEventListeners = () => {
     showSupplierQuotationRequests(selectedSupplierId);
   });
 
-  $("#qrnumber").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+  $("#quotationRequestId").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
     const selectedQuotationId = e.target.value;
     showQuotationRequestMaterials(selectedQuotationId);
   });
@@ -271,32 +270,37 @@ const printEntry = () => {
 const getFormData = () => {
   // data from basic input fields
   const data = {
-    "qrnumber": $("#qrnumber").val(),
-    "addedDate": $("#addedDate").val(),
-    "dueDate": $("#dueDate").val(),
     "supplierId": $("#supplierId").val(),
+    "quotationRequestId": $("#quotationRequestId").val(),
+    "validFrom": $("#validFrom").val(),
+    "validTo": $("#validTo").val(),
+    "addedDate": $("#addedDate").val(),
     "description": $("#description").val(),
-    "quotationRequestStatusId": $("#quotationRequestStatusId").val()
+    "quotationStatusId": $("#quotationStatusId").val()
   }
 
   // get data from materials table
-  const requestMaterials = [];
+  const quotationMaterials = [];
   $("#materialTable tbody tr").each((i, tr) => {
     const tds = $(tr).children("td");
-    const tdMaterialId = $(tds[1]).data("material-id");
-    const requested = $(tds[2]).children().first().is(":checked") ? 1 : 0;
-    const accepted = $(tds[3]).children().first().is(":checked") ? 1 : 0;
-    const received = $(tds[4]).children().first().is(":checked") ? 1 : 0;
-    requestMaterials.push({
+    const tdMaterialId = $(tds[1]).children().children().first().val();
+    const tdPurchasePrice = $(tds[2]).children().first().val();
+    const tdAvailableQty = $(tds[3]).children().first().val();
+    const tdMinimumRequestQty = $(tds[4]).children().first().val();
+    const tdUnitTypeId = $(tds[5]).children().children().first().val();
+
+
+    quotationMaterials.push({
       materialId: tdMaterialId,
-      requested,
-      received,
-      accepted
+      purchasePrice: tdPurchasePrice,
+      availableQty: tdAvailableQty,
+      minimumRequestQty: tdMinimumRequestQty,
+      unitTypeId: tdUnitTypeId
     });
   });
 
   // add request mateirals to data
-  data["requestMaterials"] = requestMaterials;
+  data["quotationMaterials"] = quotationMaterials;
 
   return data;
 }
@@ -375,15 +379,15 @@ const showSupplierQuotationRequests = async (supplierId) => {
   }
 
   // destroy and clear select picker
-  $("#qrnumber").selectpicker("destroy");
-  $("#qrnumber").empty();
+  $("#quotationRequestId").selectpicker("destroy");
+  $("#quotationRequestId").empty();
 
   quotationRequests.forEach(qr => {
-    $("#qrnumber").append(`<option data-tokens="${qr.qrnumber}" value="${qr.id}">${qr.qrnumber}</option>`);
+    $("#quotationRequestId").append(`<option data-tokens="${qr.qrnumber}" value="${qr.id}">${qr.qrnumber}</option>`);
   });
 
   // init selectpicker again
-  $("#qrnumber").selectpicker();
+  $("#quotationRequestId").selectpicker();
 
   // load initial data for materials
   if (quotationRequests[0]) {
@@ -393,7 +397,7 @@ const showSupplierQuotationRequests = async (supplierId) => {
   }
 
   // set event listener again after destroying
-  $("#qrnumber").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+  $("#quotationRequestId").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
     const selectedQuotationId = e.target.value;
     showQuotationRequestMaterials(selectedQuotationId);
   });
