@@ -36,19 +36,19 @@ async function loadModule(permissionStr) {
     // parse resposne data and return in data table frendly format
     return responseData.map(entry => {
       return {
-        "Number": entry.qrnumber,
-        "Supplier": entry.supplier.companyName ? entry.supplier.companyName : entry.supplier.personName,
-        "Added Date": entry.addedDate,
-        "Due Date": entry.dueDate,
-        "Status": entry.quotationRequestStatus.name,
+        "Number": entry.qnumber,
+        "Request Num.": entry.quotationRequest.qrnumber,
+        "Valid From": entry.validFrom,
+        "Valid To": entry.validTo,
+        "Status": entry.quotationStatus.name,
         "View": `<button class="btn btn-success btn-sm" onclick="showEditEntryModal('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
         "Edit": `<button class="btn btn-warning btn-sm" onclick="showEditEntryModal('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
-        "Delete": `${entry.quotationRequestStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
+        "Delete": `${entry.quotationStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
       }
     });
   }
 
-  window.mainTable = new DataTable("mainTableHolder", "/api/quotation_requests", permission, dataBuilderFunction, "Quatation Request List");
+  window.mainTable = new DataTable("mainTableHolder", "/api/quotations", permission, dataBuilderFunction, "Quatations List");
 }
 
 const loadFormDropdowns = async () => {
@@ -164,14 +164,14 @@ const addEntry = async () => {
   }
 
   // send post reqeust to save data
-  const response = await Request.send("/api/quotation_requests", "POST", { data: data });
+  const response = await Request.send("/api/quotations", "POST", { data: data });
 
   // show output modal based on response
   if (response.status) {
     $("#modalMainForm").modal("hide");
     reloadModule();
     mainWindow.showOutputToast("Success!", response.msg);
-    mainWindow.showOutputModal("Quatation request created!.", `<h4>Request Number: ${response.data.qrnumber}</h4>`);
+    mainWindow.showOutputModal("Quatation request created!.", `<h4>Quotation Number: ${response.data.qnumber}</h4>`);
   }
 }
 
@@ -327,10 +327,43 @@ const validateForm = () => {
 
   // validate mini table
   const formData = getFormData();
-  const requestMaterials = formData.requestMaterials;
+  const quotationMaterials = formData.quotationMaterials;
 
-  if (requestMaterials.length == 0) {
-    errors += "Please select at least one material!.";
+  if (quotationMaterials.length == 0) {
+    errors += "Please select at least one material!. <br>";
+  }
+
+  // check for duplicates & invalid values in the material list
+  let foundDuplicates = false;
+  let containsInvalidValues = false;
+
+  const ids = [];
+  $("#materialTable tbody tr").each((i, tr) => {
+    const tds = $(tr).children("td");
+    const tdMaterialId = $(tds[1]).children().children().first().val();
+    if (ids.includes[tdMaterialId]) {
+      foundDuplicates = true;
+    }
+
+    ids.push(tdMaterialId);
+
+    const tdPurchasePrice = $(tds[2]).children().first().val();
+    const tdAvailableQty = $(tds[3]).children().first().val();
+    const tdMinimumRequestQty = $(tds[4]).children().first().val();
+
+    // check if list contains invalid values
+    const regex = /^[\d]{1,7}\.[\d]{2}$/;
+    if (!regex.test(tdPurchasePrice) || !regex.test(tdAvailableQty) || !regex.test(tdMinimumRequestQty)) {
+      containsInvalidValues = true;
+    }
+  });
+
+  if (foundDuplicates) {
+    errors += "Please remove duplicates from material list!. <br>";
+  }
+
+  if (containsInvalidValues) {
+    errors += "There are invalid data in the material list!. Please check again. <br>";
   }
 
   if (errors == "") {
