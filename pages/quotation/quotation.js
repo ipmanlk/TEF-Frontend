@@ -3,7 +3,7 @@ const tempData = {
   selectedEntry: null,
   permission: null,
   quotationRequestMaterials: [],
-  unitTypes: []
+  unitTypes: [],
 };
 
 /*-------------------------------------------------------------------------------------------------------
@@ -177,46 +177,48 @@ const addEntry = async () => {
 
 const loadEntry = async (id) => {
   // get entry data from db and show in the form
-  const response = await Request.send("/api/quotation_requests", "GET", { data: { id: id } });
+  const response = await Request.send("/api/quotations", "GET", { data: { id: id } });
   const entry = response.data;
 
   // fill form inputs
-  $("#qrnumber").val(entry.qrnumber);
+  $("#qnumber").val(entry.qnumber);
   $("#addedDate").val(entry.addedDate);
-  $("#dueDate").val(entry.dueDate);
+  $("#validFrom").val(entry.validFrom);
+  $("#validTo").val(entry.validTo);
+
   $("#description").val(entry.description);
   $("#createdEmployee").val(entry.createdEmployee);
 
   // select dropdowns
-  FormUtil.selectDropdownOptionByValue("quotationRequestStatusId", entry.quotationRequestStatus.id);
+  FormUtil.selectDropdownOptionByValue("quotationStatusId", entry.quotationStatus.id);
 
   // select multi select dropdown values
-  $("#supplierId").selectpicker("val", entry.supplier.id);
+  $("#supplierId").selectpicker("val", entry.quotationRequest.supplierId);
 
-  // load material table
-  entry.quotationRequestMaterials.forEach(qrm => {
-    $("#materialTable tbody").append(`
-    <tr>
-        <td></td>
-        <td data-material-id="${qrm.material.id}">${qrm.material.name} (${qrm.material.code})</td>
-        <td><input type="checkbox" value="" class="chkRequested" ${qrm.requested ? "checked" : ""}></td>
-        <td><input type="checkbox" value="" class="chkAccepted" ${qrm.accepted ? "checked" : ""}></td>
-        <td><input type="checkbox" value="" class="chkReceived" ${qrm.received ? "checked" : ""}></td>
-        <td>
-            <button onClick="removeFromMaterialTable(this)" class="btn btn-danger btn-xs">Delete</button>
-        </td>
-    </tr>
-    `);
+  // load supplier quotation requests first for selecting values
+  await showSupplierQuotationRequests(entry.quotationRequest.supplierId);
+
+  // select appropriate supplier quotation
+  $("#quotationRequestId").selectpicker("val", entry.quotationRequest.id);
+
+  // add to material table
+  $("#materialTable tbody").empty();
+
+  entry.quotationMaterials.forEach(qm => {
+    addRowToMaterialTable({
+      materialId: qm.materialId,
+      availableQty: qm.availableQty,
+      minimumRequestQty: qm.minimumRequestQty,
+      purchasePrice: qm.purchasePrice,
+      unitTypeId: qm.unitTypeId
+    });
   });
-
-  // update index values
-  updateMaterialTableIndex();
 
   // save globally
   tempData.selectedEntry = entry;
 
-  // hide from deleted button when deleted
-  if ($("#mainForm #quotationRequestStatusId option:selected").text() == "Deleted") {
+  // // hide from deleted button when deleted
+  if ($("#mainForm #quotationStatusId option:selected").text() == "Deleted") {
     $(".btnFmDelete").hide();
   }
 }
@@ -233,7 +235,7 @@ const updateEntry = async () => {
   }
 
   // send post reqeust to save data
-  const response = await Request.send("/api/quotation_requests", "PUT", { data: data });
+  const response = await Request.send("/api/quotations", "PUT", { data: data });
 
   // show output modal based on response
   if (response.status) {
@@ -250,7 +252,7 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
   if (!confirmation) return;
 
   // send post reqeust to save data
-  const response = await Request.send(`/api/quotation_requests?data[id]=${id}`, "DELETE");
+  const response = await Request.send(`/api/quotations?data[id]=${id}`, "DELETE");
 
   // show output modal based on response
   if (response.status) {
@@ -309,8 +311,14 @@ const validateForm = () => {
   // store error msgs
   let errors = "";
 
+  // ignored inputs for form validation
+  const ignoredAttributes = ["availableQty", "minimumRequestQty", "purchasePrice"];
+
   // validate regular inputs
   tempData.validationInfo.forEach(vi => {
+
+    if (ignoredAttributes.includes(vi.attribute)) return;
+
     // validate each field
     FormUtil.validateElementValue(vi);
     // get element values
@@ -526,58 +534,68 @@ const addToMaterialTable = () => {
     return;
   }
 
+  addRowToMaterialTable({
+    materialId, availableQty, minimumRequestQty, purchasePrice, unitTypeId
+  });
+}
+
+const addRowToMaterialTable = (row = {}) => {
+  // row data
+  const { materialId, availableQty, minimumRequestQty, purchasePrice, unitTypeId } = row;
+
   // add row to table
   let materialSelectOptions = "";
   tempData.quotationRequestMaterials.forEach(qrm => {
     const mat = qrm.material;
     materialSelectOptions += `
-    <option data-tokens="${mat.code} - ${mat.name}" value="${mat.id}" ${mat.id == materialId ? "selected" : ""}>${mat.name} (${mat.code})</option>
-    `;
+      <option data-tokens="${mat.code} - ${mat.name}" value="${mat.id}" ${mat.id == materialId ? "selected" : ""}>${mat.name} (${mat.code})</option>
+      `;
   });
 
   let unitTypeSelectOptions = "";
   tempData.unitTypes.forEach(ut => {
     unitTypeSelectOptions += `
-      <option value="${ut.id}" ${ut.id == unitTypeId ? "selected" : ""}>${ut.name}</option>
-    `;
+        <option value="${ut.id}" ${ut.id == unitTypeId ? "selected" : ""}>${ut.name}</option>
+      `;
   });
 
   $("#materialTable tbody").append(`
-  <tr>
-      <td></td>
-      <td>
-        <select class="form-control selectpicker" data-live-search="true" value="${materialId}">
-          ${materialSelectOptions}
-        </select>
-      </td>
-      <td>
-        <input class="form-control" type="text" value="20.00">
-      </td>
-      <td>
-        <input class="form-control" type="text" value="20.00">
-      </td>
-      <td>
-        <input class="form-control" type="text" value="20.00">
-      </td>
-      <td>
-        <select class="form-control selectpicker" data-live-search="true" value="${unitTypeId}">
-          ${unitTypeSelectOptions}
-        </select>
-      </td>
-      <td>
-        <button class="btn btn-danger btn-sm" onclick="removeFromMaterialTable(this)">
-          <i class="glyphicon glyphicon-edit" aria-hidden="true"></i> 
-            Delete
-        </button>
-      </td>
-  </tr>
-  `);
+    <tr>
+        <td></td>
+        <td>
+          <select class="form-control selectpicker" data-live-search="true" value="${materialId}">
+            ${materialSelectOptions}
+          </select>
+        </td>
+        <td>
+          <input class="form-control" type="text" value="${purchasePrice}">
+        </td>
+        <td>
+          <input class="form-control" type="text" value="${availableQty}">
+        </td>
+        <td>
+          <input class="form-control" type="text" value="${minimumRequestQty}">
+        </td>
+        <td>
+          <select class="form-control selectpicker" data-live-search="true" value="${unitTypeId}">
+            ${unitTypeSelectOptions}
+          </select>
+        </td>
+        <td>
+          <button class="btn btn-danger btn-sm" onclick="removeFromMaterialTable(this)">
+            <i class="glyphicon glyphicon-edit" aria-hidden="true"></i> 
+              Delete
+          </button>
+        </td>
+    </tr>
+    `);
 
   // init select pickers
   $("#materialTable tbody tr td .selectpicker").selectpicker();
 
   updateMaterialTableIndex();
 }
+
 
 // updates index column of the mateiral table
 const updateMaterialTableIndex = () => {

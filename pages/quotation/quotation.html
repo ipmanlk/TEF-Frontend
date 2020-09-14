@@ -31,171 +31,6 @@
       </div>
     </div>
 
-
-    <form id="mainForm">
-      <div class="form-group has-feedback">
-        <label for="qnumber">Quotation No: <span class="required">*</span></label>
-        <input type="text" class="form-control" id="qnumber" name="qnumber" disabled>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6">
-          <div class="form-group">
-            <label for="supplierId">Supplier: <span class="required">*</span></label>
-            <select name="supplierId" id="supplierId" class="form-control" data-editable="true" data-live-search="true">
-              <option value="1">Male</option>
-              <option value="2">Female</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="form-group has-feedback">
-            <label for="quotationRequestId">Request No: <span class="required">*</span></label>
-            <select name="quotationRequestId" id="quotationRequestId" class="form-control" data-editable="true"
-              data-live-search="true">
-              <option value="1">Male</option>
-              <option value="2">Female</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-4">
-          <div class="form-group has-feedback">
-            <label for="validFrom">Valid Date From: <span class="required">*</span></label>
-            <input type="date" class="form-control" id="validFrom" name="validFrom" data-editable="true" />
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="form-group has-feedback">
-            <label for="validTo">Valid Date To: <span class="required">*</span></label>
-            <input type="date" class="form-control" id="validTo" name="validTo" data-editable="true" />
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="form-group has-feedback">
-            <label for="addedDate" onclick="$('#addedDate').val(new Date().today())">Added Date: <span
-                class="required">*</span></label>
-            <input type="date" class="form-control" id="addedDate" name="addedDate" disabled />
-          </div>
-        </div>
-      </div>
-
-      <div class="form-group has-feedback">
-        <label for="description">Description: </label>
-        <textarea class="form-control" name="description" id="description" cols="30" rows="3" data-editable="true"
-          placeholder="We need more information about your items."></textarea>
-      </div>
-
-      <div class="panel panel-default">
-        <div class="panel-heading">Quotation Materials</div>
-        <div class="panel-body">
-
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group has-feedback">
-                <label for="materialId">Material: <span class="required">*</span></label>
-                <select name="materialId" id="materialId" class="form-control" data-editable="true"
-                  data-live-search="true">
-                  <option value="1">Married</option>
-                  <option value="2">Not Married</option>
-                </select>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group has-feedback">
-                <label for="purchasePrice">Purchase Price: <span class="required">*</span></label>
-                <input type="text" class="form-control" id="purchasePrice" placeholder="20.00" name="purchasePrice"
-                  data-editable="true">
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-4">
-              <div class="form-group has-feedback">
-                <label for="availableQty">Available Qty: <span class="required">*</span></label>
-                <input type="text" class="form-control" id="availableQty" placeholder="20.00" name="availableQty"
-                  data-editable="true">
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-group has-feedback">
-                <label for="minimumRequestQty">Minimum Qty: <span class="required">*</span></label>
-                <input type="text" class="form-control" id="minimumRequestQty" placeholder="20.00"
-                  name="minimumRequestQty" data-editable="true">
-              </div>
-            </div>
-
-            <div class="col-md-4">
-              <div class="form-group has-feedback">
-                <label for="unitTypeId">Unit Type: <span class="required">*</span></label>
-                <select name="unitTypeId" id="unitTypeId" class="form-control" data-editable="true">
-                  <option value="1">Married</option>
-                  <option value="2">Not Married</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <button id="btnAddToMaterialTable" class="btn btn-primary btn-block">Add To List</button>
-          </div>
-
-          <div class="form-group">
-            <table id="materialTable" class="table table-bordered">
-              <thead>
-                <tr>
-                  <th>Index</th>
-                  <th>Name</th>
-                  <th>Purchase Price</th>
-                  <th>Available Qty</th>
-                  <th>Minimum Qty</th>
-                  <th>Unit Type</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-
-              </tbody>
-            </table>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6">
-          <div class="form-group has-feedback">
-            <label for="createdEmployee">Added By: </label>
-            <input type="text" class="form-control" id="createdEmployee" name="createdEmployee" disabled>
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="form-group has-feedback">
-            <label for="quotationStatusId">Quotation Status: <span class="required">*</span></label>
-            <select name="quotationStatusId" id="quotationStatusId" class="form-control">
-              <option value="1">Male</option>
-              <option value="2">Female</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div id="fmButtons">
-        <button class="btnFmPrint btn btn-info">Print</button>
-        <button class="btnFmAdd btn btn-success">Add</button>
-        <button class="btnFmUpdate btn btn-warning">Update</button>
-        <button class="btnFmReset btn btn-primary" style="float: right; margin-left: 10px;">Reset</button>
-        <button class="btnFmDelete btn btn-danger" style="float: right;">Delete</button>
-      </div>
-    </form>
-
     <!-- load table with previous quotations -->
     <div id="mainTableHolder" class="container-fluid" style="margin-top:30px">
 
@@ -210,9 +45,172 @@
             <h4 class="modal-title" id="modalMainFormTitle">Modal Header</h4>
           </div>
           <div class="modal-body">
+            
+            <form id="mainForm">
+              <div class="form-group has-feedback">
+                <label for="qnumber">Quotation No: <span class="required">*</span></label>
+                <input type="text" class="form-control" id="qnumber" name="qnumber" disabled>
+              </div>
 
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="supplierId">Supplier: <span class="required">*</span></label>
+                    <select name="supplierId" id="supplierId" class="form-control" data-editable="true"
+                      data-live-search="true">
+                      <option value="1">Male</option>
+                      <option value="2">Female</option>
+                    </select>
+                  </div>
+                </div>
 
+                <div class="col-md-6">
+                  <div class="form-group has-feedback">
+                    <label for="quotationRequestId">Request No: <span class="required">*</span></label>
+                    <select name="quotationRequestId" id="quotationRequestId" class="form-control" data-editable="true"
+                      data-live-search="true">
+                      <option value="1">Male</option>
+                      <option value="2">Female</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
 
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group has-feedback">
+                    <label for="validFrom">Valid Date From: <span class="required">*</span></label>
+                    <input type="date" class="form-control" id="validFrom" name="validFrom" data-editable="true" />
+                  </div>
+                </div>
+
+                <div class="col-md-4">
+                  <div class="form-group has-feedback">
+                    <label for="validTo">Valid Date To: <span class="required">*</span></label>
+                    <input type="date" class="form-control" id="validTo" name="validTo" data-editable="true" />
+                  </div>
+                </div>
+
+                <div class="col-md-4">
+                  <div class="form-group has-feedback">
+                    <label for="addedDate" onclick="$('#addedDate').val(new Date().today())">Added Date: <span
+                        class="required">*</span></label>
+                    <input type="date" class="form-control" id="addedDate" name="addedDate" disabled />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group has-feedback">
+                <label for="description">Description: </label>
+                <textarea class="form-control" name="description" id="description" cols="30" rows="3"
+                  data-editable="true" placeholder="We need more information about your items."></textarea>
+              </div>
+
+              <div class="panel panel-default">
+                <div class="panel-heading">Quotation Materials</div>
+                <div class="panel-body">
+
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group has-feedback">
+                        <label for="materialId">Material: <span class="required">*</span></label>
+                        <select name="materialId" id="materialId" class="form-control" data-editable="true"
+                          data-live-search="true">
+                          <option value="1">Married</option>
+                          <option value="2">Not Married</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group has-feedback">
+                        <label for="purchasePrice">Purchase Price: <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="purchasePrice" placeholder="20.00"
+                          name="purchasePrice" data-editable="true">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="form-group has-feedback">
+                        <label for="availableQty">Available Qty: <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="availableQty" placeholder="20.00"
+                          name="availableQty" data-editable="true">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group has-feedback">
+                        <label for="minimumRequestQty">Minimum Qty: <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="minimumRequestQty" placeholder="20.00"
+                          name="minimumRequestQty" data-editable="true">
+                      </div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <div class="form-group has-feedback">
+                        <label for="unitTypeId">Unit Type: <span class="required">*</span></label>
+                        <select name="unitTypeId" id="unitTypeId" class="form-control" data-editable="true">
+                          <option value="1">Married</option>
+                          <option value="2">Not Married</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <button id="btnAddToMaterialTable" class="btn btn-primary btn-block">Add To List</button>
+                  </div>
+
+                  <div class="form-group">
+                    <table id="materialTable" class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Index</th>
+                          <th>Name</th>
+                          <th>Purchase Price</th>
+                          <th>Available Qty</th>
+                          <th>Minimum Qty</th>
+                          <th>Unit Type</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group has-feedback">
+                    <label for="createdEmployee">Added By: </label>
+                    <input type="text" class="form-control" id="createdEmployee" name="createdEmployee" disabled>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group has-feedback">
+                    <label for="quotationStatusId">Quotation Status: <span class="required">*</span></label>
+                    <select name="quotationStatusId" id="quotationStatusId" class="form-control">
+                      <option value="1">Male</option>
+                      <option value="2">Female</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div id="fmButtons">
+                <button class="btnFmPrint btn btn-info">Print</button>
+                <button class="btnFmAdd btn btn-success">Add</button>
+                <button class="btnFmUpdate btn btn-warning">Update</button>
+                <button class="btnFmReset btn btn-primary" style="float: right; margin-left: 10px;">Reset</button>
+                <button class="btnFmDelete btn btn-danger" style="float: right;">Delete</button>
+              </div>
+            </form>
+            
           </div>
           <div class="modal-footer">
             <!-- <button id="btnModalYes" type="button" class="btn btn-danger" style="float:left">Yes</button>
