@@ -91,16 +91,7 @@ const loadFormDropdowns = async () => {
   // init bootstrap-select
   $("#supplierId").selectpicker();
   $("#materialId").selectpicker();
-
-  // load initial values
-  if (suppliers[0]) {
-    await showSupplierQuotationRequests(suppliers[0].id);
-    await showQuotationRequestMaterials($("#quotationRequestId").val());
-  } else {
-    // pass -1 to clear select (combo) boxes
-    await showSupplierQuotationRequests(-1);
-    await showQuotationRequestMaterials(-1);
-  }
+  $("#quotationRequestId").selectpicker();
 }
 
 // event listeners for form inputs and buttons
@@ -176,6 +167,8 @@ const addEntry = async () => {
 }
 
 const loadEntry = async (id) => {
+  resetForm();
+
   // get entry data from db and show in the form
   const response = await Request.send("/api/quotations", "GET", { data: { id: id } });
   const entry = response.data;
@@ -195,32 +188,36 @@ const loadEntry = async (id) => {
   // select multi select dropdown values
   $("#supplierId").selectpicker("val", entry.quotationRequest.supplierId);
 
-  // load supplier quotation requests first for selecting values
-  await showSupplierQuotationRequests(entry.quotationRequest.supplierId);
+  setTimeout(async () => {
+    // load supplier quotation requests first for selecting values
+    await showSupplierQuotationRequests(entry.quotationRequest.supplierId);
 
-  // select appropriate supplier quotation
-  $("#quotationRequestId").selectpicker("val", entry.quotationRequest.id);
+    // select appropriate supplier quotation
+    $("#quotationRequestId").selectpicker("val", entry.quotationRequest.id);
 
-  // add to material table
-  $("#materialTable tbody").empty();
+    // add to material table
+    $("#materialTable tbody").empty();
 
-  entry.quotationMaterials.forEach(qm => {
-    addRowToMaterialTable({
-      materialId: qm.materialId,
-      availableQty: qm.availableQty,
-      minimumRequestQty: qm.minimumRequestQty,
-      purchasePrice: qm.purchasePrice,
-      unitTypeId: qm.unitTypeId
+    entry.quotationMaterials.forEach(qm => {
+      addRowToMaterialTable({
+        materialId: qm.materialId,
+        materialName: qm.material.name,
+        availableQty: qm.availableQty,
+        minimumRequestQty: qm.minimumRequestQty,
+        purchasePrice: qm.purchasePrice,
+        unitTypeId: qm.unitTypeId,
+        unitTypeName: qm.material.unitType.name
+      });
     });
-  });
 
-  // save globally
-  tempData.selectedEntry = entry;
+    // save globally
+    tempData.selectedEntry = entry;
 
-  // // hide from deleted button when deleted
-  if ($("#mainForm #quotationStatusId option:selected").text() == "Deleted") {
-    $(".btnFmDelete").hide();
-  }
+    // // hide from deleted button when deleted
+    if ($("#mainForm #quotationStatusId option:selected").text() == "Deleted") {
+      $(".btnFmDelete").hide();
+    }
+  }, 300)
 }
 
 const updateEntry = async () => {
@@ -285,11 +282,11 @@ const getFormData = () => {
   const quotationMaterials = [];
   $("#materialTable tbody tr").each((i, tr) => {
     const tds = $(tr).children("td");
-    const tdMaterialId = $(tds[1]).children().children().first().val();
+    const tdMaterialId = $(tds[1]).children().first().data("material-id");
     const tdPurchasePrice = $(tds[2]).children().first().val();
     const tdAvailableQty = $(tds[3]).children().first().val();
     const tdMinimumRequestQty = $(tds[4]).children().first().val();
-    const tdUnitTypeId = $(tds[5]).children().children().first().val();
+    const tdUnitTypeId = $(tds[5]).children().first().data("unit-type-id");
 
 
     quotationMaterials.push({
@@ -312,7 +309,7 @@ const validateForm = () => {
   let errors = "";
 
   // ignored inputs for form validation
-  const ignoredAttributes = ["availableQty", "minimumRequestQty", "purchasePrice"];
+  const ignoredAttributes = ["availableQty", "minimumRequestQty", "purchasePrice", "materialId"];
 
   // validate regular inputs
   tempData.validationInfo.forEach(vi => {
@@ -395,6 +392,9 @@ const reloadModule = () => {
 const resetForm = () => {
   $("#dueDate").val("");
   $("#description").val("");
+  $("#purchasePrice").val("");
+  $("#availableQty").val("");
+  $("#minimumRequestQty").val("");
   $("#materialId").selectpicker('deselectAll');
   $("#materialId").selectpicker('refresh');
   $("#supplierId").selectpicker('deselectAll');
@@ -408,16 +408,13 @@ const resetForm = () => {
                                        Supplier Quotation Reqeusts
 -------------------------------------------------------------------------------------------------------*/
 const showSupplierQuotationRequests = async (supplierId) => {
-  let quotationRequests;
 
-  // suppler id -1 means just clear existing values
-  if (supplierId !== -1) {
-    const response = await Request.send(`/api/supplier_quotation_requests?data[supplierId]=${supplierId}`, "GET");
-    if (!response.status) return;
-    quotationRequests = response.data;
-  } else {
-    quotationRequests = [];
-  }
+  const response = await Request.send(`/api/supplier_quotation_requests?data[supplierId]=${supplierId}`, "GET");
+
+  // if request failed
+  if (!response.status) return;
+
+  const quotationRequests = response.data;
 
   // destroy and clear select picker
   $("#quotationRequestId").selectpicker("destroy");
@@ -430,12 +427,7 @@ const showSupplierQuotationRequests = async (supplierId) => {
   // init selectpicker again
   $("#quotationRequestId").selectpicker();
 
-  // load initial data for materials
-  if (quotationRequests[0]) {
-    showQuotationRequestMaterials(quotationRequests[0].id);
-  } else {
-    showQuotationRequestMaterials(-1);
-  }
+  showQuotationRequestMaterials(quotationRequests[0].id);
 
   // set event listener again after destroying
   $("#quotationRequestId").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
@@ -445,19 +437,17 @@ const showSupplierQuotationRequests = async (supplierId) => {
 }
 
 const showQuotationRequestMaterials = async (quotationRequestId) => {
-  let quotationRequestMaterials;
 
-  if (quotationRequestId !== -1) {
-    // get relevent quotation request
-    const response = await Request.send(`/api/quotation_requests?data[id]=${quotationRequestId}`, "GET");
-    if (!response.status) return;
-    quotationRequestMaterials = response.data.quotationRequestMaterials;
-  } else {
-    quotationRequestMaterials = [];
-  }
+  // clear material table
+  $("#materialTable tbody").empty();
 
-  // save globally
-  tempData.quotationRequestMaterials = quotationRequestMaterials;
+  // get relevent quotation request
+  const response = await Request.send(`/api/quotation_requests?data[id]=${quotationRequestId}`, "GET");
+
+  // when request failed
+  if (!response.status) return;
+
+  const quotationRequestMaterials = response.data.quotationRequestMaterials;
 
   // empty values
   $("#materialId").selectpicker("destroy");
@@ -479,10 +469,12 @@ const showQuotationRequestMaterials = async (quotationRequestId) => {
 
 const addToMaterialTable = () => {
   const materialId = $("#materialId").val();
+  const materialName = $("#materialId option:selected").text();
   const supplierId = $("#supplierId").val();
   const availableQty = $("#availableQty").val();
   const minimumRequestQty = $("#minimumRequestQty").val();
   const unitTypeId = $("#unitTypeId").val();
+  const unitTypeName = $("#unitTypeId option:selected").text();
   const purchasePrice = $("#purchasePrice").val();
 
   // check if required things are provided
@@ -520,7 +512,7 @@ const addToMaterialTable = () => {
   let isDuplicate = false;
   $("#materialTable tbody tr").each((i, tr) => {
     const tds = $(tr).children("td");
-    const tdMaterialId = $(tds[1]).children().children().first().val();
+    const tdMaterialId = $(tds[1]).children().first().data("material-id");
     if (materialId == tdMaterialId) {
       isDuplicate = true;
     }
@@ -535,37 +527,19 @@ const addToMaterialTable = () => {
   }
 
   addRowToMaterialTable({
-    materialId, availableQty, minimumRequestQty, purchasePrice, unitTypeId
+    materialId, materialName, availableQty, minimumRequestQty, purchasePrice, unitTypeId, unitTypeName
   });
 }
 
 const addRowToMaterialTable = (row = {}) => {
   // row data
-  const { materialId, availableQty, minimumRequestQty, purchasePrice, unitTypeId } = row;
-
-  // add row to table
-  let materialSelectOptions = "";
-  tempData.quotationRequestMaterials.forEach(qrm => {
-    const mat = qrm.material;
-    materialSelectOptions += `
-      <option data-tokens="${mat.code} - ${mat.name}" value="${mat.id}" ${mat.id == materialId ? "selected" : ""}>${mat.name} (${mat.code})</option>
-      `;
-  });
-
-  let unitTypeSelectOptions = "";
-  tempData.unitTypes.forEach(ut => {
-    unitTypeSelectOptions += `
-        <option value="${ut.id}" ${ut.id == unitTypeId ? "selected" : ""}>${ut.name}</option>
-      `;
-  });
+  const { materialId, materialName, availableQty, minimumRequestQty, purchasePrice, unitTypeId, unitTypeName } = row;
 
   $("#materialTable tbody").append(`
     <tr>
         <td></td>
         <td>
-          <select class="form-control selectpicker" data-live-search="true" value="${materialId}">
-            ${materialSelectOptions}
-          </select>
+          <input class="form-control input-read-only" type="text" data-material-id="${materialId}" value="${materialName}">
         </td>
         <td>
           <input class="form-control" type="text" value="${purchasePrice}">
@@ -577,9 +551,7 @@ const addRowToMaterialTable = (row = {}) => {
           <input class="form-control" type="text" value="${minimumRequestQty}">
         </td>
         <td>
-          <select class="form-control selectpicker" data-live-search="true" value="${unitTypeId}">
-            ${unitTypeSelectOptions}
-          </select>
+          <input class="form-control input-read-only" type="text" data-unit-type-id="${unitTypeId}" value="${unitTypeName}">
         </td>
         <td>
           <button class="btn btn-danger btn-sm" onclick="removeFromMaterialTable(this)">
@@ -589,9 +561,6 @@ const addRowToMaterialTable = (row = {}) => {
         </td>
     </tr>
     `);
-
-  // init select pickers
-  $("#materialTable tbody tr td .selectpicker").selectpicker();
 
   updateMaterialTableIndex();
 }
@@ -637,7 +606,6 @@ const showNewEntryModal = () => {
 }
 
 const showEditEntryModal = (id, readOnly = false) => {
-  resetForm();
   loadEntry(id);
   $("#modalMainFormTitle").text("Edit Material");
   $("#modalMainForm").modal("show");
@@ -645,6 +613,8 @@ const showEditEntryModal = (id, readOnly = false) => {
   if (readOnly) {
     FormUtil.enableReadOnly("mainForm");
     FormUtil.setButtionsVisibility("mainForm", tempData.permission, "view");
+    $("#mainForm *").removeClass("has-error has-success");
+    $("#mainForm .form-control-feedback").remove();
   } else {
     FormUtil.disableReadOnly("mainForm");
     FormUtil.setButtionsVisibility("mainForm", tempData.permission, "edit");
