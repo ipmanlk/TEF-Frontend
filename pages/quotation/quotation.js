@@ -2,7 +2,6 @@ const tempData = {
   validationInfo: null,
   selectedEntry: null,
   permission: null,
-  currentQuotationRequestId: undefined // stores selected quotation request id when editing entries 
 };
 
 /*-------------------------------------------------------------------------------------------------------
@@ -127,42 +126,41 @@ const registerEventListeners = () => {
     showNewEntryModal();
   });
 
-  $("#supplierId").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-    selectSupplier(e.target.value);
+  $("#supplierId").on('changed.bs.select', function (e) {
+    showSupplierQuotationRequests(e.target.value);
+  });
+
+  $("#quotationRequestId").on('changed.bs.select', function (e) {
+    $("#materialTable tbody").empty();
+    showQuotationRequestMaterials(e.target.value);
   });
 }
 
 // this function will run when supplierId select box is changed
-const selectSupplier = async (supplierId) => {
+const showSupplierQuotationRequests = async (supplierId, quotationRequestStatusName = "Active") => {
   // load supplier quotation requests
-  const response = await Request.send(`/api/supplier_quotation_requests?data[supplierId]=${supplierId}`, "GET");
+  const response = await Request.send("/api/supplier_quotation_requests", "GET", {
+    data: {
+      supplierId: supplierId,
+      quotationRequestStatusName: quotationRequestStatusName
+    }
+  });
 
   // if request failed
   if (!response.status) return;
 
   const quotationRequests = response.data;
 
-  // destroy and clear select picker
-  $("#quotationRequestId").selectpicker("destroy");
-  $("#quotationRequestId").empty();
+  // update select picker options
+  $("#quotationRequestId").first().empty();
 
   quotationRequests.forEach(qr => {
-    $("#quotationRequestId").append(`<option data-tokens="${qr.qrnumber}" value="${qr.id}">${qr.qrnumber}</option>`);
+    $("#quotationRequestId").first().append(`<option data-tokens="${qr.qrnumber}" value="${qr.id}">${qr.qrnumber}</option>`);
   });
 
-  // init selectpicker again
-  $("#quotationRequestId").selectpicker();
-
-  // register destryed event listener
-  $("#quotationRequestId").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-    showQuotationRequestMaterials(e.target.value);
-  });
-
-  // if quotation request id is given
-  if (tempData.currentQuotationRequestId) {
-    // select proper quotation request
-    $("#quotationRequestId").selectpicker("val", tempData.currentQuotationRequestId);
-  }
+  // refresh plugin
+  $("#quotationRequestId").selectpicker("refresh");
+  $("#quotationRequestId").selectpicker("render");
 }
 
 /*-------------------------------------------------------------------------------------------------------
@@ -207,9 +205,19 @@ const loadEntry = async (id) => {
   // select dropdowns
   FormUtil.selectDropdownOptionByValue("quotationStatusId", entry.quotationStatus.id);
 
-  // select multi select dropdown values
-  tempData.currentQuotationRequestId = entry.quotationRequest.id;
-  $("#supplierId").selectpicker("val", entry.quotationRequest.supplierId);
+  // select proper supplier
+  $("#supplierId").val(entry.quotationRequest.supplierId)
+  $("#supplierId").selectpicker("render");
+
+  // load supplier quotation requests
+  await showSupplierQuotationRequests(entry.quotationRequest.supplierId, "");
+
+  // select proper quotation request
+  $("#quotationRequestId").val(entry.quotationRequest.id);
+  $("#quotationRequestId").selectpicker("render");
+
+  // show quotation request materials
+  await showQuotationRequestMaterials(entry.quotationRequest.id);
 
   // add to material table
   $("#materialTable tbody").empty();
@@ -436,20 +444,17 @@ const showQuotationRequestMaterials = async (quotationRequestId) => {
   const quotationRequestMaterials = response.data.quotationRequestMaterials;
 
   // empty values
-  $("#materialId").selectpicker("destroy");
-  $("#materialId").empty();
-
-  // when there are no quotation request 
-  if (!quotationRequestMaterials) return;
+  $("#materialId").first().empty();
 
   // show quotation request materials
   quotationRequestMaterials.forEach(qrm => {
     const mat = qrm.material;
-    $("#materialId").append(`<option data-tokens="${mat.code} - ${mat.name}" value="${mat.id}">${mat.name} (${mat.code})</option>`);
+    $("#materialId").first().append(`<option data-tokens="${mat.code} - ${mat.name}" value="${mat.id}">${mat.name} (${mat.code})</option>`);
   });
 
-  // init selectpicker again 
-  $("#materialId").selectpicker();
+  // refresh select picker
+  $("#materialId").selectpicker("refresh");
+  $("#materialId").selectpicker("render");
 }
 
 /*-------------------------------------------------------------------------------------------------------
@@ -578,9 +583,9 @@ const showNewEntryModal = () => {
   resetForm();
   FormUtil.disableReadOnly("mainForm");
   // enable supplier selection and quotation request selection
-  $("#supplierId").parent().removeClass("input-read-only");
-  $("#quotationRequestId").removeClass("input-read-only");
-  $("#quotationRequestId").parent().removeClass("input-read-only");
+  // $("#supplierId").parent().removeClass("input-read-only");
+  // $("#quotationRequestId").removeClass("input-read-only");
+  // $("#quotationRequestId").parent().removeClass("input-read-only");
 
   FormUtil.setButtionsVisibility("mainForm", tempData.permission, "add");
 
@@ -611,10 +616,10 @@ const showEditEntryModal = (id, readOnly = false) => {
     FormUtil.disableReadOnly("mainForm");
     FormUtil.setButtionsVisibility("mainForm", tempData.permission, "edit");
 
-    // disable supplier selection and quotation request selection
-    $("#supplierId").parent().addClass("input-read-only");
-    $("#quotationRequestId").addClass("input-read-only");
-    $("#quotationRequestId").parent().addClass("input-read-only");
+    // // disable supplier selection and quotation request selection
+    // $("#supplierId").parent().addClass("input-read-only");
+    // $("#quotationRequestId").addClass("input-read-only");
+    // $("#quotationRequestId").parent().addClass("input-read-only");
   }
 }
 
