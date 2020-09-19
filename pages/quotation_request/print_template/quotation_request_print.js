@@ -1,4 +1,4 @@
-const printQuotationRequest = async(selectedEntry) => {
+const printQuotationRequest = async (selectedEntry) => {
   let materialRows = "";
   selectedEntry.quotationRequestMaterials.forEach((rm, index) => {
     materialRows += `
@@ -8,7 +8,7 @@ const printQuotationRequest = async(selectedEntry) => {
       </tr>
     `
   });
-  
+
   // load template
   const respone = await fetch("./print_template/quotation_request_print.html");
   let template = await respone.text();
@@ -25,4 +25,5 @@ const printQuotationRequest = async(selectedEntry) => {
 
   const win = window.open("", "Print", "width=1000,height=600");
   win.document.write(template);
+  setTimeout(() => win.print(), 1000);
 }
