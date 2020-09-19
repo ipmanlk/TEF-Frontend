@@ -397,7 +397,7 @@ const addToMaterialTable = () => {
   <tr>
       <td></td>
       <td data-material-id="${materialId}">${materialName}</td>
-      <td><input type="checkbox" value="" class="chkRequested"></td>
+      <td><input type="checkbox" value="" class="chkRequested" checked></td>
       <td><input type="checkbox" value="" class="chkAccepted"></td>
       <td><input type="checkbox" value="" class="chkReceived"></td>
       <td>
