@@ -439,6 +439,9 @@ const showQuotationRequestMaterials = async (quotationRequestId) => {
   $("#materialId").selectpicker("destroy");
   $("#materialId").empty();
 
+  // when there are no quotation request 
+  if (!quotationRequestMaterials) return;
+
   // show quotation request materials
   quotationRequestMaterials.forEach(qrm => {
     const mat = qrm.material;
@@ -586,18 +589,18 @@ const showNewEntryModal = () => {
   const employeeFullName = mainWindow.tempData.profile.employee.fullName;
   $("#mainForm #createdEmployee").val(`${employeeNumber} (${employeeFullName})`);
   // set modal title
-  $("#modalMainFormTitle").text("Create new quotation request");
+  $("#modalMainFormTitle").text("Add New Quotation");
   // set date of adding
   $("#mainForm #addedDate").val(new Date().today());
   // empty qrnumber
-  $("#mainForm #qrnumber").val("Request number will be displayed after adding.");
+  $("#mainForm #qnumber").val("Quotation number will be displayed after adding.");
   // show modal
   $("#modalMainForm").modal("show");
 }
 
 const showEditEntryModal = (id, readOnly = false) => {
   loadEntry(id);
-  $("#modalMainFormTitle").text("Edit Material");
+  $("#modalMainFormTitle").text("Edit Quotation");
   $("#modalMainForm").modal("show");
   if (readOnly) {
     FormUtil.enableReadOnly("mainForm");

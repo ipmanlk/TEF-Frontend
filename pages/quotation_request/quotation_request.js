@@ -440,7 +440,7 @@ const showNewEntryModal = () => {
   const employeeFullName = mainWindow.tempData.profile.employee.fullName;
   $("#mainForm #createdEmployee").val(`${employeeNumber} (${employeeFullName})`);
   // set modal title
-  $("#modalMainFormTitle").text("Create new quotation request");
+  $("#modalMainFormTitle").text("Create New Quotation Request");
   // set date of adding
   $("#mainForm #addedDate").val(new Date().today());
   // empty qrnumber
@@ -452,7 +452,7 @@ const showNewEntryModal = () => {
 const showEditEntryModal = (id, readOnly = false) => {
   resetForm();
   loadEntry(id);
-  $("#modalMainFormTitle").text("Edit Material");
+  $("#modalMainFormTitle").text("Edit Quotation Request");
   $("#modalMainForm").modal("show");
 
   if (readOnly) {
