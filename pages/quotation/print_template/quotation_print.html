@@ -4,22 +4,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quotation Request</title>
+  <title>Quotation</title>
   <!-- libs -->
   <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css" />
   <link rel="stylesheet" href="/pages/quotation_request/print_template/quotation_request_print.css">
-<style>
+  <style>
 
-</style>
+  </style>
 
 </head>
+
 <body>
   <div class="container invoice">
     <div class="invoice-header">
       <div class="row">
         <div class="col-xs-7">
-          <h1>Quotation Request<small> For Materials</small></h1>
-          <h4 class="text-muted">NO: #{qrnumber} | Date: #{addedDate}</h4>
+          <h1>Quotation<small> For Materials</small></h1>
+          <h4 class="text-muted">NO: #{qnumber} | Date: #{addedDate}</h4>
         </div>
         <div class="col-xs-5">
           <div class="media">
@@ -38,25 +39,7 @@
     </div>
     <div class="invoice-body">
       <div class="row">
-        <div class="col-xs-5">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">Company Details</h3>
-            </div>
-            <div class="panel-body">
-              <dl class="dl-horizontal">
-                <dt>Name</dt>
-                <dd>Onelli Traders / Two Elephants Fireworks</dd>
-                <dt>Address</dt>
-                <dd>No 107/3, Walpala, Andiambalama.</dd>
-                <dt>Phone</dt>
-                <dd>076-373-8283</dd>
-                <dt>Email</dt>
-                <dd>twoelephantsfireworks@yahoo.com</dd>
-            </div>
-          </div>
-        </div>
-        <div class="col-xs-7">
+        <div class="col-md-12">
           <div class="panel panel-default">
             <div class="panel-heading">
               <h3 class="panel-title">Supplier Details</h3>
@@ -79,17 +62,20 @@
       </div>
       <div class="panel panel-default">
         <div class="panel-heading">
-          <h3 class="panel-title">Requesting Materials</h3>
+          <h3 class="panel-title">Materials List</h3>
         </div>
         <table class="table table-bordered table-condensed">
           <thead>
             <tr>
               <th>Index</th>
               <th>Material Name</th>
+              <th>Available Qty.</th>
+              <th>Minimum Qty.</th>
+              <th>Purchase Price</th>
             </tr>
           </thead>
           <tbody>
-              #{materialRows}
+            #{materialRows}
           </tbody>
         </table>
       </div>

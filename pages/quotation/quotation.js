@@ -275,7 +275,7 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
 }
 
 const printEntry = () => {
-  printQuotationRequest(tempData.selectedEntry);
+  printQuotation(tempData.selectedEntry);
 }
 
 /*-------------------------------------------------------------------------------------------------------
