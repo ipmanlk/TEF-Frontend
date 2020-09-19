@@ -130,10 +130,6 @@ const registerEventListeners = () => {
   $("#supplierId").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
     selectSupplier(e.target.value);
   });
-
-  $("#quotationRequestId").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-    showQuotationRequestMaterials(e.target.value);
-  });
 }
 
 // this function will run when supplierId select box is changed
@@ -157,15 +153,16 @@ const selectSupplier = async (supplierId) => {
   // init selectpicker again
   $("#quotationRequestId").selectpicker();
 
-  // if quotation request id is given
-  if (tempData.currentQuotationRequestId) {
-    // select proper quotation request
-    $("#quotationRequestId").selectpicker("val", tempData.currentQuotationRequestId)
-  }
-
+  // register destryed event listener
   $("#quotationRequestId").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
     showQuotationRequestMaterials(e.target.value);
   });
+
+  // if quotation request id is given
+  if (tempData.currentQuotationRequestId) {
+    // select proper quotation request
+    $("#quotationRequestId").selectpicker("val", tempData.currentQuotationRequestId);
+  }
 }
 
 /*-------------------------------------------------------------------------------------------------------
@@ -429,9 +426,6 @@ const resetForm = () => {
 -------------------------------------------------------------------------------------------------------*/
 const showQuotationRequestMaterials = async (quotationRequestId) => {
 
-  // clear material table
-  $("#materialTable tbody").empty();
-
   // get relevent quotation request
   const response = await Request.send(`/api/quotation_requests?data[id]=${quotationRequestId}`, "GET");
 
@@ -452,7 +446,6 @@ const showQuotationRequestMaterials = async (quotationRequestId) => {
 
   // init selectpicker again 
   $("#materialId").selectpicker();
-  
 }
 
 /*-------------------------------------------------------------------------------------------------------
@@ -526,7 +519,6 @@ const addToMaterialTable = () => {
 const addRowToMaterialTable = (row = {}) => {
   // row data
   const { materialId, materialName, availableQty, minimumRequestQty, purchasePrice, unitTypeId, unitTypeName } = row;
-
   $("#materialTable tbody").append(`
     <tr>
         <td></td>
