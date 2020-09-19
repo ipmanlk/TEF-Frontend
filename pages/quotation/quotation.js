@@ -405,7 +405,8 @@ const reloadModule = () => {
 }
 
 const resetForm = () => {
-  $("#dueDate").val("");
+  $("#validFrom").val("");
+  $("#validTo").val("");
   $("#description").val("");
   $("#purchasePrice").val("");
   $("#availableQty").val("");
@@ -573,6 +574,10 @@ const showNewEntryModal = () => {
   // reset form values
   resetForm();
   FormUtil.disableReadOnly("mainForm");
+  // enable supplier selection and quotation request selection
+  $("#supplierId").parent().removeClass("input-read-only");
+  $("#quotationRequestId").removeClass("input-read-only");
+  $("#quotationRequestId").parent().removeClass("input-read-only");
 
   FormUtil.setButtionsVisibility("mainForm", tempData.permission, "add");
 
@@ -594,7 +599,6 @@ const showEditEntryModal = (id, readOnly = false) => {
   loadEntry(id);
   $("#modalMainFormTitle").text("Edit Material");
   $("#modalMainForm").modal("show");
-
   if (readOnly) {
     FormUtil.enableReadOnly("mainForm");
     FormUtil.setButtionsVisibility("mainForm", tempData.permission, "view");
@@ -603,6 +607,11 @@ const showEditEntryModal = (id, readOnly = false) => {
   } else {
     FormUtil.disableReadOnly("mainForm");
     FormUtil.setButtionsVisibility("mainForm", tempData.permission, "edit");
+
+    // disable supplier selection and quotation request selection
+    $("#supplierId").parent().addClass("input-read-only");
+    $("#quotationRequestId").addClass("input-read-only");
+    $("#quotationRequestId").parent().addClass("input-read-only");
   }
 }
 
