@@ -2,8 +2,7 @@ const tempData = {
   validationInfo: null,
   selectedEntry: null,
   permission: null,
-  quotationRequestMaterials: [],
-  unitTypes: [],
+  currentQuotationRequestId: undefined // stores selected quotation request id when editing entries 
 };
 
 /*-------------------------------------------------------------------------------------------------------
@@ -85,9 +84,6 @@ const loadFormDropdowns = async () => {
     $("#unitTypeId").append(`<option value="${ut.id}">${ut.name}</option>`);
   });
 
-  // save globally
-  tempData.unitTypes = unitTypes;
-
   // init bootstrap-select
   $("#supplierId").selectpicker();
   $("#materialId").selectpicker();
@@ -132,16 +128,45 @@ const registerEventListeners = () => {
   });
 
   $("#supplierId").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-    const selectedSupplierId = e.target.value;
-    showSupplierQuotationRequests(selectedSupplierId);
+    selectSupplier(e.target.value);
   });
 
   $("#quotationRequestId").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-    const selectedQuotationId = e.target.value;
-    showQuotationRequestMaterials(selectedQuotationId);
+    showQuotationRequestMaterials(e.target.value);
   });
 }
 
+// this function will run when supplierId select box is changed
+const selectSupplier = async (supplierId) => {
+  // load supplier quotation requests
+  const response = await Request.send(`/api/supplier_quotation_requests?data[supplierId]=${supplierId}`, "GET");
+
+  // if request failed
+  if (!response.status) return;
+
+  const quotationRequests = response.data;
+
+  // destroy and clear select picker
+  $("#quotationRequestId").selectpicker("destroy");
+  $("#quotationRequestId").empty();
+
+  quotationRequests.forEach(qr => {
+    $("#quotationRequestId").append(`<option data-tokens="${qr.qrnumber}" value="${qr.id}">${qr.qrnumber}</option>`);
+  });
+
+  // init selectpicker again
+  $("#quotationRequestId").selectpicker();
+
+  // if quotation request id is given
+  if (tempData.currentQuotationRequestId) {
+    // select proper quotation request
+    $("#quotationRequestId").selectpicker("val", tempData.currentQuotationRequestId)
+  }
+
+  $("#quotationRequestId").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+    showQuotationRequestMaterials(e.target.value);
+  });
+}
 
 /*-------------------------------------------------------------------------------------------------------
                                 Entry Related Requests (POST, PUT, DELETE, PRINT)
@@ -186,38 +211,31 @@ const loadEntry = async (id) => {
   FormUtil.selectDropdownOptionByValue("quotationStatusId", entry.quotationStatus.id);
 
   // select multi select dropdown values
+  tempData.currentQuotationRequestId = entry.quotationRequest.id;
   $("#supplierId").selectpicker("val", entry.quotationRequest.supplierId);
 
-  setTimeout(async () => {
-    // load supplier quotation requests first for selecting values
-    await showSupplierQuotationRequests(entry.quotationRequest.supplierId);
+  // add to material table
+  $("#materialTable tbody").empty();
 
-    // select appropriate supplier quotation
-    $("#quotationRequestId").selectpicker("val", entry.quotationRequest.id);
-
-    // add to material table
-    $("#materialTable tbody").empty();
-
-    entry.quotationMaterials.forEach(qm => {
-      addRowToMaterialTable({
-        materialId: qm.materialId,
-        materialName: qm.material.name,
-        availableQty: qm.availableQty,
-        minimumRequestQty: qm.minimumRequestQty,
-        purchasePrice: qm.purchasePrice,
-        unitTypeId: qm.unitTypeId,
-        unitTypeName: qm.material.unitType.name
-      });
+  entry.quotationMaterials.forEach(qm => {
+    addRowToMaterialTable({
+      materialId: qm.materialId,
+      materialName: `${qm.material.name} (${qm.material.code})`,
+      availableQty: qm.availableQty,
+      minimumRequestQty: qm.minimumRequestQty,
+      purchasePrice: qm.purchasePrice,
+      unitTypeId: qm.unitTypeId,
+      unitTypeName: qm.material.unitType.name
     });
+  });
 
-    // save globally
-    tempData.selectedEntry = entry;
+  // save globally
+  tempData.selectedEntry = entry;
 
-    // // hide from deleted button when deleted
-    if ($("#mainForm #quotationStatusId option:selected").text() == "Deleted") {
-      $(".btnFmDelete").hide();
-    }
-  }, 300)
+  // hide from deleted button when deleted
+  if ($("#mainForm #quotationStatusId option:selected").text() == "Deleted") {
+    $(".btnFmDelete").hide();
+  }
 }
 
 const updateEntry = async () => {
@@ -345,7 +363,7 @@ const validateForm = () => {
   const ids = [];
   $("#materialTable tbody tr").each((i, tr) => {
     const tds = $(tr).children("td");
-    const tdMaterialId = $(tds[1]).children().children().first().val();
+    const tdMaterialId = $(tds[1]).children().first().data("material-id");
     if (ids.includes[tdMaterialId]) {
       foundDuplicates = true;
     }
@@ -399,6 +417,8 @@ const resetForm = () => {
   $("#materialId").selectpicker('refresh');
   $("#supplierId").selectpicker('deselectAll');
   $("#supplierId").selectpicker('refresh');
+  $("#quotationRequestId").selectpicker('deselectAll');
+  $("#quotationRequestId").selectpicker('refresh');
   $("#materialTable tbody").empty();
   $("#mainForm *").removeClass("has-error has-success");
   $("#mainForm .form-control-feedback").remove();
@@ -407,35 +427,6 @@ const resetForm = () => {
 /*-------------------------------------------------------------------------------------------------------
                                        Supplier Quotation Reqeusts
 -------------------------------------------------------------------------------------------------------*/
-const showSupplierQuotationRequests = async (supplierId) => {
-
-  const response = await Request.send(`/api/supplier_quotation_requests?data[supplierId]=${supplierId}`, "GET");
-
-  // if request failed
-  if (!response.status) return;
-
-  const quotationRequests = response.data;
-
-  // destroy and clear select picker
-  $("#quotationRequestId").selectpicker("destroy");
-  $("#quotationRequestId").empty();
-
-  quotationRequests.forEach(qr => {
-    $("#quotationRequestId").append(`<option data-tokens="${qr.qrnumber}" value="${qr.id}">${qr.qrnumber}</option>`);
-  });
-
-  // init selectpicker again
-  $("#quotationRequestId").selectpicker();
-
-  showQuotationRequestMaterials(quotationRequests[0].id);
-
-  // set event listener again after destroying
-  $("#quotationRequestId").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-    const selectedQuotationId = e.target.value;
-    showQuotationRequestMaterials(selectedQuotationId);
-  });
-}
-
 const showQuotationRequestMaterials = async (quotationRequestId) => {
 
   // clear material table
@@ -461,6 +452,7 @@ const showQuotationRequestMaterials = async (quotationRequestId) => {
 
   // init selectpicker again 
   $("#materialId").selectpicker();
+  
 }
 
 /*-------------------------------------------------------------------------------------------------------
@@ -539,7 +531,7 @@ const addRowToMaterialTable = (row = {}) => {
     <tr>
         <td></td>
         <td>
-          <input class="form-control input-read-only" type="text" data-material-id="${materialId}" value="${materialName}">
+          <span data-material-id="${materialId}">${materialName}</span>
         </td>
         <td>
           <input class="form-control" type="text" value="${purchasePrice}">
@@ -551,7 +543,7 @@ const addRowToMaterialTable = (row = {}) => {
           <input class="form-control" type="text" value="${minimumRequestQty}">
         </td>
         <td>
-          <input class="form-control input-read-only" type="text" data-unit-type-id="${unitTypeId}" value="${unitTypeName}">
+          <span data-unit-type-id="${unitTypeId}">${unitTypeName}</span>
         </td>
         <td>
           <button class="btn btn-danger btn-sm" onclick="removeFromMaterialTable(this)">
@@ -588,6 +580,7 @@ const removeFromMaterialTable = (button) => {
 const showNewEntryModal = () => {
   // reset form values
   resetForm();
+  FormUtil.disableReadOnly("mainForm");
 
   FormUtil.setButtionsVisibility("mainForm", tempData.permission, "add");
 
