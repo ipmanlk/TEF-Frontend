@@ -40,15 +40,25 @@ class Request {
           // log the response
           console.log(res);
 
-          // show error modal when status of the response is false
+          // show error modal when status of the response is false (only works within the mainiFrame)
           try {
             let outputMsg;
 
+            // when error is happening due to a user input
             if (res.type == "input") {
               outputMsg = `${res.msg}`;
               mainWindow.showOutputModal("Error", outputMsg, "sm");
+
+            // if error is a server error or something else
             } else {
-              outputMsg = `${res.msg}<br/><br/><h4>Log:</h4><div class="well">Route: ${options.url} <br><br>Response: ${JSON.stringify(res)}</div>`;
+              outputMsg = `
+                ${res.msg}<br><br>
+                <h4>Log:</h4>
+                <div class="well">
+                  Route: ${options.url} <br><br>
+                  Response: ${JSON.stringify(res)}
+                </div>`;
+
               mainWindow.showOutputModal("Error", outputMsg, "lg");
             }
 
@@ -56,7 +66,12 @@ class Request {
             if (res.type == "auth") {
               window.location = "noauth.html"
             }
-          } catch (e) { }
+
+          } catch (e) {
+            // when error modal fails to display outside of mainIframe
+            console.log(e);
+            window.alert(e);
+          }
 
           // resolve the promise with false status
           resolve({ status: false });
@@ -77,10 +92,9 @@ class Request {
             window.location = "noauth.html"
           }
         } catch (e) {
-
           // if no error msg is present to show, just show a generic error modal
           console.log(e);
-          mainWindow.showOutputModal("Error", `Unable to retrive data from the server: ${textStatus}`);
+          window.alert("Error", `Unable to retrive data from the server: ${textStatus}`);
         }
 
         // resolve the promise with false status
