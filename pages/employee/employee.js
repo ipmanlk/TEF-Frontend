@@ -32,7 +32,7 @@ class employeeForm extends Form {
     }
 
     // overwrrite load entry
-    loadEntry (entry) {
+    loadEntry(entry) {
         this.reset();
         this.selectedEntry = entry;
 
@@ -58,12 +58,12 @@ class employeeForm extends Form {
 
         $(`#${this.formId} #photoPreview`).attr("src", imageURL);
 
+        this.setButtionsVisibility("edit");
+
         // check if this employee is already deleted and show / hide delete button
         if ($(`#${this.formId} #employeeStatusId option:selected`).text() == "Deleted") {
             this.hideElement(".btnFmDelete")
         }
-
-        this.setButtionsVisibility("edit");
     }
 }
 
