@@ -91,41 +91,19 @@ const loadFormDropdowns = async () => {
 
 // event listeners for form inputs and buttons
 const registerEventListeners = () => {
-  $("#btnAddToMaterialTable").on("click", (e) => {
-    e.preventDefault();
-    addToMaterialTable();
-  });
+  // prevent default form submission event
+  $("form").on("submit", e => e.preventDefault());
 
-  $(".btnFmReset").on("click", (e) => {
-    e.preventDefault();
-    resetForm();
-  });
+  // event listeners for buttons
+  $("#btnAddToMaterialTable").on("click", addToMaterialTable);
+  $(".btnFmReset").on("click", resetForm);
+  $(".btnFmUpdate").on("click", updateEntry);
+  $(".btnFmAdd").on("click", addEntry);
+  $(".btnFmDelete").on("click", deleteEntry);
+  $(".btnFmPrint").on("click", printEntry);
+  $("#btnTopAddEntry").on("click", showNewEntryModal);
 
-  $(".btnFmUpdate").on("click", (e) => {
-    e.preventDefault();
-    updateEntry();
-  });
-
-  $(".btnFmAdd").on("click", (e) => {
-    e.preventDefault();
-    addEntry();
-  });
-
-  $(".btnFmDelete").on("click", (e) => {
-    e.preventDefault();
-    deleteEntry();
-  });
-
-  $(".btnFmPrint").on("click", (e) => {
-    e.preventDefault();
-    printEntry();
-  });
-
-  $("#btnTopAddEntry").on("click", (e) => {
-    e.preventDefault();
-    showNewEntryModal();
-  });
-
+  // event listeners for bootstrap-select componnets
   $("#supplierId").on('changed.bs.select', function (e) {
     showSupplierQuotationRequests(e.target.value);
   });
@@ -328,6 +306,7 @@ const getFormData = () => {
 }
 
 const validateForm = () => {
+
   // store error msgs
   let errors = "";
 
@@ -413,21 +392,26 @@ const reloadModule = () => {
 }
 
 const resetForm = () => {
-  $("#validFrom").val("");
-  $("#validTo").val("");
-  $("#description").val("");
-  $("#purchasePrice").val("");
-  $("#availableQty").val("");
-  $("#minimumRequestQty").val("");
-  $("#materialId").selectpicker('deselectAll');
-  $("#materialId").selectpicker('refresh');
-  $("#supplierId").selectpicker('deselectAll');
-  $("#supplierId").selectpicker('refresh');
-  $("#quotationRequestId").selectpicker('deselectAll');
-  $("#quotationRequestId").selectpicker('refresh');
+  // empty input fields
+  $("#mainForm input").val("");
+  $("#materialId").val("");
+
+  // deselect select pickers
+  $("#materialId").selectpicker('render');
+  $("#supplierId").val("");
+  $("#supplierId").selectpicker('render');
+  $("#quotationRequestId").val("");
+  $("#quotationRequestId").selectpicker('render');
+
+  // empty mini table
   $("#materialTable tbody").empty();
+
+  // remove other classes used for feedbacks
   $("#mainForm *").removeClass("has-error has-success");
   $("#mainForm .form-control-feedback").remove();
+
+  // disable form read only mode if activated
+  FormUtil.disableReadOnly("mainForm");
 }
 
 /*-------------------------------------------------------------------------------------------------------
@@ -582,10 +566,6 @@ const showNewEntryModal = () => {
   // reset form values
   resetForm();
   FormUtil.disableReadOnly("mainForm");
-  // enable supplier selection and quotation request selection
-  // $("#supplierId").parent().removeClass("input-read-only");
-  // $("#quotationRequestId").removeClass("input-read-only");
-  // $("#quotationRequestId").parent().removeClass("input-read-only");
 
   FormUtil.setButtionsVisibility("mainForm", tempData.permission, "add");
 
@@ -604,22 +584,19 @@ const showNewEntryModal = () => {
 }
 
 const showEditEntryModal = (id, readOnly = false) => {
-  loadEntry(id);
-  $("#modalMainFormTitle").text("Edit Quotation");
-  $("#modalMainForm").modal("show");
-  if (readOnly) {
-    FormUtil.enableReadOnly("mainForm");
-    FormUtil.setButtionsVisibility("mainForm", tempData.permission, "view");
-    $("#mainForm *").removeClass("has-error has-success");
-    $("#mainForm .form-control-feedback").remove();
-  } else {
-    FormUtil.disableReadOnly("mainForm");
-    FormUtil.setButtionsVisibility("mainForm", tempData.permission, "edit");
+  loadEntry(id).then(() => {
 
-    // // disable supplier selection and quotation request selection
-    // $("#supplierId").parent().addClass("input-read-only");
-    // $("#quotationRequestId").addClass("input-read-only");
-    // $("#quotationRequestId").parent().addClass("input-read-only");
-  }
+    $("#modalMainFormTitle").text("Edit Quotation");
+    $("#modalMainForm").modal("show");
+
+    if (readOnly) {
+      FormUtil.enableReadOnly("mainForm");
+      FormUtil.setButtionsVisibility("mainForm", tempData.permission, "view");
+      $("#mainForm *").removeClass("has-error has-success");
+      $("#mainForm .form-control-feedback").remove();
+    } else {
+      FormUtil.disableReadOnly("mainForm");
+      FormUtil.setButtionsVisibility("mainForm", tempData.permission, "edit");
+    }
+  });
 }
-
