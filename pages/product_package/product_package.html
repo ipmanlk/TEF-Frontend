@@ -53,6 +53,15 @@
           </div>
           <div class="modal-body">
             <form id="mainForm">
+              
+              <div class="row">
+                <div class="col-md-12">
+                  <div style="float: right;">
+                    <b><span class="required">*</span> Required field</b>
+                  </div>
+                </div>
+              </div>
+
               <div class="form-group has-feedback">
                 <label for="code">Product Package Code: </label>
                 <input type="text" class="form-control" id="code" name="code" disabled>
@@ -60,7 +69,7 @@
               <div class="form-group has-feedback">
                 <label for="productCode">Product Code: </label>
                 <br>
-                <select id="productCode" class="form-control" title="PRO202000000" data-live-search="true" >
+                <select id="productCode" class="form-control" title="PRO202000000" data-live-search="true">
                 </select>
               </div>
               <div class="form-group has-feedback">
@@ -168,7 +177,8 @@
                 <button type="button" class="btnFmAdd btn btn-success">Add</button>
                 <button type="button" class="btnFmUpdate btn btn-warning">Update</button>
                 <button type="button" class="btnFmPrint btn btn-info">Print</button>
-                <button type="button" class="btnFmReset btn btn-primary" style="float: right; margin-left: 10px;">Reset</button>
+                <button type="button" class="btnFmReset btn btn-primary"
+                  style="float: right; margin-left: 10px;">Reset</button>
                 <button type="button" class="btnFmDelete btn btn-danger" style="float: right;">Delete</button>
               </div>
             </form>
@@ -191,10 +201,10 @@
 
 
   <!-- common stuff -->
-  	<script src="../../js/Request.js"></script>
-	<script src="../../js/Form.js"></script>
-	<script src="../../js/FormUtil.js"></script>
-	<script src="../../js/MiscUtil.js"></script>
+  <script src="../../js/Request.js"></script>
+  <script src="../../js/Form.js"></script>
+  <script src="../../js/FormUtil.js"></script>
+  <script src="../../js/MiscUtil.js"></script>
 
   <!-- main js -->
   <script src="product_package.js"></script>
