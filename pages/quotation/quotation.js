@@ -394,14 +394,18 @@ const reloadModule = () => {
 const resetForm = () => {
   // empty input fields
   $("#mainForm input").val("");
-  $("#materialId").val("");
 
   // deselect select pickers
-  $("#materialId").selectpicker('render');
   $("#supplierId").val("");
   $("#supplierId").selectpicker('render');
-  $("#quotationRequestId").val("");
+
+  $("#quotationRequestId").first().empty();
+  $("#quotationRequestId").selectpicker('refresh');
   $("#quotationRequestId").selectpicker('render');
+
+  $("#materialId").first().empty();
+  $("#materialId").selectpicker('refresh');
+  $("#materialId").selectpicker('render');
 
   // empty mini table
   $("#materialTable tbody").empty();
