@@ -2,85 +2,84 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Two Elephant Fireworks: Login</title>
-    <link rel="stylesheet" href="./lib/fontawesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="./lib/fontawesome/typicons/typicons.min.css">
-    <link rel="stylesheet" href="./lib/animate/animate.css">
-    <link rel="stylesheet" href="./lib/login/css/login.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Two Elephant Fireworks: Login</title>
+	<link rel="stylesheet" href="./lib/fontawesome/css/font-awesome.min.css">
+	<link rel="stylesheet" href="./lib/fontawesome/typicons/typicons.min.css">
+	<link rel="stylesheet" href="./lib/animate/animate.css">
+	<link rel="stylesheet" href="./lib/login/css/login.css">
 </head>
 
 <body>
 
-    <body id="particles-js"></body>
-    <div class="animated bounceInDown">
-        <div class="container">
-            <span class="error animated tada" id="msg"></span>
-            <form name="form1" class="box" onsubmit="return false">
-                <h4>Two Elephant Fireworks <span>Dashboard</span></h4>
-                <h5>Sign in to your account.</h5>
-                <input type="text" id="username" name="email" placeholder="Email" autocomplete="off">
-                <i class="typcn typcn-eye" id="eye"></i>
-                <input type="password" id="password" name="password" placeholder="Passsword" id="pwd"
-                    autocomplete="off">
-                <label>
-                    <input type="checkbox">
-                    <span></span>
-                    <small class="rmb">Remember me</small>
-                </label>
-                <a href="#" class="forgetpass">Forget Password?</a>
-                <input type="submit" value="Sign in" class="btn1">
-            </form>
-        </div>
-    </div>
+	<body id="particles-js"></body>
+	<div class="animated bounceInDown">
+		<div class="container">
+			<span class="error animated tada" id="msg"></span>
+			<form name="form1" class="box" onsubmit="return false">
+				<h4>Two Elephant Fireworks <span>Dashboard</span></h4>
+				<h5>Sign in to your account.</h5>
+				<input type="text" id="username" name="email" placeholder="Email" autocomplete="off">
+				<i class="typcn typcn-eye" id="eye"></i>
+				<input type="password" id="password" name="password" placeholder="Passsword" id="pwd" autocomplete="off">
+				<label>
+					<input type="checkbox">
+					<span></span>
+					<small class="rmb">Remember me</small>
+				</label>
+				<a href="#" class="forgetpass">Forget Password?</a>
+				<input type="submit" value="Sign in" class="btn1">
+			</form>
+		</div>
+	</div>
 
-    <script src="./lib/particles/particles.min.js"></script>
-    <script src="./lib/jquery/jquery.min.js"></script>
-    <script src="./lib/login/js/login.js"></script>
+	<script src="./lib/particles/particles.min.js"></script>
+	<script src="./lib/jquery/jquery.min.js"></script>
+	<script src="./lib/login/js/login.js"></script>
 
-    <script>
-        $(document).ready(() => {
-            $("form").on("submit", (e) => {
-                e.preventDefault();
-                logIn();
-            });
-        })
+	<script>
+		$(document).ready(() => {
+			$("form").on("submit", (e) => {
+				e.preventDefault();
+				logIn();
+			});
+		})
 
-        const logIn = () => {
-            if (!checkStuff()) return;
+		const logIn = () => {
+			if (!checkStuff()) return;
 
-            // create http request
-            const request = $.ajax({
-                url: "/api/login",
-                contentType: "application/json; charset=utf-8",
-                method: "POST",
-                dataType: "json",
-                data: JSON.stringify({
-                    data: {
-                        username: $("#username").val(),
-                        password: $("#password").val()
-                    }
-                })
-            });
+			// create http request
+			const request = $.ajax({
+				url: "/api/login",
+				contentType: "application/json; charset=utf-8",
+				method: "POST",
+				dataType: "json",
+				data: JSON.stringify({
+					data: {
+						username: $("#username").val(),
+						password: $("#password").val()
+					}
+				})
+			});
 
-            // when request is completed
-            request.done(function (res) {
-                if (res.status) {
-                    window.location = "./index.html";
-                } else {
-                    msg.style.display = "block";
-                    msg.innerHTML = res.msg;
-                }
-            });
+			// when request is completed
+			request.done(function (res) {
+				if (res.status) {
+					window.location = "./index.html";
+				} else {
+					msg.style.display = "block";
+					msg.innerHTML = res.msg;
+				}
+			});
 
-            // when server is unreachable or request failed
-            request.fail(function () {
-                msg.style.display = "block";
-                msg.innerHTML = "Unable to contact the server!.";
-            });
-        }
-    </script>
+			// when server is unreachable or request failed
+			request.fail(function () {
+				msg.style.display = "block";
+				msg.innerHTML = "Unable to contact the server!.";
+			});
+		}
+	</script>
 
 </body>
 
