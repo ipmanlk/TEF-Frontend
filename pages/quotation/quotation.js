@@ -99,7 +99,7 @@ const registerEventListeners = () => {
   $(".btnFmReset").on("click", resetForm);
   $(".btnFmUpdate").on("click", updateEntry);
   $(".btnFmAdd").on("click", addEntry);
-  $(".btnFmDelete").on("click", deleteEntry);
+  $(".btnFmDelete").on("click", () => deleteEntry());
   $(".btnFmPrint").on("click", printEntry);
   $("#btnTopAddEntry").on("click", showNewEntryModal);
 
