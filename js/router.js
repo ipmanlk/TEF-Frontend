@@ -137,6 +137,10 @@ const getRoutes = () => {
             title: "Quotation View",
             path: "./pages/quotation/quotation.html"
         },
+        "material_inventory": {
+            title: "Material Inventory View",
+            path: "./pages/material_inventory/material_inventory.html"
+        },
         "noauth": {
             title: "Auth Failure",
             path: "./pages/noauth.html"
