@@ -272,7 +272,7 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
 }
 
 const printEntry = () => {
-  printQuotation(tempData.selectedEntry);
+  printPurchaseOrder(tempData.selectedEntry);
 }
 
 /*-------------------------------------------------------------------------------------------------------

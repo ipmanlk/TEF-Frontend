@@ -4,10 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quotation</title>
+  <title>Purchase Order</title>
   <!-- libs -->
   <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="/pages/quotation_request/print_template/quotation_request_print.css">
+  <link rel="stylesheet" href="/pages/quotation_request/print_template/purchase_order_print.css">
   <style>
 
   </style>
@@ -19,8 +19,9 @@
     <div class="invoice-header">
       <div class="row">
         <div class="col-xs-7">
-          <h1>Quotation<small> For Materials</small></h1>
-          <h4 class="text-muted">NO: #{qnumber} | Date: #{addedDate}</h4>
+          <h1>Purchase Order</h1>
+          <h5 class="text-muted">Code: #{pocode} | Date: #{addedDate}</h5>
+          <h5 class="text-muted">Required Date: #{requiredDate}</h5>
         </div>
         <div class="col-xs-5">
           <div class="media">
