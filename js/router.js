@@ -141,6 +141,10 @@ const getRoutes = () => {
             title: "Material Inventory View",
             path: "./pages/material_inventory/material_inventory.html"
         },
+        "purchase_order": {
+            title: "Purchase Order View",
+            path: "./pages/purchase_order/purchase_order.html"
+        },
         "noauth": {
             title: "Auth Failure",
             path: "./pages/noauth.html"
