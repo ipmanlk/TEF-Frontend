@@ -38,174 +38,6 @@
 
 
 
-    <form id="mainForm">
-      <div class="row">
-        <div class="col-md-12">
-          <div style="float: right;">
-            <b><span class="required">*</span> Required field</b>
-          </div>
-        </div>
-      </div>
-
-      <div class="form-group has-feedback">
-        <label for="pocode">Purchase Order Code: <span class="required">*</span></label>
-        <input type="text" class="form-control" id="qnumber" name="pocode" disabled>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6">
-          <div class="form-group">
-            <label for="supplierId">Supplier: <span class="required">*</span></label>
-            <select name="supplierId" id="supplierId" class="form-control" data-editable="true" data-live-search="true"
-              title="Please select a supplier first">
-
-            </select>
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="form-group has-feedback">
-            <label for="quotationId">Quotation No: <span class="required">*</span></label>
-            <select name="quotationId" id="quotationId" class="form-control" data-editable="true"
-              data-live-search="true" title="Please select a quotation">
-
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel panel-default">
-        <div class="panel-heading">Materials</div>
-        <div class="panel-body">
-
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group has-feedback">
-                <label for="materialId">Material: <span class="required">*</span></label>
-                <select name="materialId" id="materialId" class="form-control" data-editable="true"
-                  data-live-search="true" title="Please select a material">
-
-                </select>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group has-feedback">
-                <label for="unitTypeId">Unit Type: <span class="required">*</span></label>
-                <select name="unitTypeId" id="unitTypeId" class="form-control" data-editable="true">
-
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-4">
-              <div class="form-group has-feedback">
-                <label for="purchasePrice">Purchase Price: <span class="required">*</span></label>
-                <input type="text" class="form-control" id="purchasePrice" placeholder="20.00" name="purchasePrice"
-                  data-editable="true">
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-group has-feedback">
-                <label for="qty">Quantity: <span class="required">*</span></label>
-                <input type="text" class="form-control" id="qty" placeholder="500.00" name="qty" data-editable="true">
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-group has-feedback">
-                <label for="lineTotal">Line Total: <span class="required">*</span></label>
-                <input type="text" class="form-control" id="lineTotal" placeholder="0.00" name="lineTotal" disabled>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <button type="button" id="btnAddToMaterialTable" class="btn btn-primary btn-block">Add To
-              List</button>
-          </div>
-
-          <div class="form-group">
-            <table id="materialTable" class="table table-bordered">
-              <thead>
-                <tr>
-                  <th>Index</th>
-                  <th>Name</th>
-                  <th>Purchase Price</th>
-                  <th>Qty</th>
-                  <th>Line Total</th>
-                  <th>Unit Type</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-
-              </tbody>
-            </table>
-          </div>
-
-        </div>
-      </div>
-
-
-      <div class="row">
-        <div class="col-md-4">
-          <div class="form-group has-feedback">
-            <label for="requiredDate">Required Date: <span class="required">*</span></label>
-            <input type="date" class="form-control" id="requiredDate" name="requiredDate" data-editable="true" />
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="form-group has-feedback">
-            <label for="totalPrice">Total Price: <span class="required">*</span></label>
-            <input type="text" class="form-control" id="totalPrice" name="totalPrice" disabled />
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="form-group has-feedback">
-            <label for="addedDate" onclick="$('#addedDate').val(new Date().today())">Added Date: <span
-                class="required">*</span></label>
-            <input type="date" class="form-control" id="addedDate" name="addedDate" disabled />
-          </div>
-        </div>
-      </div>
-
-      <div class="form-group has-feedback">
-        <label for="description">Description: </label>
-        <textarea class="form-control" name="description" id="description" cols="30" rows="3" data-editable="true"
-          placeholder="We need more information about your items."></textarea>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6">
-          <div class="form-group has-feedback">
-            <label for="createdEmployee">Added By: </label>
-            <input type="text" class="form-control" id="createdEmployee" name="createdEmployee" disabled>
-          </div>
-        </div>
-
-        <div class="col-md-6">
-          <div class="form-group has-feedback">
-            <label for="purchaseOrderStatusId">Purchase OrderStatus: <span class="required">*</span></label>
-            <select name="purchaseOrderStatusId" id="purchaseOrderStatusId" class="form-control">
-
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div id="fmButtons">
-        <button type="button" class="btnFmPrint btn btn-info">Print</button>
-        <button type="button" class="btnFmAdd btn btn-success">Add</button>
-        <button type="button" class="btnFmUpdate btn btn-warning">Update</button>
-        <button type="button" class="btnFmReset btn btn-primary" style="float: right; margin-left: 10px;">Reset</button>
-        <button type="button" class="btnFmDelete btn btn-danger" style="float: right;">Delete</button>
-      </div>
-    </form>
-
-
     <!-- modal with main form -->
     <div class="modal fade" id="modalMainForm" role="dialog">
       <div class="modal-dialog modal-lg">
@@ -215,6 +47,178 @@
             <h4 class="modal-title" id="modalMainFormTitle">Modal Header</h4>
           </div>
           <div class="modal-body">
+
+            <form id="mainForm">
+              <div class="row">
+                <div class="col-md-12">
+                  <div style="float: right;">
+                    <b><span class="required">*</span> Required field</b>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group has-feedback">
+                <label for="pocode">Purchase Order Code: <span class="required">*</span></label>
+                <input type="text" class="form-control" id="pocode" name="pocode" disabled>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="supplierId">Supplier: <span class="required">*</span></label>
+                    <select name="supplierId" id="supplierId" class="form-control" data-editable="true"
+                      data-live-search="true" title="Please select a supplier first">
+
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group has-feedback">
+                    <label for="quotationId">Quotation No: <span class="required">*</span></label>
+                    <select name="quotationId" id="quotationId" class="form-control" data-editable="true"
+                      data-live-search="true" title="Please select a quotation">
+
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel panel-default">
+                <div class="panel-heading">Materials</div>
+                <div class="panel-body">
+
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group has-feedback">
+                        <label for="materialId">Material: <span class="required">*</span></label>
+                        <select name="materialId" id="materialId" class="form-control" data-editable="true"
+                          data-live-search="true" title="Please select a material">
+
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group has-feedback">
+                        <label for="unitTypeId">Unit Type: <span class="required">*</span></label>
+                        <select name="unitTypeId" id="unitTypeId" class="form-control" data-editable="true">
+
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="form-group has-feedback">
+                        <label for="purchasePrice">Purchase Price: <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="purchasePrice" placeholder="20.00"
+                          name="purchasePrice" data-editable="true">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group has-feedback">
+                        <label for="qty">Quantity: <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="qty" placeholder="500.00" name="qty"
+                          data-editable="true">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group has-feedback">
+                        <label for="lineTotal">Line Total: <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="lineTotal" placeholder="0.00" name="lineTotal"
+                          disabled>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <button type="button" id="btnAddToMaterialTable" class="btn btn-primary btn-block">Add To
+                      List</button>
+                  </div>
+
+                  <div class="form-group">
+                    <table id="materialTable" class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Index</th>
+                          <th>Name</th>
+                          <th>Purchase Price</th>
+                          <th>Qty</th>
+                          <th>Line Total</th>
+                          <th>Unit Type</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+              </div>
+
+
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group has-feedback">
+                    <label for="requiredDate">Required Date: <span class="required">*</span></label>
+                    <input type="date" class="form-control" id="requiredDate" name="requiredDate"
+                      data-editable="true" />
+                  </div>
+                </div>
+
+                <div class="col-md-4">
+                  <div class="form-group has-feedback">
+                    <label for="totalPrice">Total Price: <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="totalPrice" name="totalPrice" disabled />
+                  </div>
+                </div>
+
+                <div class="col-md-4">
+                  <div class="form-group has-feedback">
+                    <label for="addedDate" onclick="$('#addedDate').val(new Date().today())">Added Date: <span
+                        class="required">*</span></label>
+                    <input type="date" class="form-control" id="addedDate" name="addedDate" disabled />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group has-feedback">
+                <label for="description">Description: </label>
+                <textarea class="form-control" name="description" id="description" cols="30" rows="3"
+                  data-editable="true" placeholder="We need more information about your items."></textarea>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group has-feedback">
+                    <label for="createdEmployee">Added By: </label>
+                    <input type="text" class="form-control" id="createdEmployee" name="createdEmployee" disabled>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group has-feedback">
+                    <label for="purchaseOrderStatusId">Purchase OrderStatus: <span class="required">*</span></label>
+                    <select name="purchaseOrderStatusId" id="purchaseOrderStatusId" class="form-control">
+
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div id="fmButtons">
+                <button type="button" class="btnFmPrint btn btn-info">Print</button>
+                <button type="button" class="btnFmAdd btn btn-success">Add</button>
+                <button type="button" class="btnFmUpdate btn btn-warning">Update</button>
+                <button type="button" class="btnFmReset btn btn-primary"
+                  style="float: right; margin-left: 10px;">Reset</button>
+                <button type="button" class="btnFmDelete btn btn-danger" style="float: right;">Delete</button>
+              </div>
+            </form>
+
 
           </div>
           <div class="modal-footer">

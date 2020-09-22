@@ -12,7 +12,7 @@ async function loadModule(permissionStr) {
 
   // get regexes for validation and store on window tempData
   const response = await Request.send("/api/regexes", "GET", {
-    data: { module: "QUOTATION" }
+    data: { module: "PURCHASE_ORDER" }
   });
 
   tempData.validationInfo = response.data;
@@ -34,38 +34,37 @@ async function loadModule(permissionStr) {
     // parse resposne data and return in data table frendly format
     return responseData.map(entry => {
       return {
-        "Number": entry.qnumber,
-        "Request Num.": entry.quotationRequest.qrnumber,
-        "Valid From": entry.validFrom,
-        "Valid To": entry.validTo,
-        "Status": entry.quotationStatus.name,
+        "Code": entry.pocode,
+        "Quotation No.": entry.quotation.qnumber,
+        "Required Date": entry.requiredDate,
+        "Total": entry.totalPrice,
+        "Status": entry.purchaseOrderStatus.name,
         "View": `<button class="btn btn-success btn-sm" onclick="showEditEntryModal('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
         "Edit": `<button class="btn btn-warning btn-sm" onclick="showEditEntryModal('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
-        "Delete": `${entry.quotationStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
+        "Delete": `${entry.purchaseOrderStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
       }
     });
   }
-
-  window.mainTable = new DataTable("mainTableHolder", "/api/quotations", permission, dataBuilderFunction, "Quatations List");
+  window.mainTable = new DataTable("mainTableHolder", "/api/purchase_orders", permission, dataBuilderFunction, "Purchase Orders List");
 }
 
 const loadFormDropdowns = async () => {
   // define needed attributes
-  let response, suppliers, quotationStatus, unitTypes;
+  let response, suppliers, purchaseOrderStatuses, unitTypes;
 
   // get data from the api for each dropbox
   response = await Request.send("/api/suppliers?data[limit]=0", "GET");
   suppliers = response.data;
 
-  response = await Request.send("/api/general?data[table]=quotation_status", "GET");
-  quotationStatus = response.data;
+  response = await Request.send("/api/general?data[table]=purchase_order_status", "GET");
+  purchaseOrderStatuses = response.data;
 
   response = await Request.send("/api/general?data[table]=unit_type", "GET");
   unitTypes = response.data;
 
   // clean existing options and append new data
   $("#supplierId").empty();
-  $("#quotationStatusId").empty();
+  $("#purchaseOrderStatusId").empty();
   $("#unitTypeId").empty();
 
 
@@ -75,8 +74,8 @@ const loadFormDropdowns = async () => {
     $("#supplierId").append(`<option data-tokens="${sup.code} - ${name}" value="${sup.id}">${name} (${sup.code})</option>`);
   });
 
-  quotationStatus.forEach(qs => {
-    $("#quotationStatusId").append(`<option value="${qs.id}">${qs.name}</option>`);
+  purchaseOrderStatuses.forEach(pos => {
+    $("#purchaseOrderStatusId").append(`<option value="${pos.id}">${pos.name}</option>`);
   });
 
   unitTypes.forEach(ut => {
@@ -165,14 +164,14 @@ const addEntry = async () => {
   }
 
   // send post reqeust to save data
-  const response = await Request.send("/api/quotations", "POST", { data: data });
+  const response = await Request.send("/api/purchase_orders", "POST", { data: data });
 
   // show output modal based on response
   if (response.status) {
     $("#modalMainForm").modal("hide");
     reloadModule();
     mainWindow.showOutputToast("Success!", response.msg);
-    mainWindow.showOutputModal("Quatation request created!.", `<h4>Quotation Number: ${response.data.qnumber}</h4>`);
+    mainWindow.showOutputModal("Purchase order created!.", `<h4>Purchase Order Code: ${response.data.pocode}</h4>`);
   }
 }
 
@@ -180,47 +179,47 @@ const loadEntry = async (id) => {
   resetForm();
 
   // get entry data from db and show in the form
-  const response = await Request.send("/api/quotations", "GET", { data: { id: id } });
+  const response = await Request.send("/api/purchase_orders", "GET", { data: { id: id } });
   const entry = response.data;
 
   // fill form inputs
-  $("#qnumber").val(entry.qnumber);
+  $("#pocode").val(entry.pocode);
   $("#addedDate").val(entry.addedDate);
-  $("#validFrom").val(entry.validFrom);
-  $("#validTo").val(entry.validTo);
+  $("#requiredDate").val(entry.requiredDate);
+  $("#totalPrice").val(entry.totalPrice);
 
   $("#description").val(entry.description);
   $("#createdEmployee").val(entry.createdEmployee);
 
   // select dropdowns
-  FormUtil.selectDropdownOptionByValue("quotationStatusId", entry.quotationStatus.id);
+  FormUtil.selectDropdownOptionByValue("purchaseOrderStatusId", entry.purchaseOrderStatus.id);
 
   // select proper supplier
-  $("#supplierId").val(entry.quotationRequest.supplierId)
+  $("#supplierId").val(entry.quotation.quotationRequest.supplierId)
   $("#supplierId").selectpicker("render");
 
-  // load supplier quotation requests
-  await showSupplierQuotations(entry.quotationRequest.supplierId, "");
+  // load supplier quotations
+  await showSupplierQuotations(entry.quotation.quotationRequest.supplierId, "");
 
-  // select proper quotation request
-  $("#quotationRequestId").val(entry.quotationRequest.id);
-  $("#quotationRequestId").selectpicker("render");
+  // select proper quotation
+  $("#quotationId").val(entry.quotation.id);
+  $("#quotationId").selectpicker("render");
 
-  // show quotation request materials
-  await showQuotationMaterials(entry.quotationRequest.id);
+  // show quotation materials
+  await showQuotationMaterials(entry.quotation.id);
 
   // add to material table
   $("#materialTable tbody").empty();
 
-  entry.quotationMaterials.forEach(qm => {
+  entry.purchaseOrderMaterials.forEach(pom => {
     addRowToMaterialTable({
-      materialId: qm.materialId,
-      materialName: `${qm.material.name} (${qm.material.code})`,
-      availableQty: qm.availableQty,
-      minimumRequestQty: qm.minimumRequestQty,
-      purchasePrice: qm.purchasePrice,
-      unitTypeId: qm.unitTypeId,
-      unitTypeName: qm.material.unitType.name
+      materialId: pom.material.id,
+      materialName: `${pom.material.name} (${pom.material.code})`,
+      qty: pom.qty,
+      purchasePrice: pom.purchasePrice,
+      unitTypeId: pom.material.unitType.id,
+      unitTypeName: pom.material.unitType.name,
+      lineTotal: pom.lineTotal
     });
   });
 
@@ -228,7 +227,7 @@ const loadEntry = async (id) => {
   tempData.selectedEntry = entry;
 
   // hide from deleted button when deleted
-  if ($("#mainForm #quotationStatusId option:selected").text() == "Deleted") {
+  if ($("#mainForm #purchaseOrderStatusId option:selected").text() == "Deleted") {
     $(".btnFmDelete").hide();
   }
 }
@@ -245,7 +244,7 @@ const updateEntry = async () => {
   }
 
   // send post reqeust to save data
-  const response = await Request.send("/api/quotations", "PUT", { data: data });
+  const response = await Request.send("/api/purchase_orders", "PUT", { data: data });
 
   // show output modal based on response
   if (response.status) {
@@ -262,7 +261,7 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
   if (!confirmation) return;
 
   // send post reqeust to save data
-  const response = await Request.send(`/api/quotations?data[id]=${id}`, "DELETE");
+  const response = await Request.send(`/api/purchase_orders?data[id]=${id}`, "DELETE");
 
   // show output modal based on response
   if (response.status) {
@@ -283,36 +282,36 @@ const getFormData = () => {
   // data from basic input fields
   const data = {
     "supplierId": $("#supplierId").val(),
-    "quotationRequestId": $("#quotationRequestId").val(),
-    "validFrom": $("#validFrom").val(),
-    "validTo": $("#validTo").val(),
+    "quotationId": $("#quotationId").val(),
+    "requiredDate": $("#requiredDate").val(),
     "addedDate": $("#addedDate").val(),
     "description": $("#description").val(),
-    "quotationStatusId": $("#quotationStatusId").val()
+    "purchaseOrderStatusId": $("#purchaseOrderStatusId").val(),
+    "totalPrice": $("#totalPrice").val()
   }
 
   // get data from materials table
-  const quotationMaterials = [];
+  const purchaseOrderMaterials = [];
   $("#materialTable tbody tr").each((i, tr) => {
     const tds = $(tr).children("td");
     const tdMaterialId = $(tds[1]).children().first().data("material-id");
-    const tdPurchasePrice = $(tds[2]).children().first().val();
-    const tdAvailableQty = $(tds[3]).children().first().val();
-    const tdMinimumRequestQty = $(tds[4]).children().first().val();
+    const tdPurchasePrice = $(tds[2]).children().first().data("purchase-price");
+    const tdQty = $(tds[3]).children().first().data("qty");
+    const tdLineTotal = $(tds[4]).children().first().data("line-total");
     const tdUnitTypeId = $(tds[5]).children().first().data("unit-type-id");
 
 
-    quotationMaterials.push({
+    purchaseOrderMaterials.push({
       materialId: tdMaterialId,
       purchasePrice: tdPurchasePrice,
-      availableQty: tdAvailableQty,
-      minimumRequestQty: tdMinimumRequestQty,
+      qty: tdQty,
+      lineTotal: tdLineTotal,
       unitTypeId: tdUnitTypeId
     });
   });
 
-  // add request mateirals to data
-  data["quotationMaterials"] = quotationMaterials;
+  // add purchase order mateirals to data
+  data["purchaseOrderMaterials"] = purchaseOrderMaterials;
 
   return data;
 }
@@ -323,7 +322,7 @@ const validateForm = () => {
   let errors = "";
 
   // ignored inputs for form validation
-  const ignoredAttributes = ["availableQty", "minimumRequestQty", "purchasePrice", "materialId"];
+  const ignoredAttributes = ["qty", "purchasePrice", "materialId", "unitTypeId"];
 
   // validate regular inputs
   tempData.validationInfo.forEach(vi => {
@@ -346,9 +345,8 @@ const validateForm = () => {
 
   // validate mini table
   const formData = getFormData();
-  const quotationMaterials = formData.quotationMaterials;
 
-  if (quotationMaterials.length == 0) {
+  if (formData.purchaseOrderMaterials.length == 0) {
     errors += "Please select at least one material!. <br>";
   }
 
@@ -366,13 +364,12 @@ const validateForm = () => {
 
     ids.push(tdMaterialId);
 
-    const tdPurchasePrice = $(tds[2]).children().first().val();
-    const tdAvailableQty = $(tds[3]).children().first().val();
-    const tdMinimumRequestQty = $(tds[4]).children().first().val();
+    const tdPurchasePrice = $(tds[2]).children().first().data("purchase-price");
+    const tdQty = $(tds[3]).children().first().data("qty");
 
     // check if list contains invalid values
     const regex = /^[\d]{1,7}\.[\d]{2}$/;
-    if (!regex.test(tdPurchasePrice) || !regex.test(tdAvailableQty) || !regex.test(tdMinimumRequestQty)) {
+    if (!regex.test(tdPurchasePrice) || !regex.test(tdQty)) {
       containsInvalidValues = true;
     }
   });
@@ -411,9 +408,9 @@ const resetForm = () => {
   $("#supplierId").val("");
   $("#supplierId").selectpicker('render');
 
-  $("#quotationRequestId").first().empty();
-  $("#quotationRequestId").selectpicker('refresh');
-  $("#quotationRequestId").selectpicker('render');
+  $("#quotationId").first().empty();
+  $("#quotationId").selectpicker('refresh');
+  $("#quotationId").selectpicker('render');
 
   $("#materialId").first().empty();
   $("#materialId").selectpicker('refresh');
@@ -530,13 +527,13 @@ const addRowToMaterialTable = (row = {}) => {
           <span data-material-id="${materialId}">${materialName}</span>
         </td>
         <td>
-          <span>${purchasePrice}</span>
+          <span data-purchase-price="${purchasePrice}">${purchasePrice}</span>
         </td>
         <td>
-          <span>${qty}</span>
+          <span data-qty="${qty}">${qty}</span>
         </td>
         <td>
-          <span>${lineTotal}</span>
+          <span data-line-total="${lineTotal}">${lineTotal}</span>
         </td>
         <td>
           <span data-unit-type-id="${unitTypeId}">${unitTypeName}</span>
@@ -550,22 +547,32 @@ const addRowToMaterialTable = (row = {}) => {
     </tr>
     `);
 
-  updateMaterialTableIndex();
+  refreshMaterialTable();
 }
 
 
-// updates index column of the mateiral table
-const updateMaterialTableIndex = () => {
+// updates index column of the mateiral table and purchase order total
+const refreshMaterialTable = () => {
   $("#materialTable tbody tr").each((index, tr) => {
     const indexTd = $(tr).children().first();
     indexTd.html(index + 1);
   });
+
+  // update purchase order total as well
+  let totalPrice = 0;
+  $("#materialTable tbody tr").each((i, tr) => {
+    const tds = $(tr).children("td");
+    const tdLineTotal = $(tds[4]).children().first().data("line-total"); totalPrice += parseFloat(tdLineTotal);
+  });
+
+  // show total price
+  $("#totalPrice").val(totalPrice.toFixed(2));
 }
 
 const removeFromMaterialTable = (button) => {
   $(button).parent().parent().remove();
 
-  updateMaterialTableIndex();
+  refreshMaterialTable();
 }
 
 
@@ -585,11 +592,11 @@ const showNewEntryModal = () => {
   const employeeFullName = mainWindow.tempData.profile.employee.fullName;
   $("#mainForm #createdEmployee").val(`${employeeNumber} (${employeeFullName})`);
   // set modal title
-  $("#modalMainFormTitle").text("Add New Quotation");
+  $("#modalMainFormTitle").text("Add New Purchase Order");
   // set date of adding
   $("#mainForm #addedDate").val(new Date().today());
-  // empty qrnumber
-  $("#mainForm #qnumber").val("Quotation number will be displayed after adding.");
+  // empty pocode
+  $("#mainForm #pocode").val("Purchase order code will be displayed after adding.");
   // show modal
   $("#modalMainForm").modal("show");
 }
@@ -597,7 +604,7 @@ const showNewEntryModal = () => {
 const showEditEntryModal = (id, readOnly = false) => {
   loadEntry(id).then(() => {
 
-    $("#modalMainFormTitle").text("Edit Quotation");
+    $("#modalMainFormTitle").text("Edit Purchase Order");
     $("#modalMainForm").modal("show");
 
     if (readOnly) {
