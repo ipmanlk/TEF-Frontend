@@ -311,7 +311,7 @@ const validateForm = () => {
   let errors = "";
 
   // ignored inputs for form validation
-  const ignoredAttributes = ["availableQty", "minimumRequestQty", "purchasePrice", "materialId"];
+  const ignoredAttributes = ["availableQty", "minimumRequestQty", "purchasePrice", "materialId", "unitTypeId"];
 
   // validate regular inputs
   tempData.validationInfo.forEach(vi => {
