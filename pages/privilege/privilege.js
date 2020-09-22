@@ -97,7 +97,7 @@ const formTabClick = async () => {
 
     // load initial privilege table
     reloadModuleList($("#roleId").val());
-    
+
     // show hide top buttons
     $("#btnTopAddEntry").hide();
     $("#btnTopViewEntry").show();
@@ -127,8 +127,8 @@ const getTableData = (responseData) => {
                 "Read": get,
                 "Add": post,
                 "Modify": put,
-                "Remove": del,
-                "Edit": `<button class="btn btn-warning btn-sm" onclick="editEntry('${p.roleId}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,            });
+                "Remove": del
+            });
         });
     });
 
@@ -145,7 +145,6 @@ const registerEventListeners = () => {
     $("form").on("submit", (e) => e.preventDefault());
 
     // register listeners for form buttons
-    $("#btnFmAdd").on("click", addEntry);
     $("#btnFmUpdate").on("click", updateEntry);
     $("#btnModuleAdd").on("click", () => {
         addToModuleList($("#moduleId").val());
@@ -246,7 +245,7 @@ const validateForm = async () => {
             status: true,
             data: entry
         }
-    }    
+    }
 
     // if there are errors
     return {
@@ -255,35 +254,11 @@ const validateForm = async () => {
     };
 }
 
-// add new entry to the database
-const addEntry = async () => {
-    const { status, data } = await validateForm();
-
-    // if there are errors
-    if (!status) {
-        mainWindow.showOutputModal("Sorry!. Please fix these errors.", data);
-        return;
-    }
-
-    // new entry object
-    let newEntryObj = data;
-
-    // send put reqeust to update data
-    const response = await Request.send("/api/privileges", "POST", { data: newEntryObj });
-
-    // show output modal based on response
-    if (response.status) {
-        mainWindow.showOutputToast("Success!", response.msg);
-        reloadModule();
-        setFormButtionsVisibility("edit");
-    }
-}
-
 const editEntry = async (id) => {
     // get entry data from db and show in the form
     const response = await Request.send("/api/privileges", "GET", { data: { id: id } });
     const entry = response.data;
-    
+
     // clear the module list in the form
     $("#moduleTable tbody").empty();
 
@@ -315,38 +290,8 @@ const updateEntry = async () => {
         return;
     }
 
-    const selectedEntry = tempData.selectedEntry;
-
     // new entry object
     let newEntryObj = data;
-
-    // // check if any of the data in entry has changed
-    // let dataHasChanged = false;
-
-    // console.log(selectedEntry.privileges, newEntryObj.privileges);
-    
-
-    // // when all permissions are removed
-    // if (selectedEntry.privileges.length !== newEntryObj.privileges.length) {
-    //     dataHasChanged = true;
-    // } else {
-    //     selectedEntry.privileges.every((p, index) => {
-    //         if (!newEntryObj.privileges[index]) {
-    //             dataHasChanged = true;
-    //             return;
-    //         }
-    //         if (p.permission !== newEntryObj.privileges[index].permission) {
-    //             dataHasChanged = true;
-    //             return;
-    //         }
-    //     });
-    // }
-
-    // // if nothing has been modifed
-    // if (!dataHasChanged) {
-    //     mainWindow.showOutputModal("Sorry!.", "You haven't changed anything to update.");
-    //     return;
-    // }
 
     // set id of the newEntry object
     newEntryObj.id = tempData.selectedEntry.id;
@@ -407,7 +352,7 @@ const addToModuleList = (moduleId, permission = "0000") => {
 
     // permissions and checkbox selections
     let permissions = permission.split("");
-    
+
     let post, get, put, del;
     post = parseInt(permissions[0]) ? "checked" : "";
     get = parseInt(permissions[1]) ? "checked" : "";
