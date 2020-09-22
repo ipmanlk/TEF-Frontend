@@ -470,7 +470,7 @@ const addToMaterialTable = () => {
     return;
   }
 
-  if (purchasePrice.trim() == "" || !/^[\d]{1,7}\.[\d]{2}$/.test(minimumRequestQty)) {
+  if (purchasePrice.trim() == "" || !/^[\d]{1,7}\.[\d]{2}$/.test(purchasePrice)) {
     mainWindow.showOutputModal("Sorry", "Please provice a valid purchase price!.");
     return;
   }
