@@ -359,7 +359,7 @@ const validateForm = () => {
     const tdMinimumRequestQty = $(tds[4]).children().first().val();
 
     // check if list contains invalid values
-    const regex = /^[\d]{1,7}\.[\d]{2}$/;
+    const regex = /^[\d]{1,9}\.[\d]{2}$/;
     if (!regex.test(tdPurchasePrice) || !regex.test(tdAvailableQty) || !regex.test(tdMinimumRequestQty)) {
       containsInvalidValues = true;
     }
@@ -470,17 +470,17 @@ const addToMaterialTable = () => {
     return;
   }
 
-  if (purchasePrice.trim() == "" || !/^[\d]{1,7}\.[\d]{2}$/.test(purchasePrice)) {
+  if (purchasePrice.trim() == "" || !/^[\d]{1,9}\.[\d]{2}$/.test(purchasePrice)) {
     mainWindow.showOutputModal("Sorry", "Please provice a valid purchase price!.");
     return;
   }
 
-  if (availableQty.trim() == "" || !/^[\d]{1,7}\.[\d]{2}$/.test(availableQty)) {
+  if (availableQty.trim() == "" || !/^[\d]{1,9}\.[\d]{2}$/.test(availableQty)) {
     mainWindow.showOutputModal("Sorry", "Please provice a valid available quantity!.");
     return;
   }
 
-  if (minimumRequestQty.trim() == "" || !/^[\d]{1,7}\.[\d]{2}$/.test(minimumRequestQty)) {
+  if (minimumRequestQty.trim() == "" || !/^[\d]{1,9}\.[\d]{2}$/.test(minimumRequestQty)) {
     mainWindow.showOutputModal("Sorry", "Please provice a valid minimum request quantity!.");
     return;
   }
