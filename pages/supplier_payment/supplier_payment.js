@@ -235,7 +235,7 @@ const loadEntry = async (id) => {
   $("#supplierId").selectpicker("render");
 
   // select proper grn
-  await showSupplierGrns(supplier.id);
+  await showSupplierGrns(supplier.id, "");
 
   // select proper grn
   $("#grnId").val(entry.grnId);
@@ -360,16 +360,9 @@ const resetForm = () => {
   $("#supplierId").val("");
   $("#supplierId").selectpicker('render');
 
-  $("#purchaseOrderId").first().empty();
-  $("#purchaseOrderId").selectpicker('refresh');
-  $("#purchaseOrderId").selectpicker('render');
-
-  $("#materialId").first().empty();
-  $("#materialId").selectpicker('refresh');
-  $("#materialId").selectpicker('render');
-
-  // empty mini table
-  $("#materialTable tbody").empty();
+  $("#grnId").first().empty();
+  $("#grnId").selectpicker('refresh');
+  $("#grnId").selectpicker('render');
 
   // remove other classes used for feedbacks
   $("#mainForm *").removeClass("has-error has-success");
