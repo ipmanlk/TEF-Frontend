@@ -129,7 +129,7 @@ const showSupplierGrns = async (supplierId, grnStatusName = "Pending") => {
   const response = await Request.send("/api/supplier_grns", "GET", {
     data: {
       supplierId: supplierId,
-      purchaseOrderStatusName: grnStatusName
+      grnStatusName: grnStatusName
     }
   });
 
