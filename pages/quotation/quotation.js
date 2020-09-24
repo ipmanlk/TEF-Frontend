@@ -575,8 +575,8 @@ const showNewEntryModal = () => {
 
   // set created employee number
   const employeeNumber = mainWindow.tempData.profile.employee.number;
-  const employeeFullName = mainWindow.tempData.profile.employee.fullName;
-  $("#mainForm #createdEmployee").val(`${employeeNumber} (${employeeFullName})`);
+  const employeeCallingName = mainWindow.tempData.profile.employee.callingName;
+  $("#mainForm #createdEmployee").val(`${employeeCallingName} (${employeeNumber})`);
   // set modal title
   $("#modalMainFormTitle").text("Add New Quotation");
   // set date of adding
