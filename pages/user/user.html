@@ -38,13 +38,13 @@
           <div class="modal-body">
             <form id="mainForm">
               <div class="row">
-								<div class="col-md-12">
-									<div style="float: right;">
-										<b><span class="required">*</span> Required field</b>
-									</div>
-								</div>
+                <div class="col-md-12">
+                  <div style="float: right;">
+                    <b><span class="required">*</span> Required field</b>
+                  </div>
+                </div>
               </div>
-  
+
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group has-feedback">
@@ -97,15 +97,25 @@
                 <textarea class="form-control" name="description" id="description" cols="30" rows="3"
                   data-editable="true" placeholder="One of the factory managers."></textarea>
               </div>
-              <div class="form-group has-feedback">
-                <label for="number">Created Employee Number: </label>
-                <input type="text" class="form-control" id="createdEmployeeNumber" name="createdEmployeeNumber"
-                  disabled>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group has-feedback">
+                    <label for="number">Created Employee: </label>
+                    <input type="text" class="form-control" id="createdEmployee" name="createdEmployee" disabled>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group has-feedback">
+                    <label for="number">Created Date: </label>
+                    <input type="text" class="form-control" id="addedDate" name="addedDate" disabled>
+                  </div>
+                </div>
               </div>
               <div id="fmButtons">
                 <button type="button" class="btnFmAdd btn btn-success">Add</button>
                 <button type="button" class="btnFmUpdate btn btn-warning">Update</button>
-                <button type="button" class="btnFmReset btn btn-primary" style="float: right; margin-left: 10px;">Reset</button>
+                <button type="button" class="btnFmReset btn btn-primary"
+                  style="float: right; margin-left: 10px;">Reset</button>
                 <button type="button" class="btnFmDelete btn btn-danger" style="float: right;">Delete</button>
               </div>
             </form>
@@ -127,10 +137,10 @@
   <script src="../../lib/multi-select/js/jquery.multi-select.js"></script>
 
   <!-- common stuff -->
-  	<script src="../../js/Request.js"></script>
-	<script src="../../js/Form.js"></script>
-	<script src="../../js/FormUtil.js"></script>
-	<script src="../../js/MiscUtil.js"></script>
+  <script src="../../js/Request.js"></script>
+  <script src="../../js/Form.js"></script>
+  <script src="../../js/FormUtil.js"></script>
+  <script src="../../js/MiscUtil.js"></script>
 
   <!-- main js -->
   <script src="user.js"></script>

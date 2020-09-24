@@ -79,7 +79,6 @@ async function loadModule(permissionStr) {
                 "Username": entry.username,
                 "Roles": roles,
                 "Status": entry.userStatus.name,
-                "Created by": entry.employeeCreated.number,
                 "Created on": entry.addedDate,
                 "Edit": `<button class="btn btn-warning btn-sm" onclick="showEditEntryModal('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
                 "Delete": `${entry.userStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
