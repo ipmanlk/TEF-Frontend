@@ -4,10 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GRN</title>
+  <title>Supplier Payment</title>
   <!-- libs -->
   <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="/pages/grn/print_template/grn_print.css">
+  <link rel="stylesheet" href="/pages/supplier_payment/print_template/supplier_payment_print.css">
   <style>
 
   </style>
@@ -19,9 +19,8 @@
     <div class="invoice-header">
       <div class="row">
         <div class="col-xs-7">
-          <h1>GRN</h1>
-          <h5 class="text-muted">Code: #{grncode} | Date: #{addedDate}</h5>
-          <h5 class="text-muted">Received Date: #{receivedDate}</h5>
+          <h1>Supplier Payment<small> Receipt</small></h1>
+          <h5 class="text-muted">Number: #{pnumber} | Date: #{addedDate}</h5>
         </div>
         <div class="col-xs-5">
           <div class="media">
@@ -55,45 +54,30 @@
                 <dd>#{supplierCompanyMobile}</dd>
                 <dt>Email</dt>
                 <dd>#{supplierEmail}</dd>
-                <dt>&nbsp;</dt>
-                <dd>&nbsp;</dd>
             </div>
           </div>
         </div>
-      </div>
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Materials List</h3>
-        </div>
-        <table class="table table-bordered table-condensed">
-          <thead>
-            <tr>
-              <th>Index</th>
-              <th>Material Name</th>
-              <th>Purchase Price</th>
-              <th>Received Qty.</th>
-              <th>Line Total.</th>
-            </tr>
-          </thead>
-          <tbody>
-            #{materialRows}
-          </tbody>
-        </table>
       </div>
 
       <div class="row">
         <div class="col-xs-12">
           <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Payment information</h3>
+            </div>
             <div class="panel-body">
-              <div class="col-xs-4">
-                <b>Grand Total: Rs. #{grandTotal}</b>
-              </div>
-              <div class="col-xs-4">
-                <b>Discount Ratio: #{discountRatio}%</b>
-              </div>
-              <div class="col-xs-4">
-                <b>Net Total: Rs. #{netTotal}</b>
-              </div>
+              <dl class="dl-horizontal">
+                <dt>GRN Code</dt>
+                <dd>#{grnCode}</dd>
+                <dt>GRN Net Total</dt>
+                <dd>#{grnNetTotal}</dd>
+                <dt>Supplier Total</dt>
+                <dd>#{supTotal}</dd>
+                <dt>Balance</dt>
+                <dd>#{balance}</dd>
+                <dt>Payment Method</dt>
+                <dd>#{paymentMethodName}</dd>
+              </dl>
             </div>
           </div>
         </div>

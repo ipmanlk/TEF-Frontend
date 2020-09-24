@@ -290,7 +290,7 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
 }
 
 const printEntry = () => {
-  printGrn(tempData.selectedEntry);
+  printPaymentReceipt(tempData.selectedEntry);
 }
 
 /*-------------------------------------------------------------------------------------------------------
