@@ -149,6 +149,10 @@ const getRoutes = () => {
             title: "GRN View",
             path: "./pages/grn/grn.html"
         },
+        "supplier_payment": {
+            title: "Supplier Payment View",
+            path: "./pages/supplier_payment/supplier_payment.html"
+        },
         "noauth": {
             title: "Auth Failure",
             path: "./pages/noauth.html"
