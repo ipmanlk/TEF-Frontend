@@ -31,7 +31,10 @@ function updateTiles() {
     $(".TILE").hide();
 
     // show tiles based on privileges
-    Object.keys(privileges).forEach(p => {
-        $(`.${p}.TILE`).show();
+    Object.keys(privileges).forEach(module => {
+        // check if user has read permisison
+        if (privileges[module].split("")[1] == 1) {
+            $(`.${module}.TILE`).show();
+        }
     });
 }

@@ -253,7 +253,7 @@
           tempData.privileges[moduleName] = permission;
           // update ui
           $(".LEFTMENU-ITEM").each((i, menuItem) => {
-            if ($(menuItem).hasClass(moduleName)) {
+            if ($(menuItem).hasClass(moduleName) && permission.split("")[1] == 1) {
               $(menuItem).show();
               $(menuItem).parent().parent().parent().show();
             }
