@@ -29,111 +29,42 @@ async function loadModule(permissionStr) {
     // save permission globally
     tempData.permission = permission;
 
-    await loadMainTable();
+    // create permission table
+    const dataBuilderFunction = (responseData) => {
+        // parse resposne data and return in data table frendly format
+        const data = [];
+
+        responseData.forEach(role => {
+            role.privileges.forEach(p => {
+                const perms = p.permission.split("");
+                let post, get, put, del;
+                post = perms[0] ? "Yes" : "No";
+                get = perms[1] ? "Yes" : "No";
+                put = perms[2] ? "Yes" : "No";
+                del = perms[3] ? "Yes" : "No";
+
+                data.push({
+                    "Role": role.name,
+                    "Module": p.module.name,
+                    "Read": get,
+                    "Add": post,
+                    "Modify": put,
+                    "Remove": del
+                });
+            });
+        });
+
+        return data;
+    }
+
+    window.mainTable = new DataTable("mainTableHolder", "/api/privileges", permission, dataBuilderFunction);
 }
 
 // reload main table data and from after making a change
 const reloadModule = async () => {
-    const tableData = await getInitialTableData();
-    mainTable.reload(tableData);
-
-    // fix for additional load more requests
-    setTimeout(() => tempData.loadMore = true, 500);
+    mainTable.reload();
 }
 
-/*-------------------------------------------------------------------------------------------------------
-                                            Main Table
--------------------------------------------------------------------------------------------------------*/
-const loadMainTable = async () => {
-    const tableData = await getInitialTableData();
-
-    // load data table
-    window.mainTable = new DataTable("mainTableHolder", tableData, searchEntries, loadMoreEntries, tempData.permission, "Privileges List");
-}
-
-const getInitialTableData = async () => {
-    // get initial entries from the server
-    const response = await Request.send("/api/privileges", "GET");
-
-    // convert response data to data table format
-    return getTableData(response.data);
-}
-
-const searchEntries = async (searchValue) => {
-    const response = await Request.send("/api/privileges", "GET", {
-        data: { keyword: searchValue }
-    });
-
-    const tableData = getTableData(response.data);
-
-    // load data to global main table
-    mainTable.reload(tableData);
-}
-
-const loadMoreEntries = async (searchValue, rowsCount) => {
-
-    // check if all data has been loaded
-    if (!tempData.loadMore) return;
-
-    const response = await Request.send("/api/privileges", "GET", {
-        data: { keyword: searchValue, skip: rowsCount }
-    });
-
-    // if results came empty (all loaded)
-    if (response.data.length == 0) {
-        tempData.loadMore = false;
-        return;
-    }
-
-    const tableData = getTableData(response.data);
-
-    // append to global main table
-    mainTable.append(tableData);
-}
-
-const formTabClick = async () => {
-    // show / hide proper button
-    setFormButtionsVisibility("add");
-
-    // load initial privilege table
-    reloadModuleList($("#roleId").val());
-
-    // show hide top buttons
-    $("#btnTopAddEntry").hide();
-    $("#btnTopViewEntry").show();
-}
-
-const tableTabClick = () => {
-    $("#btnTopViewEntry").hide();
-    $("#btnTopAddEntry").show();
-}
-
-const getTableData = (responseData) => {
-    // parse resposne data and return in data table frendly format
-    const data = [];
-
-    responseData.forEach(role => {
-        role.privileges.forEach(p => {
-            const perms = p.permission.split("");
-            let post, get, put, del;
-            post = perms[0] ? "Yes" : "No";
-            get = perms[1] ? "Yes" : "No";
-            put = perms[2] ? "Yes" : "No";
-            del = perms[3] ? "Yes" : "No";
-
-            data.push({
-                "Role": role.name,
-                "Module": p.module.name,
-                "Read": get,
-                "Add": post,
-                "Modify": put,
-                "Remove": del
-            });
-        });
-    });
-
-    return data;
-}
 
 /*-------------------------------------------------------------------------------------------------------
                                             Main Form
@@ -150,11 +81,8 @@ const registerEventListeners = () => {
         addToModuleList($("#moduleId").val());
     });
     $("#roleId").on("change", (e) => {
-        reloadModuleList(e.target.value);
+        showRolePrivileges(e.target.value);
     });
-    //  register listeners for form tab click
-    $(".nav-tabs a[href='#tabForm']").on("click", formTabClick);
-    $(".nav-tabs a[href='#tabTable']").on("click", tableTabClick);
 
     // event listeners for top action buttons
     $("#btnTopAddEntry").on("click", () => {
@@ -200,6 +128,9 @@ const loadFormDropdowns = async () => {
             `);
         });
     });
+
+    // load initial privileges list
+    showRolePrivileges(privileges[0].id)
 }
 
 const validateForm = async () => {
@@ -254,32 +185,6 @@ const validateForm = async () => {
     };
 }
 
-const editEntry = async (id) => {
-    // get entry data from db and show in the form
-    const response = await Request.send("/api/privileges", "GET", { data: { id: id } });
-    const entry = response.data;
-
-    // clear the module list in the form
-    $("#moduleTable tbody").empty();
-
-    // append each privilege to the module list
-    entry.privileges.forEach(p => {
-        addToModuleList(p.moduleId, p.permission);
-    });
-
-    // change tab to form
-    $(".nav-tabs a[href='#tabForm']").tab("show");
-
-    // set entry object globally to later compare
-    window.tempData.selectedEntry = entry;
-
-    if (entry.privileges.length > 0) {
-        setFormButtionsVisibility("edit");
-    } else {
-        setFormButtionsVisibility("add");
-    }
-}
-
 // update entry in the database
 const updateEntry = async () => {
     const { status, data } = await validateForm();
@@ -306,28 +211,6 @@ const updateEntry = async () => {
         reloadModule();
         editEntry(newEntryObj.id);
         tempData.selectedEntry = undefined;
-    }
-}
-
-const setFormButtionsVisibility = (action) => {
-    let permission = tempData.permission;
-
-    switch (action) {
-        case "edit":
-            $("#btnFmAdd").hide();
-            if (permission[2] !== 0) $("#btnFmUpdate").show();
-            if (permission[3] !== 0) $("#btnFmDelete").show();
-            $("#btnFmReset").show();
-            $("#btnFmPrint").hide();
-            break;
-
-        case "add":
-            if (permission[0] !== 0) $("#btnFmAdd").show();
-            $("#btnFmUpdate").hide();
-            $("#btnFmDelete").hide();
-            $("#btnFmReset").show();
-            $("#btnFmPrint").hide();
-            break;
     }
 }
 
@@ -379,6 +262,28 @@ const removeFromModuleList = (button) => {
     $(button).parent().parent().remove();
 }
 
-const reloadModuleList = (roleId) => {
-    editEntry(roleId);
+const showRolePrivileges = async (id) => {
+    // get entry data from db and show in the form
+    const response = await Request.send("/api/privileges", "GET", { data: { id: id } });
+    const entry = response.data;
+
+    // clear the module list in the form
+    $("#moduleTable tbody").empty();
+
+    // append each privilege to the module list
+    entry.privileges.forEach(p => {
+        addToModuleList(p.moduleId, p.permission);
+    });
+
+    // change tab to form
+    $(".nav-tabs a[href='#tabForm']").tab("show");
+
+    // set entry object globally to later compare
+    window.tempData.selectedEntry = entry;
+
+    // if (entry.privileges.length > 0) {
+    //     setFormButtionsVisibility("edit");
+    // } else {
+    //     setFormButtionsVisibility("add");
+    // }
 }
