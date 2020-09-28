@@ -33,3 +33,16 @@ Date.prototype.today = function () {
   const month = ("0" + (now.getMonth() + 1)).slice(-2);
   return (now.getFullYear() + "-" + (month) + "-" + (day));
 }
+
+// format date object to input type=date friendly format
+Date.prototype.formatForInput = function() {
+  const day = ("0" + this.getDate()).slice(-2);
+  const month = ("0" + (this.getMonth() + 1)).slice(-2);
+  return (this.getFullYear() + "-" + (month) + "-" + (day));
+}
+
+Date.prototype.addDays = function(days) {
+  var date = new Date(this.valueOf());
+  date.setDate(date.getDate() + days);
+  return date;
+}
