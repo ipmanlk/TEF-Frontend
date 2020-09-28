@@ -443,6 +443,13 @@ const showNewEntryModal = () => {
   $("#modalMainFormTitle").text("Create New Quotation Request");
   // set date of adding
   $("#mainForm #addedDate").val(new Date().today());
+
+  // set limits for due date
+  const date = new Date();
+  const dueDate = $("#mainForm #dueDate");
+  dueDate.attr("min", date.addDays(1).formatForInput());
+  dueDate.attr("max", date.addDays(14).formatForInput());
+
   // empty qrnumber
   $("#mainForm #qrnumber").val("Request number will be displayed after adding.");
   // show modal

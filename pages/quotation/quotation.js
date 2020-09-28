@@ -112,6 +112,14 @@ const registerEventListeners = () => {
     $("#materialTable tbody").empty();
     showQuotationRequestMaterials(e.target.value);
   });
+
+  // set approrpiate limit for the "valid to" date input
+  $("#mainForm #validFrom, #mainForm #validTo").on("keyup change", function () {
+    const validFrom = $("#mainForm #validFrom");
+    const validTo = $("#mainForm #validTo");
+    if (validFrom.val() == "") return;
+    validTo.attr("min", new Date(validFrom.val()).addDays(1).formatForInput());
+  });
 }
 
 // this function will run when supplierId select box is changed
@@ -581,6 +589,14 @@ const showNewEntryModal = () => {
   $("#modalMainFormTitle").text("Add New Quotation");
   // set date of adding
   $("#mainForm #addedDate").val(new Date().today());
+
+  // set limits for valid from and valid to
+  const date = new Date();
+  const validFrom = $("#mainForm #validFrom");
+  const validTo = $("#mainForm #validTo");
+  validFrom.attr("min", date.formatForInput());
+  validTo.attr("min", date.formatForInput());
+
   // empty qrnumber
   $("#mainForm #qnumber").val("Quotation number will be displayed after adding.");
   // show modal
