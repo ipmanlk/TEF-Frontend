@@ -194,7 +194,7 @@ const showQuotationMaterialInfo = (materialId) => {
   $("#purchasePrice").val(material.purchasePrice);
   $("#minimumRequestQty").val(material.minimumRequestQty);
   $("#availableQty").val(material.availableQty);
-
+  FormUtil.selectDropdownOptionByValue("unitTypeId", material.unitTypeId);
 }
 
 /*-------------------------------------------------------------------------------------------------------
