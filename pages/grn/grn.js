@@ -2,6 +2,7 @@ const tempData = {
   validationInfo: null,
   selectedEntry: null,
   permission: null,
+  selectedPurchaseOrder: null,
 };
 
 /*-------------------------------------------------------------------------------------------------------
@@ -113,6 +114,10 @@ const registerEventListeners = () => {
     showPurchaseOrderMaterials(e.target.value);
   });
 
+  $("#materialId").on('changed.bs.select', function (e) {
+    showPurchaseOrderMaterialInfo(e.target.value);
+  });
+
   // calculate line total on add to material list 
   $("#purchasePrice, #receivedQty").on("keyup change", function () {
     const purchasePrice = $("#purchasePrice").val().trim();
@@ -143,6 +148,10 @@ const registerEventListeners = () => {
   });
 }
 
+/*-------------------------------------------------------------------------------------------------------
+                           Functions for Multi-Select Dropdowns
+-------------------------------------------------------------------------------------------------------*/
+
 // this function will run when supplierId select box is changed
 const showSupplierPurchaseOrders = async (supplierId, purchaseOrderStatusName = "Active") => {
   // load supplier quotation requests
@@ -168,6 +177,43 @@ const showSupplierPurchaseOrders = async (supplierId, purchaseOrderStatusName = 
   // refresh plugin
   $("#purchaseOrderId").selectpicker("refresh");
   $("#purchaseOrderId").selectpicker("render");
+}
+
+const showPurchaseOrderMaterials = async (quotationId) => {
+
+  // get relevent quotation request
+  const response = await Request.send(`/api/purchase_orders?data[id]=${quotationId}`, "GET");
+
+  // when request failed
+  if (!response.status) return;
+
+  // save globally for later use
+  tempData.selectedPurchaseOrder = response.data;
+
+  const purchaseOrderMaterials = response.data.purchaseOrderMaterials;
+
+  // empty values
+  $("#materialId").first().empty();
+
+  // show quotation materials
+  purchaseOrderMaterials.forEach(pom => {
+    const mat = pom.material;
+    $("#materialId").first().append(`<option data-tokens="${mat.code} - ${mat.name}" value="${mat.id}">${mat.name} (${mat.code})</option>`);
+  });
+
+  // refresh select picker
+  $("#materialId").selectpicker("refresh");
+  $("#materialId").selectpicker("render");
+}
+
+const showPurchaseOrderMaterialInfo = (materialId) => {
+  const material = tempData.selectedPurchaseOrder.purchaseOrderMaterials.find(mat => mat.materialId == materialId);
+
+  // fill details
+  $("#purchasePrice").val(material.purchasePrice);
+  $("#receivedQty").val(material.qty);
+  $("#lineTotal").val(material.lineTotal);
+  FormUtil.selectDropdownOptionByValue("unitTypeId", material.unitTypeId);
 }
 
 /*-------------------------------------------------------------------------------------------------------
@@ -311,8 +357,8 @@ const getFormData = () => {
   $("#materialTable tbody tr").each((i, tr) => {
     const tds = $(tr).children("td");
     const tdMaterialId = $(tds[1]).children().first().data("material-id");
-    const tdPurchasePrice = $(tds[2]).children().first().data("purchase-price");
-    const tdReceivedQty = $(tds[3]).children().first().data("received-qty");
+    const tdPurchasePrice = $(tds[2]).children().first().val();
+    const tdReceivedQty = $(tds[3]).children().first().val();
     const tdLineTotal = $(tds[4]).children().first().data("line-total");
     const tdUnitTypeId = $(tds[5]).children().first().data("unit-type-id");
 
@@ -380,8 +426,8 @@ const validateForm = () => {
 
     ids.push(tdMaterialId);
 
-    const tdPurchasePrice = $(tds[2]).children().first().data("purchase-price");
-    const tdReceivedQty = $(tds[3]).children().first().data("received-qty");
+    const tdPurchasePrice = $(tds[2]).children().first().val();
+    const tdReceivedQty = $(tds[3]).children().first().val();
 
     // check if list contains invalid values
     const regex = /^[\d]{1,9}\.[\d]{2}$/;
@@ -441,33 +487,6 @@ const resetForm = () => {
 
   // disable form read only mode if activated
   FormUtil.disableReadOnly("mainForm");
-}
-
-/*-------------------------------------------------------------------------------------------------------
-                                       Supplier Quotations
--------------------------------------------------------------------------------------------------------*/
-const showPurchaseOrderMaterials = async (quotationId) => {
-
-  // get relevent quotation request
-  const response = await Request.send(`/api/purchase_orders?data[id]=${quotationId}`, "GET");
-
-  // when request failed
-  if (!response.status) return;
-
-  const purchaseOrderMaterials = response.data.purchaseOrderMaterials;
-
-  // empty values
-  $("#materialId").first().empty();
-
-  // show quotation materials
-  purchaseOrderMaterials.forEach(pom => {
-    const mat = pom.material;
-    $("#materialId").first().append(`<option data-tokens="${mat.code} - ${mat.name}" value="${mat.id}">${mat.name} (${mat.code})</option>`);
-  });
-
-  // refresh select picker
-  $("#materialId").selectpicker("refresh");
-  $("#materialId").selectpicker("render");
 }
 
 /*-------------------------------------------------------------------------------------------------------
@@ -543,10 +562,10 @@ const addRowToMaterialTable = (row = {}) => {
           <span data-material-id="${materialId}">${materialName}</span>
         </td>
         <td>
-          <span data-purchase-price="${purchasePrice}">${purchasePrice}</span>
+         <input class="form-control" type="text" value="${purchasePrice}">
         </td>
         <td>
-          <span data-received-qty="${receivedQty}">${receivedQty}</span>
+          <input class="form-control" type="text" value="${receivedQty}">
         </td>
         <td>
           <span data-line-total="${lineTotal}">${lineTotal}</span>
@@ -583,6 +602,20 @@ const refreshMaterialTable = () => {
 
   // show grand total
   $("#grandTotal").val(grandTotal.toFixed(2));
+
+  // re-register event listener for inputs
+
+  // re-calculate mini table line total when a input has changed inside it
+  $("#materialTable tbody input[type=text]").off();
+  $("#materialTable tbody input[type=text]").on("keyup change", function () {
+    const row = $(this).parent().parent();
+    const tds = row.children();
+    const tdPurchasePrice = $(tds[2]).children().first().val();
+    const tdReceivedQty = $(tds[3]).children().first().val();
+    const lineTotal = parseFloat(tdPurchasePrice) * parseFloat(tdReceivedQty);
+    $(tds[4]).children().first().attr("data-line-total", lineTotal.toFixed(2));
+    $(tds[4]).children().first().text(lineTotal.toFixed(2));
+  });
 }
 
 const removeFromMaterialTable = (button) => {
@@ -613,6 +646,10 @@ const showNewEntryModal = () => {
   $("#mainForm #addedDate").val(new Date().today());
   // empty pocode
   $("#mainForm #grncode").val("GRN code will be displayed after adding.");
+  // set limits for receivedDate
+  const receivedDate = $("#receivedDate");
+  receivedDate.attr("min", new Date().removeDays(7).formatForInput());
+  receivedDate.attr("max", new Date().addDays(1).formatForInput());
   // show modal
   $("#modalMainForm").modal("show");
 }
