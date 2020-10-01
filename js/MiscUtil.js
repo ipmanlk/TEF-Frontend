@@ -1,21 +1,21 @@
 class MiscUtil {
   static getURLfromBuffer(buffer) {
-      // create image url from buffer data recived from server
-      const arrayBufferView = new Uint8Array(buffer.data);
-      const blob = new Blob([arrayBufferView], { type: "image/png" });
-      const urlCreator = window.URL || window.webkitURL;
-      const imageUrl = urlCreator.createObjectURL(blob);
-      return imageUrl;
+    // create image url from buffer data recived from server
+    const arrayBufferView = new Uint8Array(buffer.data);
+    const blob = new Blob([arrayBufferView], { type: "image/png" });
+    const urlCreator = window.URL || window.webkitURL;
+    const imageUrl = urlCreator.createObjectURL(blob);
+    return imageUrl;
   }
 
   static getBase64FromFile(file) {
-      // create a base64 string from a file object
-      return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(file);
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = error => reject(error);
-      });
+    // create a base64 string from a file object
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
   }
 }
 
@@ -35,14 +35,20 @@ Date.prototype.today = function () {
 }
 
 // format date object to input type=date friendly format
-Date.prototype.formatForInput = function() {
+Date.prototype.formatForInput = function () {
   const day = ("0" + this.getDate()).slice(-2);
   const month = ("0" + (this.getMonth() + 1)).slice(-2);
   return (this.getFullYear() + "-" + (month) + "-" + (day));
 }
 
-Date.prototype.addDays = function(days) {
+Date.prototype.addDays = function (days) {
   var date = new Date(this.valueOf());
   date.setDate(date.getDate() + days);
+  return date;
+}
+
+Date.prototype.removeDays = function (days) {
+  var date = new Date(this.valueOf());
+  date.setDate(date.getDate() - days);
   return date;
 }
