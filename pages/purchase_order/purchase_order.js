@@ -2,6 +2,7 @@ const tempData = {
   validationInfo: null,
   selectedEntry: null,
   permission: null,
+  selectedQuotation: null
 };
 
 /*-------------------------------------------------------------------------------------------------------
@@ -112,6 +113,10 @@ const registerEventListeners = () => {
     showQuotationMaterials(e.target.value);
   });
 
+  $("#materialId").on('changed.bs.select', function (e) {
+    showQuotationMaterialInfo(e.target.value);
+  });
+
   // calculate line total on add to material list 
   $("#purchasePrice, #qty").on("keyup change", function () {
     const purchasePrice = $("#purchasePrice").val().trim();
@@ -124,6 +129,10 @@ const registerEventListeners = () => {
     }
   });
 }
+
+/*-------------------------------------------------------------------------------------------------------
+                           Functions for Multi-Select Dropdowns
+-------------------------------------------------------------------------------------------------------*/
 
 // this function will run when supplierId select box is changed
 const showSupplierQuotations = async (supplierId, quotationStatusName = "Active") => {
@@ -150,6 +159,42 @@ const showSupplierQuotations = async (supplierId, quotationStatusName = "Active"
   // refresh plugin
   $("#quotationId").selectpicker("refresh");
   $("#quotationId").selectpicker("render");
+}
+
+const showQuotationMaterials = async (quotationId) => {
+
+  // get relevent quotation request
+  const response = await Request.send(`/api/quotations?data[id]=${quotationId}`, "GET");
+
+  // when request failed
+  if (!response.status) return;
+
+  // save globally for later use
+  tempData.selectedQuotation = response.data;
+
+  const quotationMaterials = response.data.quotationMaterials;
+
+  // empty values
+  $("#materialId").first().empty();
+
+  // show quotation materials
+  quotationMaterials.forEach(qm => {
+    const mat = qm.material;
+    $("#materialId").first().append(`<option data-tokens="${mat.code} - ${mat.name}" value="${mat.id}">${mat.name} (${mat.code})</option>`);
+  });
+
+  // refresh select picker
+  $("#materialId").selectpicker("refresh");
+  $("#materialId").selectpicker("render");
+}
+
+const showQuotationMaterialInfo = (materialId) => {
+  const quotationMaterials = tempData.selectedQuotation.quotationMaterials;
+  const material = quotationMaterials.find(mat => mat.materialId == materialId);
+  $("#purchasePrice").val(material.purchasePrice);
+  $("#minimumRequestQty").val(material.minimumRequestQty);
+  $("#availableQty").val(material.availableQty);
+
 }
 
 /*-------------------------------------------------------------------------------------------------------
@@ -428,33 +473,6 @@ const resetForm = () => {
 }
 
 /*-------------------------------------------------------------------------------------------------------
-                                       Supplier Quotations
--------------------------------------------------------------------------------------------------------*/
-const showQuotationMaterials = async (quotationId) => {
-
-  // get relevent quotation request
-  const response = await Request.send(`/api/quotations?data[id]=${quotationId}`, "GET");
-
-  // when request failed
-  if (!response.status) return;
-
-  const quotationMaterials = response.data.quotationMaterials;
-
-  // empty values
-  $("#materialId").first().empty();
-
-  // show quotation materials
-  quotationMaterials.forEach(qm => {
-    const mat = qm.material;
-    $("#materialId").first().append(`<option data-tokens="${mat.code} - ${mat.name}" value="${mat.id}">${mat.name} (${mat.code})</option>`);
-  });
-
-  // refresh select picker
-  $("#materialId").selectpicker("refresh");
-  $("#materialId").selectpicker("render");
-}
-
-/*-------------------------------------------------------------------------------------------------------
                                            Material Table
 -------------------------------------------------------------------------------------------------------*/
 
@@ -491,6 +509,15 @@ const addToMaterialTable = () => {
 
   if (unitTypeId.trim() == "") {
     mainWindow.showOutputModal("Sorry", "Please select a valid unit type first!.");
+    return;
+  }
+
+  // check if qty is between min order amount and max order amount
+  const minQty = parseFloat($("#minimumRequestQty").val());
+  const maxQty = parseFloat($("#availableQty").val());
+
+  if (qty < minQty || qty > maxQty) {
+    mainWindow.showOutputModal("Sorry", "Please enter a quantity between min. order qty and max. order qty.");
     return;
   }
 
@@ -597,6 +624,8 @@ const showNewEntryModal = () => {
   $("#mainForm #addedDate").val(new Date().today());
   // empty pocode
   $("#mainForm #pocode").val("Purchase order code will be displayed after adding.");
+  // set limits for required date
+  $("#requiredDate").attr("min", new Date().addDays(1).formatForInput());
   // show modal
   $("#modalMainForm").modal("show");
 }

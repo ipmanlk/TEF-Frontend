@@ -111,19 +111,36 @@
                   <div class="row">
                     <div class="col-md-4">
                       <div class="form-group has-feedback">
-                        <label for="purchasePrice">Purchase Price: <span class="required">*</span></label>
-                        <input type="text" class="form-control" id="purchasePrice" placeholder="20.00"
-                          name="purchasePrice" data-editable="true">
+                        <label for="purchasePrice">Purchase Price: </label>
+                        <input type="text" class="form-control" id="purchasePrice" placeholder="500.00"
+                          name="purchasePrice" disabled>
                       </div>
                     </div>
                     <div class="col-md-4">
+                      <div class="form-group has-feedback">
+                        <label for="minimumRequestQty">Min. Order Qty: </label>
+                        <input type="text" class="form-control" id="minimumRequestQty" placeholder="500.00"
+                          name="minimumRequestQty" disabled>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group has-feedback">
+                        <label for="availableQty">Max. Order Qty: </label>
+                        <input type="text" class="form-control" id="availableQty" placeholder="500.00"
+                          name="availableQty" disabled>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6">
                       <div class="form-group has-feedback">
                         <label for="qty">Quantity: <span class="required">*</span></label>
                         <input type="text" class="form-control" id="qty" placeholder="500.00" name="qty"
                           data-editable="true">
                       </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                       <div class="form-group has-feedback">
                         <label for="lineTotal">Line Total: <span class="required">*</span></label>
                         <input type="text" class="form-control" id="lineTotal" placeholder="0.00" name="lineTotal"
