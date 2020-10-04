@@ -107,7 +107,7 @@ const registerEventListeners = () => {
   });
 
   $("#grnId").on('changed.bs.select', function (e) {
-    showGrnTotalAndSupTotal(e.target.value);
+    showGrnInfo(e.target.value);
   });
 
   // update balance 
@@ -151,7 +151,7 @@ const showSupplierGrns = async (supplierId, grnStatusName = "Pending") => {
 }
 
 // show grn total net amount and suppllier total amount with arreas
-const showGrnTotalAndSupTotal = async (grnId) => {
+const showGrnInfo = async (grnId) => {
   const response = await Request.send("/api/grns", "GET", {
     data: {
       id: grnId
@@ -164,10 +164,20 @@ const showGrnTotalAndSupTotal = async (grnId) => {
   // show grn net total
   const grn = response.data;
   const supplier = grn.purchaseOrder.quotation.quotationRequest.supplier;
-  const supplierTotal = parseFloat(grn.netTotal) + parseFloat(supplier.arrears);
+  const grnPayedAmount = parseFloat(grn.payedAmount);
+  const grnNetTotal = parseFloat(grn.netTotal);
+  const supplierArreas = parseFloat(supplier.arrears);
+
+  let supplierTotal = grnNetTotal + supplierArreas;
+
+  // fix for adding x2 grnNetTotals to
+  if (grnPayedAmount > 0) {
+    supplierTotal = supplierArreas;
+  }
 
   // show totals
-  $("#grnNetTotal").val(grn.netTotal);
+  $("#grnPayedAmount").val(grn.payedAmount);
+  $("#grnNetTotal").val(grnNetTotal.toFixed(2));
   $("#supTotalAmount").val(supplierTotal.toFixed(2));
 }
 
@@ -175,6 +185,7 @@ const showGrnTotalAndSupTotal = async (grnId) => {
 const showBalance = () => {
   const supplierTotal = parseFloat($("#supTotalAmount").val());
   const payAmount = parseFloat($("#payAmount").val());
+  const payedAmount = parseFloat($("#grnPayedAmount").val());
 
   if (!isNaN(supplierTotal) && !isNaN(payAmount)) {
     let balance = supplierTotal - payAmount;
@@ -224,6 +235,8 @@ const loadEntry = async (id) => {
   showPaymentMethod(entry.supplierPaymentMethod.name);
 
   // fill form inputs
+  entry["grnPayedAmount"] = entry.grn.payedAmount;
+
   Object.keys(entry).forEach(key => {
     $(`#${key}`).val(entry[key]);
   });
