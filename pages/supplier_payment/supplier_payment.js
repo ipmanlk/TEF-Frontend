@@ -164,28 +164,20 @@ const showGrnInfo = async (grnId) => {
   // show grn net total
   const grn = response.data;
   const supplier = grn.purchaseOrder.quotation.quotationRequest.supplier;
-  const grnPayedAmount = parseFloat(grn.payedAmount);
   const grnNetTotal = parseFloat(grn.netTotal);
   const supplierArreas = parseFloat(supplier.arrears);
-
-  let supplierTotal = grnNetTotal + supplierArreas;
-
-  // fix for adding x2 grnNetTotals to
-  if (grnPayedAmount > 0) {
-    supplierTotal = supplierArreas;
-  }
 
   // show totals
   $("#grnPayedAmount").val(grn.payedAmount);
   $("#grnNetTotal").val(grnNetTotal.toFixed(2));
-  $("#supTotalAmount").val(supplierTotal.toFixed(2));
+  $("#supTotalAmount").val(supplierArreas.toFixed(2));
 }
 
 // calcualte balance from supplier total and pay amount
 const showBalance = () => {
   const supplierTotal = parseFloat($("#supTotalAmount").val());
   const payAmount = parseFloat($("#payAmount").val());
-  const payedAmount = parseFloat($("#grnPayedAmount").val());
+  // const payedAmount = parseFloat($("#grnPayedAmount").val());
 
   if (!isNaN(supplierTotal) && !isNaN(payAmount)) {
     let balance = supplierTotal - payAmount;
