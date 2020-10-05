@@ -349,7 +349,8 @@ const getFormData = () => {
     "grandTotal": $("#grandTotal").val(),
     "discountRatio": $("#discountRatio").val(),
     "netTotal": $("#netTotal").val(),
-    "invoiceNo": $("#invoiceNo").val()
+    "invoiceNo": $("#invoiceNo").val(),
+    "supplierId": $("#supplierId").val()
   }
 
   // get data from materials table
