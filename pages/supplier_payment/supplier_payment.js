@@ -75,17 +75,21 @@ const loadFormDropdowns = async () => {
     $("#supplierId").append(`<option data-tokens="${sup.code} - ${name}" value="${sup.id}">${name} (${sup.code})</option>`);
   });
 
-  supplierPaymentStatuses.forEach(sps => {
-    $("#supplierPaymentStatusId").append(`<option value="${sps.id}">${sps.name}</option>`);
-  });
-
   paymentMethods.forEach(pm => {
     $("#supplierPaymentMethodId").append(`<option value="${pm.id}">${pm.name}</option>`);
   });
 
+  supplierPaymentStatuses.forEach(sps => {
+    $("#supplierPaymentStatusId").append(`<option value="${sps.id}">${sps.name}</option>`);
+  });
+
+  // select default value as completed
+  FormUtil.selectDropdownOptionByText("supplierPaymentStatusId", "Completed");
+
   // init bootstrap-select
   $("#supplierId").selectpicker();
   $("#grnId").selectpicker();
+
 }
 
 // event listeners for form inputs and buttons
