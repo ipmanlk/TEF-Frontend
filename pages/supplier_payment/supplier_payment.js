@@ -170,11 +170,12 @@ const showGrnInfo = async (grnId) => {
   const supplier = grn.purchaseOrder.quotation.quotationRequest.supplier;
   const grnNetTotal = parseFloat(grn.netTotal);
   const supplierArreas = parseFloat(supplier.arrears);
-
+  const grnPayedAmount = parseFloat(grn.payedAmount);
   // show totals
-  $("#grnPayedAmount").val(grn.payedAmount);
+  $("#grnPayedAmount").val(grnPayedAmount.toFixed(2));
   $("#grnNetTotal").val(grnNetTotal.toFixed(2));
   $("#supTotalAmount").val(supplierArreas.toFixed(2));
+  $("#grnBalance").val((grnNetTotal - grnPayedAmount).toFixed(2));
 }
 
 // calcualte balance from supplier total and pay amount
