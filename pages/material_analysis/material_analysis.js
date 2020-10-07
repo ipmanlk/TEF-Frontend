@@ -12,6 +12,13 @@ async function loadModule(permissionStr) {
   if (permission[2] == 0) {
     $(".btnFmUpdate").hide();
   }
+
+  // get regexes for validation and store on window tempData
+  const response = await Request.send("/api/regexes", "GET", {
+    data: { module: "MATERIAL_ANALYSIS" }
+  });
+
+  FormUtil.enableRealtimeValidation(response.data);
 }
 
 const loadFormDropdowns = async () => {
