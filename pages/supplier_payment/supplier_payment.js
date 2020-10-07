@@ -181,7 +181,6 @@ const showGrnInfo = async (grnId) => {
 const showBalance = () => {
   const supplierTotal = parseFloat($("#supTotalAmount").val());
   const payAmount = parseFloat($("#payAmount").val());
-  // const payedAmount = parseFloat($("#grnPayedAmount").val());
 
   if (!isNaN(supplierTotal) && !isNaN(payAmount)) {
     let balance = supplierTotal - payAmount;
@@ -339,6 +338,16 @@ const validateForm = () => {
       errors += `${vi.error}<br/>`
     }
   });
+
+
+  // check if pay amout is greater than actual grn amount
+  const payAmount = parseFloat($("#payAmount").val());
+  const grnPayedAmount = parseFloat($("#grnPayedAmount").val());
+  const grnNetTotal = parseFloat($("#grnNetTotal").val());
+
+  if (payAmount > (grnNetTotal - grnPayedAmount)) {
+    errors += "GRN pay amount can't exceed the GRN net total!."
+  }
 
   if (errors == "") {
     // get form data
