@@ -13,7 +13,7 @@ async function loadModule(permissionStr) {
 
   // get regexes for validation and store on window tempData
   const response = await Request.send("/api/regexes", "GET", {
-    data: { module: "PURCHASE_ORDER" }
+    data: { module: "CUSTOMER_ORDER" }
   });
 
   tempData.validationInfo = response.data;
@@ -51,42 +51,41 @@ async function loadModule(permissionStr) {
 
 const loadFormDropdowns = async () => {
   // define needed attributes
-  let response, suppliers, purchaseOrderStatuses, unitTypes;
+  let response, customers, productPackages, customerOrderStatuses;
 
   // get data from the api for each dropbox
-  response = await Request.send("/api/suppliers?data[limit]=0", "GET");
-  suppliers = response.data;
+  response = await Request.send("/api/customers?data[limit]=0", "GET");
+  customers = response.data;
 
-  response = await Request.send("/api/general?data[table]=purchase_order_status", "GET");
-  purchaseOrderStatuses = response.data;
+  response = await Request.send("/api/product_packages?data[limit]=0", "GET");
+  productPackages = response.data;
 
-  response = await Request.send("/api/general?data[table]=unit_type", "GET");
-  unitTypes = response.data;
+  response = await Request.send("/api/general?data[table]=customer_order_status", "GET");
+  customerOrderStatuses = response.data;
 
   // clean existing options and append new data
-  $("#supplierId").empty();
-  $("#purchaseOrderStatusId").empty();
-  $("#unitTypeId").empty();
+  $("#customerId").empty();
+  $("#productPackageId").empty();
+  $("#customerOrderStatusId").empty();
 
 
-  suppliers.forEach(sup => {
+  customers.forEach(cus => {
     // show company name for companies and person name for individuals
-    let name = sup.companyName ? sup.companyName : sup.personName;
-    $("#supplierId").append(`<option data-tokens="${sup.code} - ${name}" value="${sup.id}">${name} (${sup.code})</option>`);
+    let name = cus.companyName ? cus.companyName : cus.customerName;
+    $("#customerId").append(`<option data-tokens="${cus.number} - ${name}" value="${cus.id}">${name} (${cus.number})</option>`);
   });
 
-  purchaseOrderStatuses.forEach(pos => {
-    $("#purchaseOrderStatusId").append(`<option value="${pos.id}">${pos.name}</option>`);
+  productPackages.forEach(pp => {
+    $("#productPackageId").append(`<option data-tokens="${pp.code} - ${pp.name}" value="${pp.id}">${pp.name} (${pp.code})</option>`);
   });
 
-  unitTypes.forEach(ut => {
-    $("#unitTypeId").append(`<option value="${ut.id}">${ut.name}</option>`);
+  customerOrderStatuses.forEach(cos => {
+    $("#customerOrderStatusId").append(`<option value="${cos.id}">${cos.name}</option>`);
   });
 
   // init bootstrap-select
-  $("#supplierId").selectpicker();
-  $("#materialId").selectpicker();
-  $("#quotationId").selectpicker();
+  $("#customerId").selectpicker();
+  $("#productPackageId").selectpicker();
 }
 
 // event listeners for form inputs and buttons
@@ -95,7 +94,7 @@ const registerEventListeners = () => {
   $("form").on("submit", e => e.preventDefault());
 
   // event listeners for buttons
-  $("#btnAddToMaterialTable").on("click", addToMaterialTable);
+  $("#btnaddToProductPackageTable").on("click", addToProductPackageTable);
   $(".btnFmReset").on("click", resetForm);
   $(".btnFmUpdate").on("click", updateEntry);
   $(".btnFmAdd").on("click", addEntry);
@@ -104,97 +103,90 @@ const registerEventListeners = () => {
   $("#btnTopAddEntry").on("click", showNewEntryModal);
 
   // event listeners for bootstrap-select componnets
-  $("#supplierId").on('changed.bs.select', function (e) {
-    showSupplierQuotations(e.target.value);
-  });
-
-  $("#quotationId").on('changed.bs.select', function (e) {
-    $("#materialTable tbody").empty();
-    showQuotationMaterials(e.target.value);
-  });
-
-  $("#materialId").on('changed.bs.select', function (e) {
-    showQuotationMaterialInfo(e.target.value);
+  $("#productPackageId").on('changed.bs.select', function (e) {
+    showProductPackageInfo(e.target.value);
   });
 
   // calculate line total on add to material list 
-  $("#purchasePrice, #qty").on("keyup change", function () {
-    const purchasePrice = $("#purchasePrice").val().trim();
-    const qty = $("#qty").val().trim();
+  $("#productPackageQty").on("keyup change", function () {
+    const salePrice = $("#productPackageSalePrice").val().trim();
+    const qty = $("#productPackageQty").val().trim();
 
-    if (!isNaN(purchasePrice && !isNaN(qty))) {
-      $("#lineTotal").val(parseFloat(purchasePrice * qty).toFixed(2));
+    if (!isNaN(salePrice) && !isNaN(qty)) {
+      $("#lineTotal").val(parseFloat(salePrice * qty).toFixed(2));
     } else {
-      $("#lineTotal").val(parseFloat("0.00").toFixed(2));
+      $("#lineTotal").val("0.00");
     }
   });
+
+  // calculate grand totbal with discount
+  $("#grandTotal, #discountRatio").on("keyup change", function () {
+    const grandTotal = $("#grandTotal").val();
+    let discountRatio = $("#discountRatio").val();
+
+    if (!isNaN(grandTotal) && !isNaN(discountRatio)) {
+      // calcualte net total
+      const netTotal = grandTotal - (grandTotal * (discountRatio / 100));
+
+      // show net total
+      $("#netTotal").val(netTotal.toFixed(2));
+
+    } else {
+      $("#netTotal").val("0.00");
+    }
+  });
+
+  // add new customer
+  $("#btnAddNewCustomer").click(() => {
+    showAddCustomerModal().then(async () => {
+      // refresh the customer list when new customer is added
+      const response = await Request.send("/api/customers?data[limit]=0", "GET");
+      const customers = response.data;
+
+      // update select picker options
+      $("#customerId").first().empty();
+
+      customers.forEach(cus => {
+        // show company name for companies and person name for individuals
+        let name = cus.companyName ? cus.companyName : cus.customerName;
+        $("#customerId").append(`<option data-tokens="${cus.number} - ${name}" value="${cus.id}">${name} (${cus.number})</option>`);
+      });
+
+      // refresh plugin
+      $("#customerId").selectpicker("refresh");
+      $("#customerId").selectpicker("render");
+    })
+  });
+
 }
+
+// show customer view in an iframe
+const showAddCustomerModal = () => {
+  return new Promise((resolve, reject) => {
+    $("#modalAddCustomerIframe").attr("src", "/pages/customer/customer.html");
+    $("#modalAddCustomerIframe").css("min-height", "100vh");
+    // $("#modalAddCustomerIframe").css("min-width", height);
+    $("#modalAddCustomerIframe").on("load", () => {
+      document.getElementById("modalAddCustomerIframe").contentWindow.mainWindow = mainWindow;
+      document.getElementById("modalAddCustomerIframe").contentWindow.loadModule(mainWindow.tempData.privileges["CUSTOMER"]);
+    });
+    $("#modalAddCustomer").modal();
+    $("#modalAddCustomer").off("hidden.bs.modal");
+    $("#modalAddCustomer").on("hidden.bs.modal", function (e) {
+      resolve();
+    });
+  });
+}
+
 
 /*-------------------------------------------------------------------------------------------------------
                            Functions for Multi-Select Dropdowns
 -------------------------------------------------------------------------------------------------------*/
 
-// this function will run when supplierId select box is changed
-const showSupplierQuotations = async (supplierId, quotationStatusName = "Active") => {
-  // load supplier quotation requests
-  const response = await Request.send("/api/supplier_quotations", "GET", {
-    data: {
-      supplierId: supplierId,
-      quotationStatusName: quotationStatusName
-    }
-  });
-
-  // if request failed
-  if (!response.status) return;
-
-  const quotations = response.data;
-
-  // update select picker options
-  $("#quotationId").first().empty();
-
-  quotations.forEach(q => {
-    $("#quotationId").first().append(`<option data-tokens="${q.qnumber}" value="${q.id}">${q.qnumber}</option>`);
-  });
-
-  // refresh plugin
-  $("#quotationId").selectpicker("refresh");
-  $("#quotationId").selectpicker("render");
-}
-
-const showQuotationMaterials = async (quotationId) => {
-
-  // get relevent quotation request
-  const response = await Request.send(`/api/quotations?data[id]=${quotationId}`, "GET");
-
-  // when request failed
-  if (!response.status) return;
-
-  // save globally for later use
-  tempData.selectedQuotation = response.data;
-
-  const quotationMaterials = response.data.quotationMaterials;
-
-  // empty values
-  $("#materialId").first().empty();
-
-  // show quotation materials
-  quotationMaterials.forEach(qm => {
-    const mat = qm.material;
-    $("#materialId").first().append(`<option data-tokens="${mat.code} - ${mat.name}" value="${mat.id}">${mat.name} (${mat.code})</option>`);
-  });
-
-  // refresh select picker
-  $("#materialId").selectpicker("refresh");
-  $("#materialId").selectpicker("render");
-}
-
-const showQuotationMaterialInfo = (materialId) => {
-  const quotationMaterials = tempData.selectedQuotation.quotationMaterials;
-  const material = quotationMaterials.find(mat => mat.materialId == materialId);
-  $("#purchasePrice").val(material.purchasePrice);
-  $("#minimumRequestQty").val(material.minimumRequestQty);
-  $("#availableQty").val(material.availableQty);
-  FormUtil.selectDropdownOptionByValue("unitTypeId", material.unitTypeId);
+const showProductPackageInfo = async (productPackageId) => {
+  const response = await Request.send(`/api/product_packages?data[id]=${productPackageId}`, "GET");
+  const productPackage = response.data;
+  $("#productPackageSalePrice").val(productPackage.salePrice);
 }
 
 /*-------------------------------------------------------------------------------------------------------
@@ -254,10 +246,10 @@ const loadEntry = async (id) => {
   await showQuotationMaterials(entry.quotation.id);
 
   // add to material table
-  $("#materialTable tbody").empty();
+  $("#productPackageTable tbody").empty();
 
   entry.purchaseOrderMaterials.forEach(pom => {
-    addRowToMaterialTable({
+    addRowToProductPackageTable({
       materialId: pom.material.id,
       materialName: `${pom.material.name} (${pom.material.code})`,
       qty: pom.qty,
@@ -337,7 +329,7 @@ const getFormData = () => {
 
   // get data from materials table
   const purchaseOrderMaterials = [];
-  $("#materialTable tbody tr").each((i, tr) => {
+  $("#productPackageTable tbody tr").each((i, tr) => {
     const tds = $(tr).children("td");
     const tdMaterialId = $(tds[1]).children().first().data("material-id");
     const tdPurchasePrice = $(tds[2]).children().first().data("purchase-price");
@@ -400,7 +392,7 @@ const validateForm = () => {
   let containsInvalidValues = false;
 
   const ids = [];
-  $("#materialTable tbody tr").each((i, tr) => {
+  $("#productPackageTable tbody tr").each((i, tr) => {
     const tds = $(tr).children("td");
     const tdMaterialId = $(tds[1]).children().first().data("material-id");
     if (ids.includes[tdMaterialId]) {
@@ -462,7 +454,7 @@ const resetForm = () => {
   $("#materialId").selectpicker('render');
 
   // empty mini table
-  $("#materialTable tbody").empty();
+  $("#productPackageTable tbody").empty();
 
   // remove other classes used for feedbacks
   $("#mainForm *").removeClass("has-error has-success");
@@ -476,57 +468,31 @@ const resetForm = () => {
                                            Material Table
 -------------------------------------------------------------------------------------------------------*/
 
-const addToMaterialTable = () => {
-  const materialId = $("#materialId").val();
-  const materialName = $("#materialId option:selected").text();
-  const supplierId = $("#supplierId").val();
-  const qty = $("#qty").val();
+const addToProductPackageTable = () => {
+  const productPackageId = $("#productPackageId").val();
+  const productPackageName = $("#productPackageId option:selected").text();
+  const productPackageQty = $("#productPackageQty").val();
   const lineTotal = $("#lineTotal").val();
-  const unitTypeId = $("#unitTypeId").val();
-  const unitTypeName = $("#unitTypeId option:selected").text();
-  const purchasePrice = $("#purchasePrice").val();
+  const productPackageSalePrice = $("#productPackageSalePrice").val();
 
   // check if required things are provided
-  if (supplierId.trim() == "") {
-    mainWindow.showOutputModal("Sorry", "Please select a supplier first!.");
+  if (productPackageId.trim() == "") {
+    mainWindow.showOutputModal("Sorry", "Please select a product package first!.");
     return;
   }
 
-  if (materialId.trim() == "") {
-    mainWindow.showOutputModal("Sorry", "Please select a material first!.");
+  if (productPackageQty.trim() == "" || !/^[\d]+$/.test(productPackageQty)) {
+    mainWindow.showOutputModal("Sorry", "Please provice a valid product package quantity!.");
     return;
   }
 
-  if (purchasePrice.trim() == "" || !/^[\d]{1,9}\.[\d]{2}$/.test(purchasePrice)) {
-    mainWindow.showOutputModal("Sorry", "Please provice a valid purchase price!.");
-    return;
-  }
-
-  if (qty.trim() == "" || !/^[\d]{1,9}\.[\d]{2}$/.test(qty)) {
-    mainWindow.showOutputModal("Sorry", "Please provice a valid quantity!.");
-    return;
-  }
-
-  if (unitTypeId.trim() == "") {
-    mainWindow.showOutputModal("Sorry", "Please select a valid unit type first!.");
-    return;
-  }
-
-  // check if qty is between min order amount and max order amount
-  const minQty = parseFloat($("#minimumRequestQty").val());
-  const maxQty = parseFloat($("#availableQty").val());
-
-  if (qty < minQty || qty > maxQty) {
-    mainWindow.showOutputModal("Sorry", "Please enter a quantity between min. order qty and max. order qty.");
-    return;
-  }
 
   // check for duplicates
   let isDuplicate = false;
-  $("#materialTable tbody tr").each((i, tr) => {
+  $("#productPackageTable tbody tr").each((i, tr) => {
     const tds = $(tr).children("td");
-    const tdMaterialId = $(tds[1]).children().first().data("material-id");
-    if (materialId == tdMaterialId) {
+    const tdProductPackageId = $(tds[1]).children().first().data("product-package-id");
+    if (productPackageId == tdProductPackageId) {
       isDuplicate = true;
     }
   });
@@ -534,39 +500,36 @@ const addToMaterialTable = () => {
   if (isDuplicate) {
     mainWindow.showOutputModal(
       "Sorry",
-      "This material is already in the materials list!."
+      "This product package is already in the product package list!."
     );
     return;
   }
 
-  addRowToMaterialTable({
-    materialId, materialName, qty, purchasePrice, unitTypeId, unitTypeName, lineTotal
+  addRowToProductPackageTable({
+    productPackageId, productPackageName, productPackageQty, lineTotal, productPackageSalePrice
   });
 }
 
-const addRowToMaterialTable = (row = {}) => {
+const addRowToProductPackageTable = (row = {}) => {
   // row data
-  const { materialId, materialName, qty, purchasePrice, unitTypeId, unitTypeName, lineTotal } = row;
-  $("#materialTable tbody").append(`
+  const { productPackageId, productPackageName, productPackageQty, lineTotal, productPackageSalePrice } = row;
+  $("#productPackageTable tbody").append(`
     <tr>
         <td></td>
         <td>
-          <span data-material-id="${materialId}">${materialName}</span>
+          <span data-product-package-id="${productPackageId}">${productPackageName}</span>
         </td>
         <td>
-          <span data-purchase-price="${purchasePrice}">${purchasePrice}</span>
+          <span data-product-package-sale-price="${productPackageSalePrice}">${productPackageSalePrice}</span>
         </td>
         <td>
-          <span data-qty="${qty}">${qty}</span>
+          <span data-product-package-qty="${productPackageQty}">${productPackageQty}</span>
         </td>
         <td>
           <span data-line-total="${lineTotal}">${lineTotal}</span>
         </td>
         <td>
-          <span data-unit-type-id="${unitTypeId}">${unitTypeName}</span>
-        </td>
-        <td>
-          <button class="btn btn-danger btn-sm" onclick="removeFromMaterialTable(this)">
+          <button class="btn btn-danger btn-sm" onclick="removeFromProductPackageTable(this)">
             <i class="glyphicon glyphicon-edit" aria-hidden="true"></i> 
               Delete
           </button>
@@ -574,32 +537,32 @@ const addRowToMaterialTable = (row = {}) => {
     </tr>
     `);
 
-  refreshMaterialTable();
+  refreshProductPackageTable();
 }
 
 
 // updates index column of the mateiral table and purchase order total
-const refreshMaterialTable = () => {
-  $("#materialTable tbody tr").each((index, tr) => {
+const refreshProductPackageTable = () => {
+  $("#productPackageTable tbody tr").each((index, tr) => {
     const indexTd = $(tr).children().first();
     indexTd.html(index + 1);
   });
 
-  // update purchase order total as well
-  let totalPrice = 0;
-  $("#materialTable tbody tr").each((i, tr) => {
+  // update grand total as well
+  let grandTotal = 0;
+  $("#productPackageTable tbody tr").each((i, tr) => {
     const tds = $(tr).children("td");
-    const tdLineTotal = $(tds[4]).children().first().data("line-total"); totalPrice += parseFloat(tdLineTotal);
+    const tdLineTotal = $(tds[4]).children().first().data("line-total"); grandTotal += parseFloat(tdLineTotal);
   });
 
   // show total price
-  $("#totalPrice").val(totalPrice.toFixed(2));
+  $("#grandTotal").val(grandTotal.toFixed(2));
 }
 
-const removeFromMaterialTable = (button) => {
+const removeFromProductPackageTable = (button) => {
   $(button).parent().parent().remove();
 
-  refreshMaterialTable();
+  refreshProductPackageTable();
 }
 
 
@@ -619,11 +582,11 @@ const showNewEntryModal = () => {
   const employeeCallingName = mainWindow.tempData.profile.employee.callingName;
   $("#mainForm #createdEmployee").val(`${employeeCallingName} (${employeeNumber})`);
   // set modal title
-  $("#modalMainFormTitle").text("Add New Purchase Order");
+  $("#modalMainFormTitle").text("Add New Customer Order");
   // set date of adding
   $("#mainForm #addedDate").val(new Date().today());
   // empty pocode
-  $("#mainForm #pocode").val("Purchase order code will be displayed after adding.");
+  $("#mainForm #cusocode").val("Order code will be displayed after adding.");
   // set limits for required date
   $("#requiredDate").attr("min", new Date().addDays(1).formatForInput());
   // show modal
@@ -633,7 +596,7 @@ const showNewEntryModal = () => {
 const showEditEntryModal = (id, readOnly = false) => {
   loadEntry(id).then(() => {
 
-    $("#modalMainFormTitle").text("Edit Purchase Order");
+    $("#modalMainFormTitle").text("Edit Customer Order");
     $("#modalMainForm").modal("show");
 
     if (readOnly) {
