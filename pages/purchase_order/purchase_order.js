@@ -122,10 +122,10 @@ const registerEventListeners = () => {
     const purchasePrice = $("#purchasePrice").val().trim();
     const qty = $("#qty").val().trim();
 
-    if (!isNaN(purchasePrice && !isNaN(qty))) {
+    if (!isNaN(purchasePrice) && !isNaN(qty)) {
       $("#lineTotal").val(parseFloat(purchasePrice * qty).toFixed(2));
     } else {
-      $("#lineTotal").val(parseFloat("0.00").toFixed(2));
+      $("#lineTotal").val("0.00");
     }
   });
 }

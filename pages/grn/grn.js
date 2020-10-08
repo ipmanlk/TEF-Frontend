@@ -126,7 +126,7 @@ const registerEventListeners = () => {
     if (!isNaN(purchasePrice && !isNaN(qty))) {
       $("#lineTotal").val(parseFloat(purchasePrice * qty).toFixed(2));
     } else {
-      $("#lineTotal").val(parseFloat("0.00").toFixed(2));
+      $("#lineTotal").val("0.00");
     }
   });
 
@@ -135,7 +135,7 @@ const registerEventListeners = () => {
     const grandTotal = $("#grandTotal").val();
     let discountRatio = $("#discountRatio").val();
 
-    if (!isNaN(grandTotal && !isNaN(discountRatio))) {
+    if (!isNaN(grandTotal) && !isNaN(discountRatio)) {
       // calcualte net total
       const netTotal = grandTotal - (grandTotal * (discountRatio / 100));
 
@@ -143,7 +143,7 @@ const registerEventListeners = () => {
       $("#netTotal").val(netTotal.toFixed(2));
 
     } else {
-      $("#netTotal").val(parseFloat("0.00").toFixed(2));
+      $("#netTotal").val("0.00");
     }
   });
 }
