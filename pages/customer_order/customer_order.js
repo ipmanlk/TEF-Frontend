@@ -35,18 +35,18 @@ async function loadModule(permissionStr) {
     // parse resposne data and return in data table frendly format
     return responseData.map(entry => {
       return {
-        "Code": entry.pocode,
-        "Quotation No.": entry.quotation.qnumber,
+        "Code": entry.cocode,
+        "Customer Num.": entry.customer.number,
         "Required Date": entry.requiredDate,
-        "Total": entry.totalPrice,
-        "Status": entry.purchaseOrderStatus.name,
+        "Net Total": entry.netTotal,
+        "Status": entry.customerOrderStatus.name,
         "View": `<button class="btn btn-success btn-sm" onclick="showEditEntryModal('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
         "Edit": `<button class="btn btn-warning btn-sm" onclick="showEditEntryModal('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
-        "Delete": `${entry.purchaseOrderStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
+        "Delete": `${entry.customerOrderStatus.name == "Deleted" ? "" : `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`}`
       }
     });
   }
-  window.mainTable = new DataTable("mainTableHolder", "/api/purchase_orders", permission, dataBuilderFunction, "Purchase Orders List");
+  window.mainTable = new DataTable("mainTableHolder", "/api/customer_orders", permission, dataBuilderFunction, "Customer Orders List");
 }
 
 const loadFormDropdowns = async () => {
@@ -201,7 +201,7 @@ const addEntry = async () => {
   }
 
   // send post reqeust to save data
-  const response = await Request.send("/api/purchase_orders", "POST", { data: data });
+  const response = await Request.send("/api/customer_orders", "POST", { data: data });
 
   // show output modal based on response
   if (response.status) {
@@ -216,47 +216,33 @@ const loadEntry = async (id) => {
   resetForm();
 
   // get entry data from db and show in the form
-  const response = await Request.send("/api/purchase_orders", "GET", { data: { id: id } });
+  const response = await Request.send("/api/customer_orders", "GET", { data: { id: id } });
   const entry = response.data;
 
   // fill form inputs
-  $("#pocode").val(entry.pocode);
+  $("#cocode").val(entry.cocode);
   $("#addedDate").val(entry.addedDate);
   $("#requiredDate").val(entry.requiredDate);
-  $("#totalPrice").val(entry.totalPrice);
-
+  $("#grandTotal").val(entry.grandTotal);
+  $("#discountRatio").val(entry.discountRatio);
+  $("#netTotal").val(entry.netTotal);
   $("#description").val(entry.description);
   $("#createdEmployee").val(entry.createdEmployee);
 
-  // select dropdowns
-  FormUtil.selectDropdownOptionByValue("purchaseOrderStatusId", entry.purchaseOrderStatus.id);
+  // select proper customer
+  $("#customerId").val(entry.customer.id)
+  $("#customerId").selectpicker("render");
 
-  // select proper supplier
-  $("#supplierId").val(entry.quotation.quotationRequest.supplierId)
-  $("#supplierId").selectpicker("render");
-
-  // load supplier quotations
-  await showSupplierQuotations(entry.quotation.quotationRequest.supplierId, "");
-
-  // select proper quotation
-  $("#quotationId").val(entry.quotation.id);
-  $("#quotationId").selectpicker("render");
-
-  // show quotation materials
-  await showQuotationMaterials(entry.quotation.id);
-
-  // add to material table
+  // add to product packages table
   $("#productPackageTable tbody").empty();
 
-  entry.purchaseOrderMaterials.forEach(pom => {
+  entry.customerOrderProductPackages.forEach(pkg => {
     addRowToProductPackageTable({
-      materialId: pom.material.id,
-      materialName: `${pom.material.name} (${pom.material.code})`,
-      qty: pom.qty,
-      purchasePrice: pom.purchasePrice,
-      unitTypeId: pom.material.unitType.id,
-      unitTypeName: pom.material.unitType.name,
-      lineTotal: pom.lineTotal
+      productPackageId: pkg.productPackage.id,
+      productPackageName: `${pkg.productPackage.name} (${pkg.productPackage.code})`,
+      productPackageQty: pkg.qty,
+      lineTotal: pkg.lineTotal,
+      productPackageSalePrice: pkg.productPackage.salePrice
     });
   });
 
@@ -281,7 +267,7 @@ const updateEntry = async () => {
   }
 
   // send post reqeust to save data
-  const response = await Request.send("/api/purchase_orders", "PUT", { data: data });
+  const response = await Request.send("/api/customer_orders", "PUT", { data: data });
 
   // show output modal based on response
   if (response.status) {
@@ -298,7 +284,7 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
   if (!confirmation) return;
 
   // send post reqeust to save data
-  const response = await Request.send(`/api/purchase_orders?data[id]=${id}`, "DELETE");
+  const response = await Request.send(`/api/customer_orders?data[id]=${id}`, "DELETE");
 
   // show output modal based on response
   if (response.status) {
@@ -317,38 +303,35 @@ const printEntry = () => {
 -------------------------------------------------------------------------------------------------------*/
 const getFormData = () => {
   // data from basic input fields
-  const data = {
-    "supplierId": $("#supplierId").val(),
-    "quotationId": $("#quotationId").val(),
-    "requiredDate": $("#requiredDate").val(),
-    "addedDate": $("#addedDate").val(),
-    "description": $("#description").val(),
-    "purchaseOrderStatusId": $("#purchaseOrderStatusId").val(),
-    "totalPrice": $("#totalPrice").val()
-  }
+  const data = {};
 
-  // get data from materials table
-  const purchaseOrderMaterials = [];
+  // add element valeus to data obj
+  tempData.validationInfo.forEach(vi => {
+    let attributeValue = $(`#${vi.attribute}`).val();
+    if (attributeValue.trim() == "") attributeValue = null;
+    data[vi.attribute] = attributeValue;
+  });
+
+  // get data from product packages table
+  const customerOrderProductPackages = [];
   $("#productPackageTable tbody tr").each((i, tr) => {
     const tds = $(tr).children("td");
-    const tdMaterialId = $(tds[1]).children().first().data("material-id");
-    const tdPurchasePrice = $(tds[2]).children().first().data("purchase-price");
-    const tdQty = $(tds[3]).children().first().data("qty");
+    const tdProductPackageId = $(tds[1]).children().first().data("product-package-id");
+    const tdProductPackageSalePrice = $(tds[2]).children().first().data("product-package-sale-price");
+    const tdProductPackageQty = $(tds[3]).children().first().data("product-package-qty");
     const tdLineTotal = $(tds[4]).children().first().data("line-total");
-    const tdUnitTypeId = $(tds[5]).children().first().data("unit-type-id");
 
 
-    purchaseOrderMaterials.push({
-      materialId: tdMaterialId,
-      purchasePrice: tdPurchasePrice,
-      qty: tdQty,
+    customerOrderProductPackages.push({
+      productPackageId: tdProductPackageId,
+      salePrice: tdProductPackageSalePrice,
+      qty: tdProductPackageQty,
       lineTotal: tdLineTotal,
-      unitTypeId: tdUnitTypeId
     });
   });
 
   // add purchase order mateirals to data
-  data["purchaseOrderMaterials"] = purchaseOrderMaterials;
+  data["customerOrderProductPackages"] = customerOrderProductPackages;
 
   return data;
 }
@@ -359,7 +342,7 @@ const validateForm = () => {
   let errors = "";
 
   // ignored inputs for form validation
-  const ignoredAttributes = ["qty", "purchasePrice", "materialId", "unitTypeId"];
+  const ignoredAttributes = ["productPackageId", "productPackageSalePrice", "productPackageQty", "lineTotal"];
 
   // validate regular inputs
   tempData.validationInfo.forEach(vi => {
@@ -383,41 +366,41 @@ const validateForm = () => {
   // validate mini table
   const formData = getFormData();
 
-  if (formData.purchaseOrderMaterials.length == 0) {
-    errors += "Please select at least one material!. <br>";
+  if (formData.customerOrderProductPackages.length == 0) {
+    errors += "Please select at least one product package!. <br>";
   }
 
-  // check for duplicates & invalid values in the material list
-  let foundDuplicates = false;
-  let containsInvalidValues = false;
+  // // check for duplicates & invalid values in the material list
+  // let foundDuplicates = false;
+  // let containsInvalidValues = false;
 
-  const ids = [];
-  $("#productPackageTable tbody tr").each((i, tr) => {
-    const tds = $(tr).children("td");
-    const tdMaterialId = $(tds[1]).children().first().data("material-id");
-    if (ids.includes[tdMaterialId]) {
-      foundDuplicates = true;
-    }
+  // const ids = [];
+  // $("#productPackageTable tbody tr").each((i, tr) => {
+  //   const tds = $(tr).children("td");
+  //   const tdMaterialId = $(tds[1]).children().first().data("material-id");
+  //   if (ids.includes[tdMaterialId]) {
+  //     foundDuplicates = true;
+  //   }
 
-    ids.push(tdMaterialId);
+  //   ids.push(tdMaterialId);
 
-    const tdPurchasePrice = $(tds[2]).children().first().data("purchase-price");
-    const tdQty = $(tds[3]).children().first().data("qty");
+  //   const tdPurchasePrice = $(tds[2]).children().first().data("purchase-price");
+  //   const tdQty = $(tds[3]).children().first().data("qty");
 
-    // check if list contains invalid values
-    const regex = /^[\d]{1,9}\.[\d]{2}$/;
-    if (!regex.test(tdPurchasePrice) || !regex.test(tdQty)) {
-      containsInvalidValues = true;
-    }
-  });
+  //   // check if list contains invalid values
+  //   const regex = /^[\d]{1,9}\.[\d]{2}$/;
+  //   if (!regex.test(tdPurchasePrice) || !regex.test(tdQty)) {
+  //     containsInvalidValues = true;
+  //   }
+  // });
 
-  if (foundDuplicates) {
-    errors += "Please remove duplicates from material list!. <br>";
-  }
+  // if (foundDuplicates) {
+  //   errors += "Please remove duplicates from material list!. <br>";
+  // }
 
-  if (containsInvalidValues) {
-    errors += "There are invalid data in the material list!. Please check again. <br>";
-  }
+  // if (containsInvalidValues) {
+  //   errors += "There are invalid data in the material list!. Please check again. <br>";
+  // }
 
   if (errors == "") {
     return {
@@ -442,16 +425,11 @@ const resetForm = () => {
   $("#mainForm input").val("");
 
   // deselect select pickers
-  $("#supplierId").val("");
-  $("#supplierId").selectpicker('render');
+  $("#customerId").val("");
+  $("#customerId").selectpicker('render');
 
-  $("#quotationId").first().empty();
-  $("#quotationId").selectpicker('refresh');
-  $("#quotationId").selectpicker('render');
-
-  $("#materialId").first().empty();
-  $("#materialId").selectpicker('refresh');
-  $("#materialId").selectpicker('render');
+  $("#productPackageId").val("");
+  $("#productPackageId").selectpicker('render');
 
   // empty mini table
   $("#productPackageTable tbody").empty();
@@ -586,7 +564,7 @@ const showNewEntryModal = () => {
   // set date of adding
   $("#mainForm #addedDate").val(new Date().today());
   // empty pocode
-  $("#mainForm #cusocode").val("Order code will be displayed after adding.");
+  $("#mainForm #cocode").val("Order code will be displayed after adding.");
   // set limits for required date
   $("#requiredDate").attr("min", new Date().addDays(1).formatForInput());
   // show modal
