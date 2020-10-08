@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Purchase Order</title>
+  <!-- libs -->
+  <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/pages/purchase_order/print_template/purchase_order_print.css">
+  <style>
+
+  </style>
+
+</head>
+
+<body>
+  <div class="container invoice">
+    <div class="invoice-header">
+      <div class="row">
+        <div class="col-xs-7">
+          <h1>Purchase Order</h1>
+          <h5 class="text-muted">Code: #{pocode} | Date: #{addedDate}</h5>
+          <h5 class="text-muted">Required Date: #{requiredDate}</h5>
+        </div>
+        <div class="col-xs-5">
+          <div class="media">
+            <div class="media-left">
+              <div style="height: 70px; width: 70px;"></div>
+            </div>
+            <ul class="media-body list-unstyled">
+              <li><strong>Onelli Traders / Two Elephants Fireworks</strong></li>
+              <li>Firework Manufacturers</li>
+              <li>No 107/3, Walpala, Andiambalama.</li>
+              <li>twoelephantsfireworks@yahoo.com</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="invoice-body">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">Supplier Details</h3>
+            </div>
+            <div class="panel-body">
+              <dl class="dl-horizontal">
+                <dt>Name</dt>
+                <dd>#{supplierCompanyName}</dd>
+                <dt>Address</dt>
+                <dd>#{supplierAddress}</dd>
+                <dt>Phone</dt>
+                <dd>#{supplierCompanyMobile}</dd>
+                <dt>Email</dt>
+                <dd>#{supplierEmail}</dd>
+                <dt>&nbsp;</dt>
+                <dd>&nbsp;</dd>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Materials List</h3>
+        </div>
+        <table class="table table-bordered table-condensed">
+          <thead>
+            <tr>
+              <th>Index</th>
+              <th>Material Name</th>
+              <th>Available Qty.</th>
+              <th>Minimum Qty.</th>
+              <th>Purchase Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            #{materialRows}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <i>Comments / Notes</i>
+            </div>
+            <div class="panel-body">
+              #{description}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- libs -->
+  <script src="/lib/bootstrap/js/bootstrap.min.js"></script>
+</body>
+
+</html>
