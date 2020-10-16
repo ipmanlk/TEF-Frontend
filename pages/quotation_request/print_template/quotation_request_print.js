@@ -13,17 +13,47 @@ const printQuotationRequest = async (selectedEntry) => {
   const respone = await fetch("./print_template/quotation_request_print.html");
   let template = await respone.text();
 
+
   // replace template values
-  template = template.replace(/#{qrnumber}/g, selectedEntry.qrnumber);
-  template = template.replace(/#{addedDate}/g, selectedEntry.addedDate);
-  template = template.replace(/#{supplierCompanyName}/g, selectedEntry.supplier.companyName);
-  template = template.replace(/#{supplierAddress}/g, selectedEntry.supplier.address);
-  template = template.replace(/#{supplierCompanyMobile}/g, selectedEntry.supplier.companyMobile);
-  template = template.replace(/#{supplierEmail}/g, selectedEntry.supplier.email);
-  template = template.replace(/#{materialRows}/g, materialRows);
-  template = template.replace(/#{description}/g, selectedEntry.description.trim() == "" ? "None" : selectedEntry.description);
+  const supplier = selectedEntry.supplier;
+
+  const placeholderValues = {
+    qrnumber: selectedEntry.qrnumber,
+    supCode: supplier.code,
+    supType: supplier.supplierType.name,
+    addedDate: selectedEntry.addedDate,
+    supCompanyName: supplier.companyName,
+    supCompanyMobile: supplier.companyMobile,
+    supCompanyMail: supplier.email,
+    supCompanyAddress: supplier.address,
+    supCompanyPersonName: supplier.personName,
+    supCompanyPersonMobile: supplier.personMobile,
+    supName: supplier.personName,
+    supMobile: supplier.personMobile,
+    supMail: supplier.email,
+    supAddress: supplier.address,
+    materialRows: materialRows,
+    description: selectedEntry.description
+  }
+
+  // fix description
+  if (!placeholderValues.description || placeholderValues.description.trim() == "") {
+    placeholderValues.description = "None";
+  }
+
+  Object.keys(placeholderValues).forEach(key => {
+    template = template.replace(new RegExp(`#{${key}}`, "g"), placeholderValues[key]);
+  });
 
   const win = window.open("", "Print", "width=1000,height=600");
   win.document.write(template);
+
+  // get proper class name to hide
+  let className = (placeholderValues.supType == "Company") ? ".individual" : ".company";
+  let classes = win.document.querySelectorAll(className);
+  for (let i = 0; i < classes.length; i++) {
+    classes[i].style.display = "none";
+  }
+
   setTimeout(() => win.print(), 1000);
 }
