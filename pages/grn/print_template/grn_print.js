@@ -18,9 +18,10 @@ const printGrn = async (selectedEntry) => {
 
   // replace template values
   const supplier = selectedEntry.purchaseOrder.quotation.quotationRequest.supplier;
-  console.log(supplier);
+
   const placeholderValues = {
-    code: selectedEntry.grncode,
+    grncode: selectedEntry.grncode,
+    supCode: supplier.code,
     supType: supplier.supplierType.name,
     addedDate: selectedEntry.addedDate,
     receivedDate: selectedEntry.receivedDate,
@@ -55,7 +56,7 @@ const printGrn = async (selectedEntry) => {
   win.document.write(template);
 
   // get proper class name to hide
-  let className = (placeholderValues.supCompanyName) ? ".individual" : ".company";
+  let className = (placeholderValues.supType == "Company") ? ".individual" : ".company";
   let classes = win.document.querySelectorAll(className);
   for (let i = 0; i < classes.length; i++) {
     classes[i].style.display = "none";
