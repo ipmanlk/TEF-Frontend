@@ -4,10 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Purchase Order</title>
+  <title>Customer Order</title>
   <!-- libs -->
   <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="/pages/purchase_order/print_template/purchase_order_print.css">
+  <link rel="stylesheet" href="/pages/customer_order/print_template/customer_order_print.css">
   <style>
 
   </style>
@@ -19,8 +19,8 @@
     <div class="invoice-header">
       <div class="row">
         <div class="col-xs-7">
-          <h1>Purchase Order</h1>
-          <h5 class="text-muted">Code: #{pocode} | Date: #{addedDate}</h5>
+          <h1>Customer Order</h1>
+          <h5 class="text-muted">Code: #{code} | Date: #{addedDate}</h5>
           <h5 class="text-muted">Required Date: #{requiredDate}</h5>
         </div>
         <div class="col-xs-5">
@@ -43,18 +43,28 @@
         <div class="col-md-12">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Supplier Details</h3>
+              <h3 class="panel-title">Customer Details</h3>
             </div>
             <div class="panel-body">
               <dl class="dl-horizontal">
-                <dt>Name</dt>
-                <dd>#{supplierCompanyName}</dd>
-                <dt>Address</dt>
-                <dd>#{supplierAddress}</dd>
-                <dt>Phone</dt>
-                <dd>#{supplierCompanyMobile}</dd>
-                <dt>Email</dt>
-                <dd>#{supplierEmail}</dd>
+                <dt>Number</dt>
+                <dd>#{cusNumber}</dd>
+                <dt class="company">Company Name</dt>
+                <dd class="company">#{companyName}</dd>
+                <dt class="company">Company Mobile</dt>
+                <dd class="company">#{companyMobile}</dd>
+                <dt class="company">Company Mail</dt>
+                <dd class="company">#{companyMail}</dd>
+                <dt class="company">Contact Person Name</dt>
+                <dd class="company">#{companyContactPersonName}</dd>
+                <dt class="company">Contact Person Mobile</dt>
+                <dd class="company">#{companyContactPersonMobile}</dd>
+                <dt class="individual">Name</dt>
+                <dd class="individual">#{customerName}</dd>
+                <dt class="individual">Contact Number</dt>
+                <dd class="individual">#{customerMobile}</dd>
+                <dt class="individual">Email</dt>
+                <dd class="individual">#{customerEmail}</dd>
                 <dt>&nbsp;</dt>
                 <dd>&nbsp;</dd>
             </div>
@@ -69,16 +79,35 @@
           <thead>
             <tr>
               <th>Index</th>
-              <th>Material Name</th>
-              <th>Available Qty.</th>
-              <th>Minimum Qty.</th>
-              <th>Purchase Price</th>
+              <th>Product Package Name</th>
+              <th>Sale Price</th>
+              <th>Qty.</th>
+              <th>Line Total</th>
             </tr>
           </thead>
           <tbody>
-            #{materialRows}
+            #{productPkgRows}
           </tbody>
         </table>
+      </div>
+
+
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div class="col-xs-4">
+                <b>Grand Total: Rs. #{grandTotal}</b>
+              </div>
+              <div class="col-xs-4">
+                <b>Discount Ratio: #{discountRatio}%</b>
+              </div>
+              <div class="col-xs-4">
+                <b>Net Total: Rs. #{netTotal}</b>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="row">

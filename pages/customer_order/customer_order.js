@@ -294,8 +294,11 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
   }
 }
 
-const printEntry = () => {
-  printPurchaseOrder(tempData.selectedEntry);
+const printEntry = async () => {
+  // load full customer info
+  const response = await Request.send(`/api/customers?data[id]=${tempData.selectedEntry.customer.id}`, "GET");
+  tempData.selectedEntry["customer"] = response.data;
+  printCustomerOrder(tempData.selectedEntry);
 }
 
 /*-------------------------------------------------------------------------------------------------------
