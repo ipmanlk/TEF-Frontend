@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>TwoElephantFireworks - Purchase Order</title>
+  <link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../lib/datatable/datatable.css" />
+  <link rel="stylesheet" type="text/css" href="../../lib/bootstrap-select/css/bootstrap-select.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../css/pages/common.css" />
+  <style>
+    .input-read-only {
+      outline: none;
+      border: none;
+      background-color: white;
+      pointer-events: none;
+      box-shadow: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid" style="margin-top: 20px; margin-bottom: 100px">
+
+    <div id="actionButtonHolder" class="row" style="margin-bottom: 20px; padding-left: 35px;">
+      <div class="col-md-12">
+        <button id="btnTopAddEntry" class="btn btn-primary">
+          <i class="glyphicon glyphicon-plus-sign" aria-hidden="true"></i>
+          Create New Invoice
+        </button>
+      </div>
+    </div>
+
+    <!-- load table with previous quotations -->
+    <div id="mainTableHolder" class="container-fluid" style="margin-top:30px">
+
+    </div>
+
+
+    <!-- modal with main form -->
+    <div class="modal fade" id="modalMainForm" role="dialog">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="margin-bottom: 100px;">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" id="modalMainFormTitle">Modal Header</h4>
+          </div>
+          <div class="modal-body">
+
+            <form id="mainForm">
+              <div class="row">
+                <div class="col-md-12">
+                  <div style="float: right;">
+                    <b><span class="required">*</span> Required field</b>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group has-feedback">
+                <label for="code">Invoice Code: <span class="required">*</span></label>
+                <input type="text" class="form-control" id="code" name="code" disabled>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="customerId">Customer: <span class="required">*</span></label>
+                    <select name="customerId" id="customerId" class="form-control" data-editable="true"
+                      data-live-search="true" title="Please select a customer first">
+
+                    </select>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group has-feedback">
+                    <label for="customerOrderId">Order: <span class="required">*</span></label>
+                    <select name="customerOrderId" id="customerOrderId" class="form-control" data-editable="true"
+                      data-live-search="true" title="Please select an order">
+
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel panel-default">
+                <div class="panel-heading">Customer Details <b>(Fill For Unregistered Customers)</b></div>
+                <div class="panel-body">
+                  <div class="container-fluid" style="margin-top: 10px;">
+                    <!-- unregistered customer -->
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="form-group has-feedback company_info">
+                          <label for="customerName">Customer Name: <span class="required">*</span></label>
+                          <input type="text" class="form-control" id="customerName" placeholder="A.K. Silva"
+                            name="customerName" data-editable="true">
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group has-feedback company_info">
+                          <label for="nic">NIC: <span class="required">*</span></label>
+                          <input type="text" class="form-control" id="nic" placeholder="987456321V or 12365478491"
+                            name="nic" data-editable="true">
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group has-feedback company_info">
+                          <label for="customerMobile">Contact No: <span class="required">*</span></label>
+                          <input type="text" class="form-control" id="customerMobile" placeholder="0362325478"
+                            name="customerMobile" data-editable="true">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+
+              <div class="panel panel-default">
+                <div class="panel-heading">Product Packages</div>
+                <div class="panel-body">
+
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="form-group has-feedback">
+                        <label for="productPackageId">Product Package: <span class="required">*</span></label>
+                        <select name="productPackageId" id="productPackageId" class="form-control" data-editable="true"
+                          data-live-search="true" title="Please select a product package">
+
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group has-feedback">
+                        <label for="salePrice">Sale Price: <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="salePrice" placeholder="500.00" name="salePrice"
+                          disabled>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group has-feedback">
+                        <label for="requestedQty">Requested Qty: <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="requestedQty" placeholder="10" name="requestedQty">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group has-feedback">
+                        <label for="deliveredQty">Delivered Qty: <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="deliveredQty" placeholder="8" name="deliveredQty">
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <div class="form-group has-feedback">
+                        <label for="lineTotal">Line Total: <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="lineTotal" placeholder="500.00" name="lineTotal"
+                          disabled>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <button type="button" id="btnAddToproductPackageTable" class="btn btn-primary btn-block">Add To
+                      List</button>
+                  </div>
+
+                  <div class="form-group">
+                    <table id="productPackageTable" class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Index</th>
+                          <th>Name</th>
+                          <th>Sale Price</th>
+                          <th>Requested Qty</th>
+                          <th>Delivered Qty</th>
+                          <th>Line Total</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+              </div>
+
+
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group has-feedback">
+                    <label for="grandTotal">Grand Total: <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="grandTotal" placeholder="10000.00" name="grandTotal"
+                      data-editable="true" disabled>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group has-feedback">
+                    <label for="discountRatio">Discount Ratio (%): <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="discountRatio" placeholder="5.00" name="discountRatio"
+                      data-editable="true">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group has-feedback">
+                    <label for="netTotal">Net Total: <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="netTotal" placeholder="9500.00" name="netTotal"
+                      data-editable="true" disabled>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group has-feedback">
+                    <label for="cusTotalAmount">Customer Total: <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="cusTotalAmount" placeholder="10000.00"
+                      name="cusTotalAmount" data-editable="true" disabled>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group has-feedback">
+                    <label for="payedAmount">Payed Amount: <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="payedAmount" placeholder="10000.00" name="payedAmount"
+                      data-editable="true">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group has-feedback">
+                    <label for="balance">Total Balance: <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="balance" placeholder="5.00" name="balance"
+                      data-editable="true" disabled>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-group has-feedback">
+                    <label for="customerPaymentMethodId">Payment Method: <span class="required">*</span></label>
+                    <select name="customerPaymentMethodId" id="customerPaymentMethodId" class="form-control"
+                      title="Please select a payment method">
+
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- payment details -->
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="panel panel-default" id="panelPaymentCheque" style="display: none;">
+                    <div class="panel-heading">Cheque Details</div>
+                    <div class="panel-body">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group has-feedback">
+                            <label for="chequeNo">Cheque No: <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="chequeNo" placeholder="45466333"
+                              name="chequeNo">
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group has-feedback">
+                            <label for="chequeDate">Cheque No: <span class="required">*</span></label>
+                            <input type="date" class="form-control" id="chequeDate" name="chequeDate">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="panel panel-default" id="panelPaymentBank" style="display: none;">
+                    <div class="panel-heading">Bank Transfer Details</div>
+                    <div class="panel-body">
+                      <div class="row">
+                        <div class="col-md-3">
+                          <div class="form-group has-feedback">
+                            <label for="bankacHolder">Bank A/C Holder: <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="bankacHolder" placeholder="P.D.K. Mendis"
+                              name="bankacHolder" data-editable="true">
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group has-feedback">
+                            <label for="bankacNo">Bank A/C No: <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="bankacNo" placeholder="225457456"
+                              name="bankacNo" data-editable="true">
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group has-feedback">
+                            <label for="bankacBank">Bank Name: <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="bankacBank" placeholder="BOC Bank"
+                              name="bankacBank" data-editable="true">
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group has-feedback">
+                            <label for="bankacBranch">Bank Branch: <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="bankacBranch" placeholder="Hanwella Branch"
+                              name="bankacBranch" data-editable="true">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <div class="form-group has-feedback">
+                <label for="description">Description: </label>
+                <textarea class="form-control" name="description" id="description" cols="30" rows="3"
+                  data-editable="true" placeholder="We need more information about your items."></textarea>
+              </div>
+
+
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group has-feedback">
+                    <label for="addedDate" onclick="$('#addedDate').val(new Date().today())">Payed Date: <span
+                        class="required">*</span></label>
+                    <input type="date" class="form-control" id="addedDate" name="addedDate" disabled />
+                  </div>
+                </div>
+
+                <div class="col-md-4">
+                  <div class="form-group has-feedback">
+                    <label for="createdEmployee">Added By: <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="createdEmployee" name="createdEmployee" disabled>
+                  </div>
+                </div>
+
+                <div class="col-md-4">
+                  <div class="form-group has-feedback">
+                    <label for="customerInvoiceStatusId">Invoice Status: <span class="required">*</span></label>
+                    <select name="customerInvoiceStatusId" id="customerInvoiceStatusId" class="form-control">
+
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div id="fmButtons">
+                <button type="button" class="btnFmPrint btn btn-info">Print</button>
+                <button type="button" class="btnFmAdd btn btn-success">Add</button>
+                <button type="button" class="btnFmUpdate btn btn-warning">Update</button>
+                <button type="button" class="btnFmReset btn btn-primary"
+                  style="float: right; margin-left: 10px;">Reset</button>
+                <button type="button" class="btnFmDelete btn btn-danger" style="float: right;">Delete</button>
+              </div>
+            </form>
+
+          </div>
+          <div class="modal-footer">
+            <!-- <button id="btnModalYes" type="button" class="btn btn-danger" style="float:left">Yes</button>
+    <button id="btnModalNo" type="button" class="btn btn-default" data-dismiss="modal">No</button> -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- libs -->
+  <script src="../../lib/jquery/jquery.min.js"></script>
+  <script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
+  <script src="../../lib/bootstrap-select/js/bootstrap-select.min.js"></script>
+  <script src="../../lib/datatable/datatable.v2.js"></script>
+
+  <!-- common stuff -->
+  <script src="../../js/Request.js"></script>
+  <script src="../../js/Form.js"></script>
+  <script src="../../js/FormUtil.js"></script>
+  <script src="../../js/MiscUtil.js"></script>
+
+  <!-- main js -->
+  <script src="./customer_invoice.js"></script>
+  <script src="./print_template/customer_invoice_print.js"></script>
+</body>
+
+</html>
