@@ -142,7 +142,7 @@ const registerEventListeners = () => {
 
 	$("#customerOrderId").on("changed.bs.select", function (e) {
 		$("#productPackageTable tbody").empty();
-		showCustomerOrderProductPackages(e.target.value);
+		showCustomerOrderInfo(e.target.value);
 	});
 
 	// calculate line total
@@ -243,7 +243,9 @@ const showCustomerOrdersAndInfo = async (customerId) => {
 	// save globally
 	tempData.selectedCustomer = customer;
 
-	$("#customerName").val(customer.customerName);
+	$("#customerName").val(
+		customer.companyName ? customer.companyName : customer.customerName
+	);
 	$("#customerMobile").val(customer.customerMobile);
 	$("#nic").val(customer.nic);
 
@@ -276,7 +278,7 @@ const showCustomerOrdersAndInfo = async (customerId) => {
 	$("#customerOrderId").selectpicker("render");
 };
 
-const showCustomerOrderProductPackages = async (customerOrderId) => {
+const showCustomerOrderInfo = async (customerOrderId) => {
 	const response = await Request.send("/api/customer_orders", "GET", {
 		data: {
 			id: customerOrderId,
@@ -287,6 +289,11 @@ const showCustomerOrderProductPackages = async (customerOrderId) => {
 	if (!response.status) return;
 
 	const data = response.data;
+
+	$("#grandTotal").val(data.grandTotal);
+	$("#discountRatio").val(data.discountRatio);
+	$("#discountRatio").trigger("change");
+	$("#netTotal").val(data.netTotal);
 
 	data.customerOrderProductPackages.forEach((pkg) => {
 		addRowToProductPackageTable({
