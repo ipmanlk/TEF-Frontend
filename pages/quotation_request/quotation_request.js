@@ -513,14 +513,15 @@ const showNewEntryModal = () => {
 const showEditEntryModal = (id, readOnly = false) => {
 	resetForm();
 	loadEntry(id).then(() => {
-		$("#modalMainFormTitle").text("Edit Quotation Request");
 		$("#modalMainForm").modal("show");
 		if (readOnly) {
 			FormUtil.enableReadOnly("mainForm");
 			FormUtil.setButtionsVisibility("mainForm", tempData.permission, "view");
+			$("#modalMainFormTitle").text("View Quotation Request");
 		} else {
 			FormUtil.disableReadOnly("mainForm");
 			FormUtil.setButtionsVisibility("mainForm", tempData.permission, "edit");
+			$("#modalMainFormTitle").text("Edit Quotation Request");
 			// hide from deleted button when deleted
 			if (
 				$("#mainForm #quotationRequestStatusId option:selected").text() ==

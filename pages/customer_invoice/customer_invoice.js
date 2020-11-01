@@ -818,17 +818,16 @@ const showNewEntryModal = () => {
 
 const showEditEntryModal = (id, readOnly = false) => {
 	loadEntry(id).then(() => {
-		$("#modalMainFormTitle").text("Edit Invoice");
 		$("#modalMainForm").modal("show");
 
 		if (readOnly) {
 			FormUtil.enableReadOnly("mainForm");
 			FormUtil.setButtionsVisibility("mainForm", tempData.permission, "view");
-			$("#mainForm *").removeClass("has-error has-success");
-			$("#mainForm .form-control-feedback").remove();
+			$("#modalMainFormTitle").text("View Invoice");
 		} else {
 			FormUtil.disableReadOnly("mainForm");
 			FormUtil.setButtionsVisibility("mainForm", tempData.permission, "edit");
+			$("#modalMainFormTitle").text("Edit Invoice");
 			// hide form deleted button when deleted
 			if (tempData.selectedEntry.customerInvoiceStatus.name == "Deleted") {
 				$(".btnFmDelete").hide();

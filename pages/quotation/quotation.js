@@ -695,7 +695,6 @@ const showNewEntryModal = () => {
 
 const showEditEntryModal = (id, readOnly = false) => {
 	loadEntry(id).then(() => {
-		$("#modalMainFormTitle").text("Edit Quotation");
 		$("#modalMainForm").modal("show");
 
 		if (readOnly) {
@@ -703,9 +702,11 @@ const showEditEntryModal = (id, readOnly = false) => {
 			FormUtil.setButtionsVisibility("mainForm", tempData.permission, "view");
 			$("#mainForm *").removeClass("has-error has-success");
 			$("#mainForm .form-control-feedback").remove();
+			$("#modalMainFormTitle").text("View Quotation");
 		} else {
 			FormUtil.disableReadOnly("mainForm");
 			FormUtil.setButtionsVisibility("mainForm", tempData.permission, "edit");
+			$("#modalMainFormTitle").text("Edit Quotation");
 			// hide from deleted button when deleted
 			if (
 				$("#mainForm #quotationStatusId option:selected").text() == "Deleted"
