@@ -1,13 +1,13 @@
-const printPurchaseOrder = async (selectedEntry) => {
-	let materialRows = "";
-	selectedEntry.purchaseOrderMaterials.forEach((pom, index) => {
-		materialRows += `
+const printInvoice = async (selectedEntry) => {
+	let productPackageRows = "";
+	selectedEntry.customerInvoiceProductPackages.forEach((pkg, index) => {
+		productPackageRows += `
       <tr>
         <td>${index + 1}</td>
-        <td>${pom.material.name}</td>
-        <td>${pom.purchasePrice}</td>
-        <td>${pom.qty}</td>
-        <td>${pom.lineTotal}</td>
+        <td>${pkg.productPackage.name} (${pkg.productPackage.code})</td>
+        <td>${pkg.salePrice}</td>
+        <td>${pkg.deliveredQty}</td>
+        <td>${pkg.lineTotal}</td>
       </tr>
     `;
 	});
@@ -16,27 +16,20 @@ const printPurchaseOrder = async (selectedEntry) => {
 	const respone = await fetch("./print_template/customer_invoice_print.html");
 	let template = await respone.text();
 
-	// replace template values
-	const supplier = selectedEntry.quotation.quotationRequest.supplier;
-
 	const placeholderValues = {
-		pocode: selectedEntry.pocode,
-		supCode: supplier.code,
-		supType: supplier.supplierType.name,
+		code: selectedEntry.code,
 		addedDate: selectedEntry.addedDate,
-		requiredDate: selectedEntry.requiredDate,
-		supCompanyName: supplier.companyName,
-		supCompanyMobile: supplier.companyMobile,
-		supCompanyMail: supplier.email,
-		supCompanyAddress: supplier.address,
-		supCompanyPersonName: supplier.personName,
-		supCompanyPersonMobile: supplier.personMobile,
-		supName: supplier.personName,
-		supMobile: supplier.personMobile,
-		supMail: supplier.email,
-		supAddress: supplier.address,
-		materialRows: materialRows,
+		customerName: selectedEntry.customerName,
+		customerMobile: selectedEntry.customerMobile,
+		grandTotal: selectedEntry.grandTotal,
+		discountRatio: selectedEntry.discountRatio,
+		netTotal: selectedEntry.netTotal,
+		customerTotal: selectedEntry.cusTotalAmount,
+		payedAmount: selectedEntry.payedAmount,
+		balance: selectedEntry.balance,
 		description: selectedEntry.description,
+		customerPaymentMethod: selectedEntry.customerPaymentMethod.name,
+		productPackageRows: productPackageRows,
 	};
 
 	// fix description
@@ -56,14 +49,6 @@ const printPurchaseOrder = async (selectedEntry) => {
 
 	const win = window.open("", "Print", "width=1000,height=600");
 	win.document.write(template);
-
-	// get proper class name to hide
-	let className =
-		placeholderValues.supType == "Company" ? ".individual" : ".company";
-	let classes = win.document.querySelectorAll(className);
-	for (let i = 0; i < classes.length; i++) {
-		classes[i].style.display = "none";
-	}
 
 	setTimeout(() => win.print(), 1000);
 };

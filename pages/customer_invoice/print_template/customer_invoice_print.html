@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Purchase Order</title>
+  <title>Customer Invoice</title>
   <!-- libs -->
   <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.min.css" />
   <link rel="stylesheet" href="/pages/customer_invoice/print_template/customer_invoice_print.css">
@@ -19,9 +19,8 @@
     <div class="invoice-header">
       <div class="row">
         <div class="col-xs-7">
-          <h1>Purchase Order</h1>
-          <h5 class="text-muted">Code: #{pocode} | Date: #{addedDate}</h5>
-          <h5 class="text-muted">Required Date: #{requiredDate}</h5>
+          <h1>Invoice</h1>
+          <h5 class="text-muted">Code: #{code} | Date: #{addedDate}</h5>
         </div>
         <div class="col-xs-5">
           <div class="media">
@@ -43,74 +42,76 @@
         <div class="col-md-12">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">Supplier Details</h3>
+              <h3 class="panel-title">Customer Details</h3>
             </div>
             <div class="panel-body">
               <dl class="dl-horizontal">
-                <dt>Code</dt>
-                <dd>#{supCode}</dd>
+                <dt>Name</dt>
+                <dd>#{customerName}</dd>
 
-                <dt>Type</dt>
-                <dd>#{supType}</dd>
+                <dt>Contact Number</dt>
+                <dd>#{customerMobile}</dd>
 
-                <span class="company">
-                  <dt>Company Name</dt>
-                  <dd>#{supCompanyName}</dd>
-
-                  <dt>Company Contact Num.</dt>
-                  <dd>#{supCompanyMobile}</dd>
-
-                  <dt>Company E-Mail</dt>
-                  <dd>#{supCompanyMail}</dd>
-
-                  <dt>Company Address</dt>
-                  <dd>#{supCompanyAddress}</dd>
-
-                  <dt>Contact Person</dt>
-                  <dd>#{supCompanyPersonName}</dd>
-
-                  <dt>Contact Person Mobile</dt>
-                  <dd>#{supCompanyPersonMobile}</dd>
-                </span>
-
-                <span class="individual">
-                  <dt>Name</dt>
-                  <dd>#{supName}</dd>
-
-                  <dt>Contact Number</dt>
-                  <dd>#{supMobile}</dd>
-
-                  <dt>E-Mail</dt>
-                  <dd>#{supMail}</dd>
-
-                  <dt>Address</dt>
-                  <dd>#{supAddress}</dd>
-                </span>
-
-                <dt>&nbsp;</dt>
-                <dd>&nbsp;</dd>
+                <dt>Paymet Method</dt>
+                <dd>#{customerPaymentMethod}</dd>
             </div>
           </div>
         </div>
       </div>
       <div class="panel panel-default">
         <div class="panel-heading">
-          <h3 class="panel-title">Materials List</h3>
+          <h3 class="panel-title">Product Packages List</h3>
         </div>
         <table class="table table-bordered table-condensed">
           <thead>
             <tr>
               <th>Index</th>
-              <th>Material Name</th>
-              <th>Available Qty.</th>
-              <th>Minimum Qty.</th>
-              <th>Purchase Price</th>
+              <th>Name</th>
+              <th>Sale Price</th>
+              <th>Qty</th>
+              <th>Line Total</th>
             </tr>
           </thead>
           <tbody>
-            #{materialRows}
+            #{productPackageRows}
           </tbody>
         </table>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div class="col-xs-4">
+                Grand Total: Rs. #{grandTotal}
+              </div>
+              <div class="col-xs-4">
+                Discount Ratio: #{discountRatio}%
+              </div>
+              <div class="col-xs-4">
+                Net Total: Rs. #{netTotal}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div class="col-xs-4">
+                <b>Customer Total: Rs. #{customerTotal}</b>
+              </div>
+              <div class="col-xs-4">
+                <b>Payed: Rs. #{payedAmount}</b>
+              </div>
+              <div class="col-xs-4">
+                <b>Total Balance: Rs. #{balance}</b>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="row">

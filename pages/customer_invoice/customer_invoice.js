@@ -369,58 +369,40 @@ const loadEntry = async (id) => {
 	const entry = response.data;
 
 	// fill form inputs
-	$("#pocode").val(entry.pocode);
-	$("#addedDate").val(entry.addedDate);
-	$("#requiredDate").val(entry.requiredDate);
-	$("#totalPrice").val(entry.totalPrice);
-
-	$("#description").val(entry.description);
-	$("#createdEmployee").val(entry.createdEmployee);
+	Object.keys(entry).forEach((key) => {
+		$(`#${key}`).val(entry[key]);
+	});
 
 	// select dropdowns
 	FormUtil.selectDropdownOptionByValue(
-		"purchaseOrderStatusId",
-		entry.purchaseOrderStatus.id
+		"customerInvoiceStatusId",
+		entry.customerInvoiceStatus.id
 	);
 
-	// select proper supplier
-	$("#supplierId").val(entry.quotation.quotationRequest.supplierId);
-	$("#supplierId").selectpicker("render");
+	FormUtil.selectDropdownOptionByValue(
+		"customerPaymentMethodId",
+		entry.customerPaymentMethod.id
+	);
 
-	// load supplier quotations
-	await showSupplierQuotations(entry.quotation.quotationRequest.supplierId, "");
+	// show proper payment method
+	showPaymentMethod(entry.customerPaymentMethod.name);
 
-	// select proper quotation
-	$("#quotationId").val(entry.quotation.id);
-	$("#quotationId").selectpicker("render");
+	// fill mini table
+	$("#productPackageTable tbody").empty();
 
-	// show quotation materials
-	await showQuotationMaterials(entry.quotation.id);
-
-	// add to material table
-	$("#materialTable tbody").empty();
-
-	entry.purchaseOrderMaterials.forEach((pom) => {
+	entry.customerInvoiceProductPackages.forEach((pkg) => {
 		addRowToProductPackageTable({
-			materialId: pom.material.id,
-			materialName: `${pom.material.name} (${pom.material.code})`,
-			qty: pom.qty,
-			purchasePrice: pom.purchasePrice,
-			unitTypeId: pom.material.unitType.id,
-			unitTypeName: pom.material.unitType.name,
-			lineTotal: pom.lineTotal,
+			productPackageId: pkg.productPackageId,
+			productPackageName: `${pkg.productPackage.name} (${pkg.productPackage.code})`,
+			salePrice: pkg.salePrice,
+			requestedQty: pkg.requestedQty,
+			deliveredQty: pkg.deliveredQty,
+			lineTotal: pkg.lineTotal,
 		});
 	});
 
 	// save globally
 	tempData.selectedEntry = entry;
-
-	// hide from deleted button when deleted
-	if (
-		$("#mainForm #purchaseOrderStatusId option:selected").text() == "Deleted"
-	) {
-		$(".btnFmDelete").hide();
-	}
 };
 
 const updateEntry = async () => {
@@ -473,7 +455,7 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
 };
 
 const printEntry = () => {
-	printPurchaseOrder(tempData.selectedEntry);
+	printInvoice(tempData.selectedEntry);
 };
 
 /*-------------------------------------------------------------------------------------------------------
@@ -540,13 +522,17 @@ const validateForm = () => {
 		if (ignoredAttributes.includes(vi.attribute)) return;
 
 		// validate each field
-		FormUtil.validateElementValue(vi);
+		try {
+			FormUtil.validateElementValue(vi);
+		} catch (e) {
+			console.log(vi);
+		}
 		// get element values
 		const value = $(`#${vi.attribute}`).val();
 		// regex
 		const regex = new RegExp(vi.regex);
 		// ignore empty optional values
-		if (vi.optional && value.trim() == "") return;
+		if (vi.optional && (value == null || value.trim() == "")) return;
 
 		if (!regex.test(value)) {
 			errors += `${vi.error}<br/>`;
@@ -843,6 +829,10 @@ const showEditEntryModal = (id, readOnly = false) => {
 		} else {
 			FormUtil.disableReadOnly("mainForm");
 			FormUtil.setButtionsVisibility("mainForm", tempData.permission, "edit");
+			// hide form deleted button when deleted
+			if (tempData.selectedEntry.customerInvoiceStatus.name == "Deleted") {
+				$(".btnFmDelete").hide();
+			}
 		}
 	});
 };
