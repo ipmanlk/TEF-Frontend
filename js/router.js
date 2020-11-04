@@ -160,6 +160,10 @@ const getRoutes = () => {
 			title: "Customer Invoice View",
 			path: "./pages/customer_invoice/customer_invoice.html",
 		},
+		production_order: {
+			title: "Production Order View",
+			path: "./pages/production_order/production_order.html",
+		},
 		noauth: {
 			title: "Auth Failure",
 			path: "./pages/noauth.html",
