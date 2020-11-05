@@ -190,6 +190,7 @@ const confirmOrder = async () => {
 	// set entry id
 	data["id"] = tempData.selectedEntry.id;
 	data["statusName"] = "Confirmed";
+	data["confirmedDate"] = $("#confirmedDate").val();
 
 	// send post reqeust to save data
 	const response = await Request.send("/api/production_orders_confirm", "PUT", {
@@ -210,6 +211,7 @@ const rejectOrder = async () => {
 	// set entry id
 	data["id"] = tempData.selectedEntry.id;
 	data["statusName"] = "Rejected";
+	data["confirmedDate"] = $("#confirmedDate").val();
 
 	// send post reqeust to save data
 	const response = await Request.send("/api/production_orders_confirm", "PUT", {
