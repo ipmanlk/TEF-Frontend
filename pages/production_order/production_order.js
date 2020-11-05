@@ -525,5 +525,15 @@ const showEditEntryModal = (id, readOnly = false) => {
 				$(".btnFmDelete").hide();
 			}
 		}
+
+		// confirmed info
+		if (
+			tempData.selectedEntry.confirmedBy != null &&
+			tempData.selectedEntry.confirmedDate != null
+		) {
+			$("#confirmedInfo").show();
+		} else {
+			$("#confirmedInfo").hide();
+		}
 	});
 };
