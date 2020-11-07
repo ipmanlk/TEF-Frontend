@@ -504,6 +504,9 @@ const showNewEntryModal = () => {
 
 	// empty code
 	$("#mainForm #code").val("Order code will be displayed after adding.");
+
+	$("#confirmedInfo").hide();
+
 	// show modal
 	$("#modalMainForm").modal("show");
 };
