@@ -1,34 +1,24 @@
-const printInvoice = async (selectedEntry) => {
+const printProductionOrder = async (selectedEntry) => {
 	let productPackageRows = "";
-	selectedEntry.customerInvoiceProductPackages.forEach((pkg, index) => {
+	selectedEntry.productionOrderProductPackages.forEach((pkg, index) => {
 		productPackageRows += `
       <tr>
         <td>${index + 1}</td>
         <td>${pkg.productPackage.name} (${pkg.productPackage.code})</td>
-        <td>${pkg.salePrice}</td>
-        <td>${pkg.deliveredQty}</td>
-        <td>${pkg.lineTotal}</td>
+        <td>${pkg.qty}</td>
       </tr>
     `;
 	});
 
 	// load template
-	const respone = await fetch("./print_template/customer_invoice_print.html");
+	const respone = await fetch("./print_template/production_order_print.html");
 	let template = await respone.text();
 
 	const placeholderValues = {
 		code: selectedEntry.code,
 		addedDate: selectedEntry.addedDate,
-		customerName: selectedEntry.customerName,
-		customerMobile: selectedEntry.customerMobile,
-		grandTotal: selectedEntry.grandTotal,
-		discountRatio: selectedEntry.discountRatio,
-		netTotal: selectedEntry.netTotal,
-		customerTotal: selectedEntry.cusTotalAmount,
-		payedAmount: selectedEntry.payedAmount,
-		balance: selectedEntry.balance,
+		requiredDate: selectedEntry.requiredDate,
 		description: selectedEntry.description,
-		customerPaymentMethod: selectedEntry.customerPaymentMethod.name,
 		productPackageRows: productPackageRows,
 	};
 

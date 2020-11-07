@@ -221,7 +221,7 @@ const deleteEntry = async (id = tempData.selectedEntry.id) => {
 };
 
 const printEntry = () => {
-	printInvoice(tempData.selectedEntry);
+	printProductionOrder(tempData.selectedEntry);
 };
 
 /*-------------------------------------------------------------------------------------------------------
