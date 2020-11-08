@@ -122,15 +122,16 @@ const checkMaterialInventory = async () => {
 		};
 	});
 
+	const allMaterials = [];
 	const lowMaterials = [];
 
 	// check materials
 	Object.keys(requiredMaterialAmounts).forEach((k) => {
 		const requiredAmount = requiredMaterialAmounts[k];
 		const availableAmount = materialInventory[k].availableQty;
+		const material = materialInventory[k];
 
 		if (requiredAmount > availableAmount) {
-			const material = materialInventory[k];
 			lowMaterials.push({
 				id: material.id,
 				code: material.code,
@@ -140,14 +141,23 @@ const checkMaterialInventory = async () => {
 				unitType: material.unitType,
 			});
 		}
+
+		allMaterials.push({
+			id: material.id,
+			code: material.code,
+			name: material.name,
+			requiredAmount: requiredAmount,
+			availableAmount: availableAmount,
+			unitType: material.unitType,
+		});
 	});
 
-	// if some materials are low, return them
-	if (lowMaterials.length == 0) {
-		return { status: true };
-	} else {
-		return { status: false, lowMaterials: lowMaterials };
-	}
+	// return status false when there are low materials
+	return {
+		status: lowMaterials.length == 0,
+		lowMaterials: lowMaterials,
+		allMaterials: allMaterials,
+	};
 };
 
 /*-------------------------------------------------------------------------------------------------------
@@ -362,10 +372,10 @@ const showEditEntryModal = (id, readOnly = false) => {
 			$(".btnFmConfirm").attr("disabled", false);
 		} else {
 			// production order can't be confirmed, show low material list
-			$("#materialListTable tbody").empty();
+			$("#lowMaterialListTable tbody").empty();
 
 			inventoryStatus.lowMaterials.forEach((mat, index) => {
-				$("#materialListTable tbody").append(`
+				$("#lowMaterialListTable tbody").append(`
 				<tr>
 					<td>${index + 1}</td>
 					<td>${mat.name} (${mat.code})</td>
@@ -377,11 +387,25 @@ const showEditEntryModal = (id, readOnly = false) => {
 			});
 
 			$("#lowMaterialPanel").show();
-			$(".btnFmConfirm").hide();
 
 			// disable confirm button
 			$(".btnFmConfirm").attr("disabled", true);
 		}
+
+		// show material summery
+		$("#materialListTable tbody").empty();
+
+		inventoryStatus.allMaterials.forEach((mat, index) => {
+			$("#materialListTable tbody").append(`
+			<tr>
+				<td>${index + 1}</td>
+				<td>${mat.name} (${mat.code})</td>
+				<td>${parseFloat(mat.availableAmount).toFixed(2)}</td>
+				<td>${parseFloat(mat.requiredAmount).toFixed(2)}</td>
+				<td>${mat.unitType.name}</td>
+			</tr>
+			`);
+		});
 
 		if (tempData.selectedEntry.productionOrderStatus.name == "Pending") {
 			$(".btnFmConfirm").show();
