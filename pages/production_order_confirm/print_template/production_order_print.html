@@ -19,8 +19,9 @@
     <div class="invoice-header">
       <div class="row">
         <div class="col-xs-7">
-          <h1>Invoice</h1>
-          <h5 class="text-muted">Code: #{code} | Date: #{addedDate}</h5>
+          <h1>Production Order</h1>
+          <h5 class="text-muted">Code: #{code} | Date: #{addedDate} | Required Date: #{requiredDate}</h5>
+
         </div>
         <div class="col-xs-5">
           <div class="media">
@@ -40,7 +41,7 @@
     <div class="invoice-body">
       <div class="row">
         <div class="col-md-12">
-          <div class="panel panel-default">
+          <!-- <div class="panel panel-default">
             <div class="panel-heading">
               <h3 class="panel-title">Customer Details</h3>
             </div>
@@ -55,7 +56,7 @@
                 <dt>Paymet Method</dt>
                 <dd>#{customerPaymentMethod}</dd>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="panel panel-default">
@@ -67,9 +68,7 @@
             <tr>
               <th>Index</th>
               <th>Name</th>
-              <th>Sale Price</th>
-              <th>Qty</th>
-              <th>Line Total</th>
+              <th>Requested Qty</th>
             </tr>
           </thead>
           <tbody>
@@ -77,7 +76,7 @@
           </tbody>
         </table>
       </div>
-
+      <!-- 
       <div class="row">
         <div class="col-xs-12">
           <div class="panel panel-default">
@@ -112,7 +111,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <div class="row">
         <div class="col-xs-12">

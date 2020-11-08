@@ -61,8 +61,12 @@ const registerEventListeners = () => {
 	$(".btnFmReject").on("click", rejectOrder);
 	// $(".btnFmAdd").on("click", addEntry);
 	// $(".btnFmDelete").on("click", () => deleteEntry());
-	// $(".btnFmPrint").on("click", printEntry);
+	$(".btnFmPrint").on("click", printEntry);
 	// $("#btnTopAddEntry").on("click", showNewEntryModal);
+};
+
+const printEntry = () => {
+	printProductionOrder(tempData.selectedEntry);
 };
 
 /*-------------------------------------------------------------------------------------------------------
@@ -353,6 +357,9 @@ const showEditEntryModal = (id, readOnly = false) => {
 			$("#lowMaterialPanel").hide();
 			// show confirm button
 			$(".btnFmConfirm").show();
+
+			// enable confirm button
+			$(".btnFmConfirm").attr("disabled", false);
 		} else {
 			// production order can't be confirmed, show low material list
 			$("#materialListTable tbody").empty();
@@ -376,11 +383,18 @@ const showEditEntryModal = (id, readOnly = false) => {
 			$(".btnFmConfirm").attr("disabled", true);
 		}
 
+		if (tempData.selectedEntry.productionOrderStatus.name == "Pending") {
+			$(".btnFmConfirm").show();
+			$(".btnFmReject").show();
+		}
+
 		if (tempData.selectedEntry.productionOrderStatus.name == "Confirmed") {
 			$(".btnFmConfirm").hide();
+			$(".btnFmReject").hide();
 		}
 
 		if (tempData.selectedEntry.productionOrderStatus.name == "Rejected") {
+			$(".btnFmConfirm").show();
 			$(".btnFmReject").hide();
 		}
 
