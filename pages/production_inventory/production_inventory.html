@@ -10,11 +10,65 @@
 </head>
 
 <body>
-  <div class="container-fluid" style="margin-top: 20px; margin-bottom:100px;">
+  <div class="container-fluid" style="margin-top: 20px; margin-bottom: 100px">
+
+    <div id="actionButtonHolder" class="row" style="margin-bottom: 20px; padding-left: 35px;">
+      <div class="col-md-12">
+        <button id="btnTopAddEntry" class="btn btn-primary">
+          <i class="glyphicon glyphicon-plus-sign" aria-hidden="true"></i>
+          Add Product Packages
+        </button>
+      </div>
+    </div>
 
 
     <div id="mainTableHolder" class="container-fluid" style="margin-top:50px">
 
+    </div>
+
+
+
+    <!-- modal with main form -->
+    <div class="modal fade" id="modalMainForm" role="dialog">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="margin-bottom: 100px;">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" id="modalMainFormTitle">Modal Header</h4>
+          </div>
+          <div class="modal-body">
+
+            <form id="mainForm">
+              <div class="row">
+                <div class="col-md-12">
+                  <div style="float: right;">
+                    <b><span class="required">*</span> Required field</b>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="row">
+
+              </div>
+
+              <div id="fmButtons">
+                <button type="button" class="btnFmPrint btn btn-info">Print</button>
+                <button type="button" class="btnFmAdd btn btn-success">Add</button>
+                <button type="button" class="btnFmUpdate btn btn-warning">Update</button>
+                <button type="button" class="btnFmReset btn btn-primary"
+                  style="float: right; margin-left: 10px;">Reset</button>
+                <button type="button" class="btnFmDelete btn btn-danger" style="float: right;">Delete</button>
+              </div>
+            </form>
+
+          </div>
+          <div class="modal-footer">
+            <!-- <button id="btnModalYes" type="button" class="btn btn-danger" style="float:left">Yes</button>
+    <button id="btnModalNo" type="button" class="btn btn-default" data-dismiss="modal">No</button> -->
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>
