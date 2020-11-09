@@ -11,21 +11,21 @@ async function loadModule(permissionStr) {
 		// parse resposne data and return in data table frendly format
 		return responseData.map((entry) => {
 			return {
-				Code: entry.material.code,
-				Name: entry.material.name,
+				Code: entry.productPackage.code,
+				Name: entry.productPackage.name,
 				"Qty. (All Time)": entry.qty,
 				"Avaiable Qty.": entry.availableQty,
-				Status: entry.materialInventoryStatus.name,
+				Status: entry.productionInventoryStatus.name,
 			};
 		});
 	};
 
 	window.mainTable = new DataTable(
 		"mainTableHolder",
-		"/api/material_inventory",
+		"/api/production_inventory",
 		permission,
 		dataBuilderFunction,
-		"Material Inventory"
+		"Production Inventory"
 	);
 
 	// catch promise rejections

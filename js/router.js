@@ -168,6 +168,10 @@ const getRoutes = () => {
 			title: "Production Order Confirm View",
 			path: "./pages/production_order_confirm/production_order_confirm.html",
 		},
+		production_inventory: {
+			title: "Production Inventory View",
+			path: "./pages/production_inventory/production_inventory.html",
+		},
 		noauth: {
 			title: "Auth Failure",
 			path: "./pages/noauth.html",
