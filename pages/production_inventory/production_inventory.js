@@ -16,7 +16,6 @@ async function loadModule(permissionStr) {
 				"Qty. (All Time)": entry.qty,
 				"Avaiable Qty.": entry.availableQty,
 				Status: entry.productionInventoryStatus.name,
-				Edit: `<button class="btn btn-warning btn-sm" onclick="showEditEntryModal('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
 			};
 		});
 	};
@@ -29,17 +28,39 @@ async function loadModule(permissionStr) {
 		"Production Inventory"
 	);
 
-	// catch promise rejections
-	$(window).on("unhandledrejection", (event) => {
-		console.error(
-			"Unhandled rejection (promise: ",
-			event.promise,
-			", reason: ",
-			event.reason,
-			")."
+	await loadFormDropdowns();
+	registerEventListeners();
+}
+
+const registerEventListeners = () => {
+	// prevent default form submission event
+	$("form").on("submit", (e) => e.preventDefault());
+
+	// event listeners for buttons
+	$("#btnTopAddEntry").on("click", showNewEntryModal);
+	$(".btnFmAdd").on("click", addEntry);
+};
+
+const loadFormDropdowns = async () => {
+	// define needed attributes
+	let productPackages;
+
+	// get data from the api for each dropbox
+	response = await Request.send("/api/product_packages?data[limit]=0", "GET");
+	productPackages = response.data;
+
+	// clean existing options and append new data
+	$("#productPackageId").empty();
+
+	productPackages.forEach((pkg) => {
+		$("#productPackageId").append(
+			`<option value="${pkg.id}">${pkg.name} (${pkg.code})</option>`
 		);
 	});
-}
+
+	// init bootstrap-select
+	$("#productPackageId").selectpicker();
+};
 
 /*-------------------------------------------------------------------------------------------------------
                                             Modals
@@ -47,62 +68,68 @@ async function loadModule(permissionStr) {
 
 const showNewEntryModal = () => {
 	// reset form values
-	resetForm();
+	// resetForm();
 	FormUtil.disableReadOnly("mainForm");
 
-	FormUtil.setButtionsVisibility("mainForm", tempData.permission, "add");
-
-	// set created employee number
-	const employeeNumber = mainWindow.tempData.profile.employee.number;
-	const employeeCallingName = mainWindow.tempData.profile.employee.callingName;
-	$("#mainForm #createdEmployee").val(
-		`${employeeCallingName} (${employeeNumber})`
-	);
 	// set modal title
-	$("#modalMainFormTitle").text("Add New Production Order");
-	// set date of adding
-	$("#mainForm #addedDate").val(new Date().today());
-	// limit for required data
-	const date = new Date();
-	// const dueDate = $("#mainForm #requiredDate");
-	$("#mainForm #requiredDate").attr("min", date.formatForInput());
-	// dueDate.attr("max", date.addDays(30).formatForInput());
-
-	// empty code
-	$("#mainForm #code").val("Order code will be displayed after adding.");
-
-	$("#confirmedInfo").hide();
+	$("#modalMainFormTitle").text("Add Product Packages");
 
 	// show modal
 	$("#modalMainForm").modal("show");
 };
 
-const showEditEntryModal = (id, readOnly = false) => {
-	loadEntry(id).then(() => {
-		$("#modalMainForm").modal("show");
+/*-------------------------------------------------------------------------------------------------------
+                                Entry Related Requests (POST, PUT, DELETE, PRINT)
+-------------------------------------------------------------------------------------------------------*/
+const addEntry = async () => {
+	const productPackageId = $("#productPackageId").val();
+	const productPackageName = $("#productPackageId option:selected").text();
+	const qty = $("#qty").val();
 
-		if (readOnly) {
-			FormUtil.enableReadOnly("mainForm");
-			FormUtil.setButtionsVisibility("mainForm", tempData.permission, "view");
-			$("#modalMainFormTitle").text("View Production Order");
-		} else {
-			FormUtil.disableReadOnly("mainForm");
-			FormUtil.setButtionsVisibility("mainForm", tempData.permission, "edit");
-			$("#modalMainFormTitle").text("Edit Production Order");
-			// hide form deleted button when deleted
-			if (tempData.selectedEntry.productionOrderStatus.name == "Deleted") {
-				$(".btnFmDelete").hide();
-			}
-		}
+	if (isNaN(productPackageId) || isNaN(qty)) {
+		mainWindow.showOutputModal(
+			"Sorry!. Please fix these problems first.",
+			"Please select a valid product package and qty first!."
+		);
+		return;
+	}
 
-		// confirmed info
-		if (
-			tempData.selectedEntry.confirmedBy != null &&
-			tempData.selectedEntry.confirmedDate != null
-		) {
-			$("#confirmedInfo").show();
-		} else {
-			$("#confirmedInfo").hide();
-		}
+	// confirm the action
+	const confirm = window.confirm(
+		`This will add ${qty} ${productPackageName} to the inventory. Do you want to continue?.`
+	);
+
+	if (!confirm) return;
+
+	// send post reqeust to save data
+	const response = await Request.send("/api/production_inventory", "POST", {
+		data: {
+			productPackageId,
+			qty,
+		},
 	});
+
+	// show output modal based on response
+	if (response.status) {
+		$("#modalMainForm").modal("hide");
+		reloadModule();
+		mainWindow.showOutputToast("Success!", response.msg);
+		mainWindow.showOutputModal(
+			"Success!.",
+			"Product packages have been added!"
+		);
+	}
+};
+
+const resetForm = () => {
+	$("#mainForm input").val("");
+
+	// deselect select pickers
+	$("#productPackageId").val("");
+	$("#productPackageId").selectpicker("render");
+};
+
+const reloadModule = () => {
+	resetForm();
+	mainTable.reload();
 };

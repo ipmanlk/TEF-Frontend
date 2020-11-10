@@ -6,6 +6,7 @@
   <title>TwoElephantFireworks - Production Inventory</title>
   <link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="../../lib/datatable/datatable.css" />
+  <link rel="stylesheet" type="text/css" href="../../lib/bootstrap-select/css/bootstrap-select.min.css" />
   <link rel="stylesheet" type="text/css" href="../../css/pages/common.css" />
 </head>
 
@@ -47,18 +48,24 @@
                 </div>
               </div>
 
+              <div class="form-group has-feedback">
+                <label for="productPackageId">Product Package: <span class="required">*</span></label>
+                <select name="productPackageId" id="productPackageId" class="form-control" data-editable="true"
+                  data-live-search="true" title="Please select a product package">
 
-              <div class="row">
-
+                </select>
               </div>
 
+              <div class="form-group has-feedback">
+                <label for="qty">Qty: <span class="required">*</span></label>
+                <input type="number" class="form-control" id="qty" placeholder="10" name="qty">
+              </div>
+
+
               <div id="fmButtons">
-                <button type="button" class="btnFmPrint btn btn-info">Print</button>
                 <button type="button" class="btnFmAdd btn btn-success">Add</button>
-                <button type="button" class="btnFmUpdate btn btn-warning">Update</button>
                 <button type="button" class="btnFmReset btn btn-primary"
                   style="float: right; margin-left: 10px;">Reset</button>
-                <button type="button" class="btnFmDelete btn btn-danger" style="float: right;">Delete</button>
               </div>
             </form>
 
@@ -76,8 +83,8 @@
   <!-- libs -->
   <script src="../../lib/jquery/jquery.min.js"></script>
   <script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
-
-  <script src="../../lib/datatable/datatable.v2.js"></script>
+  <script src="../../lib/bootstrap-select/js/bootstrap-select.min.js"></script>
+  <script src="../../lib/datatable/datatable.v2.js"></script
 
   <!-- common stuff -->
   <script src="../../js/Request.js"></script>
