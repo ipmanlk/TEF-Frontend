@@ -1,5 +1,6 @@
 const tempData = {
 	selectedEntry: null,
+	selectedEntryMaterials: null,
 };
 
 /*-------------------------------------------------------------------------------------------------------
@@ -152,6 +153,9 @@ const checkMaterialInventory = async () => {
 		});
 	});
 
+	// save all required materials globally
+	tempData.selectedEntryMaterials = allMaterials;
+
 	// return status false when there are low materials
 	return {
 		status: lowMaterials.length == 0,
@@ -205,6 +209,7 @@ const confirmOrder = async () => {
 	data["id"] = tempData.selectedEntry.id;
 	data["statusName"] = "Confirmed";
 	data["confirmedDate"] = $("#confirmedDate").val();
+	data["materials"] = tempData.selectedEntryMaterials;
 
 	// send post reqeust to save data
 	const response = await Request.send("/api/production_orders_confirm", "PUT", {
