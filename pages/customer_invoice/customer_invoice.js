@@ -225,6 +225,7 @@ const showProductPackageInfo = async (productPackageId) => {
 	const data = response.data;
 
 	$("#salePrice").val(data.salePrice);
+	$("#availableQty").val(data.availableQty);
 };
 
 const showCustomerOrdersAndInfo = async (customerId) => {
@@ -644,6 +645,7 @@ const addToProductPackageTable = () => {
 	const requestedQty = $("#requestedQty").val();
 	const deliveredQty = $("#deliveredQty").val();
 	const lineTotal = $("#lineTotal").val();
+	const availableQty = $("#availableQty").val();
 
 	// check if required things are provided
 	if (productPackageId.trim() == "") {
@@ -671,6 +673,15 @@ const addToProductPackageTable = () => {
 		mainWindow.showOutputModal(
 			"Sorry",
 			"Please provide a valid delivered qty!."
+		);
+		return;
+	}
+
+	// check if available qty
+	if (availableQty < deliveredQty) {
+		mainWindow.showOutputModal(
+			"Sorry",
+			"Delivered quantity is higher than the available quantity!."
 		);
 		return;
 	}
