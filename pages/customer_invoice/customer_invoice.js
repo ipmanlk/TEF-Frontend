@@ -60,7 +60,11 @@ async function loadModule(permissionStr) {
 
 const loadFormDropdowns = async () => {
 	// define needed attributes
-	let customers, productPackages, paymentMethods, invoiceStatuses;
+	let customers,
+		productPackages,
+		paymentMethods,
+		invoiceStatuses,
+		customerTypes;
 
 	// get data from the api for each dropbox
 	response = await Request.send("/api/customers?data[limit]=0", "GET");
@@ -81,11 +85,18 @@ const loadFormDropdowns = async () => {
 	);
 	invoiceStatuses = response.data;
 
+	response = await Request.send(
+		"/api/general?data[table]=customer_invoice_customer_type",
+		"GET"
+	);
+	customerTypes = response.data;
+
 	// clean existing options and append new data
 	$("#customerId").empty();
 	$("#productPackageId").empty();
 	$("#customerPaymentMethodId").empty();
 	$("#customerInvoiceStatusId").empty();
+	$("#customerInvoiceCustomerTypeId").empty();
 
 	customers.forEach((cus) => {
 		let name = !cus.companyName ? cus.customerName : cus.companyName;
@@ -109,6 +120,12 @@ const loadFormDropdowns = async () => {
 	invoiceStatuses.forEach((st) => {
 		$("#customerInvoiceStatusId").append(
 			`<option value="${st.id}">${st.name}</option>`
+		);
+	});
+
+	customerTypes.forEach((ct) => {
+		$("#customerInvoiceCustomerTypeId").append(
+			`<option value="${ct.id}">${ct.name}</option>`
 		);
 	});
 
@@ -143,6 +160,13 @@ const registerEventListeners = () => {
 	$("#customerOrderId").on("changed.bs.select", function (e) {
 		$("#productPackageTable tbody").empty();
 		showCustomerOrderInfo(e.target.value);
+	});
+
+	$("#customerInvoiceCustomerTypeId").on("change", function (e) {
+		const customerType = $(
+			"#customerInvoiceCustomerTypeId option:selected"
+		).text();
+		showCustomerInfo(customerType);
 	});
 
 	// calculate line total
@@ -229,26 +253,26 @@ const showProductPackageInfo = async (productPackageId) => {
 };
 
 const showCustomerOrdersAndInfo = async (customerId) => {
-	// fill customer details
-	let response = await Request.send("/api/customers", "GET", {
-		data: {
-			id: customerId,
-		},
-	});
+	// // fill customer details
+	// let response = await Request.send("/api/customers", "GET", {
+	// 	data: {
+	// 		id: customerId,
+	// 	},
+	// });
 
-	// if request failed
-	if (!response.status) return;
+	// // if request failed
+	// if (!response.status) return;
 
-	const customer = response.data;
+	// const customer = response.data;
 
-	// save globally
-	tempData.selectedCustomer = customer;
+	// // save globally
+	// tempData.selectedCustomer = customer;
 
-	$("#customerName").val(
-		customer.companyName ? customer.companyName : customer.customerName
-	);
-	$("#customerMobile").val(customer.customerMobile);
-	$("#nic").val(customer.nic);
+	// $("#customerName").val(
+	// 	customer.companyName ? customer.companyName : customer.customerName
+	// );
+	// $("#customerMobile").val(customer.customerMobile);
+	// $("#nic").val(customer.nic);
 
 	// show customer orders
 	response = await Request.send("/api/customer_orders", "GET", {
@@ -306,6 +330,18 @@ const showCustomerOrderInfo = async (customerOrderId) => {
 			lineTotal: pkg.lineTotal,
 		});
 	});
+};
+
+const showCustomerInfo = (customerType) => {
+	console.log(customerType);
+	switch (customerType) {
+		case "Registered Customer":
+			$("#customerInfo").show();
+			break;
+		case "Unregistered Customer":
+			$("#customerInfo").hide();
+			break;
+	}
 };
 
 /*-------------------------------------------------------------------------------------------------------
@@ -376,10 +412,26 @@ const loadEntry = async (id) => {
 	});
 	const entry = response.data;
 
+	// show proper customer type info
+	showCustomerInfo(entry.customerInvoiceCustomerType.name);
+
+	// show proper payment method
+	showPaymentMethod(entry.customerPaymentMethod.name);
+
 	// fill form inputs
 	Object.keys(entry).forEach((key) => {
 		$(`#${key}`).val(entry[key]);
 	});
+
+	// select multi select dropdown values if there is a customer
+	if (entry.customer) {
+		$("#customerId").selectpicker("val", entry.customer.id);
+		await showCustomerOrdersAndInfo(entry.customer.id);
+	}
+
+	if (entry.customerOrder) {
+		$("#customerOrderId").selectpicker("val", entry.customerOrder.id);
+	}
 
 	// select dropdowns
 	FormUtil.selectDropdownOptionByValue(
@@ -392,8 +444,10 @@ const loadEntry = async (id) => {
 		entry.customerPaymentMethod.id
 	);
 
-	// show proper payment method
-	showPaymentMethod(entry.customerPaymentMethod.name);
+	FormUtil.selectDropdownOptionByValue(
+		"customerInvoiceCustomerTypeId",
+		entry.customerInvoiceCustomerType.id
+	);
 
 	// fill mini table
 	$("#productPackageTable tbody").empty();

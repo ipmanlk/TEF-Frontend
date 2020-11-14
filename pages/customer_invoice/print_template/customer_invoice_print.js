@@ -19,8 +19,6 @@ const printInvoice = async (selectedEntry) => {
 	const placeholderValues = {
 		code: selectedEntry.code,
 		addedDate: selectedEntry.addedDate,
-		customerName: selectedEntry.customerName,
-		customerMobile: selectedEntry.customerMobile,
 		grandTotal: selectedEntry.grandTotal,
 		discountRatio: selectedEntry.discountRatio,
 		netTotal: selectedEntry.netTotal,
@@ -31,6 +29,13 @@ const printInvoice = async (selectedEntry) => {
 		customerPaymentMethod: selectedEntry.customerPaymentMethod.name,
 		productPackageRows: productPackageRows,
 	};
+
+	if (selectedEntry.customer) {
+		placeholderValues["customerName"] = selectedEntry.customer.companyName
+			? selectedEntry.customer.companyName
+			: selectedEntry.customer.customerName;
+		placeholderValues["customerMobile"] = selectedEntry.customer.customerMobile;
+	}
 
 	// fix description
 	if (
@@ -50,5 +55,13 @@ const printInvoice = async (selectedEntry) => {
 	const win = window.open("", "Print", "width=1000,height=600");
 	win.document.write(template);
 
-	setTimeout(() => win.print(), 1000);
+	setTimeout(() => {
+		// if this is an unregistered customer, hide customer info
+		if (!selectedEntry.customerId) {
+			win.document.getElementById("customerInfo").style.display = "none";
+		} else {
+			win.document.getElementById("customerInfo").style.display = "block";
+		}
+		win.print();
+	}, 1000);
 };

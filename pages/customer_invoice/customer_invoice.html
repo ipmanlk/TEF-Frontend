@@ -61,10 +61,18 @@
                 <input type="text" class="form-control" id="code" name="code" disabled>
               </div>
 
-              <div class="row">
+              <div class="form-group has-feedback">
+                <label for="customerInvoiceCustomerTypeId">Customer Type: <span class="required">*</span></label>
+                <select name="customerInvoiceCustomerTypeId" id="customerInvoiceCustomerTypeId" class="form-control"
+                  data-editable="true" data-live-search="true" title="Please select a customer type first">
+
+                </select>
+              </div>
+
+              <div class="row" id="customerInfo" style="display: none;">
                 <div class="col-md-6">
-                  <div class="form-group">
-                    <label for="customerId">Customer: </label>
+                  <div class="form-group has-feedback">
+                    <label for="customerId">Customer: <span class="required">*</span> </label>
                     <select name="customerId" id="customerId" class="form-control" data-editable="true"
                       data-live-search="true" title="Please select a customer first">
 
@@ -76,46 +84,12 @@
                   <div class="form-group has-feedback">
                     <label for="customerOrderId">Order: </label>
                     <select name="customerOrderId" id="customerOrderId" class="form-control" data-editable="true"
-                      data-live-search="true" title="Please select an order">
+                      data-live-search="true" title="Please select an order if there is one">
 
                     </select>
                   </div>
                 </div>
               </div>
-
-              <div class="panel panel-default">
-                <div class="panel-heading">Customer Details <b>(Fill For Unregistered Customers)</b></div>
-                <div class="panel-body">
-                  <div class="container-fluid" style="margin-top: 10px;">
-                    <!-- unregistered customer -->
-                    <div class="row">
-                      <div class="col-md-4">
-                        <div class="form-group has-feedback company_info">
-                          <label for="customerName">Customer Name: <span class="required">*</span></label>
-                          <input type="text" class="form-control" id="customerName" placeholder="A.K. Silva"
-                            name="customerName" data-editable="true">
-                        </div>
-                      </div>
-                      <div class="col-md-4">
-                        <div class="form-group has-feedback company_info">
-                          <label for="nic">NIC: <span class="required">*</span></label>
-                          <input type="text" class="form-control" id="nic" placeholder="987456321V or 12365478491"
-                            name="nic" data-editable="true">
-                        </div>
-                      </div>
-                      <div class="col-md-4">
-                        <div class="form-group has-feedback company_info">
-                          <label for="customerMobile">Contact No: <span class="required">*</span></label>
-                          <input type="text" class="form-control" id="customerMobile" placeholder="0362325478"
-                            name="customerMobile" data-editable="true">
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-
 
               <div class="panel panel-default">
                 <div class="panel-heading">Product Packages</div>
@@ -276,7 +250,7 @@
                         </div>
                         <div class="col-md-6">
                           <div class="form-group has-feedback">
-                            <label for="chequeDate">Cheque No: <span class="required">*</span></label>
+                            <label for="chequeDate">Cheque Date: <span class="required">*</span></label>
                             <input type="date" class="form-control" id="chequeDate" name="chequeDate">
                           </div>
                         </div>
@@ -288,32 +262,18 @@
                     <div class="panel-heading">Bank Transfer Details</div>
                     <div class="panel-body">
                       <div class="row">
-                        <div class="col-md-3">
-                          <div class="form-group has-feedback">
-                            <label for="bankacHolder">Bank A/C Holder: <span class="required">*</span></label>
-                            <input type="text" class="form-control" id="bankacHolder" placeholder="P.D.K. Mendis"
-                              name="bankacHolder" data-editable="true">
-                          </div>
-                        </div>
-                        <div class="col-md-3">
-                          <div class="form-group has-feedback">
-                            <label for="bankacNo">Bank A/C No: <span class="required">*</span></label>
-                            <input type="text" class="form-control" id="bankacNo" placeholder="225457456"
-                              name="bankacNo" data-editable="true">
-                          </div>
-                        </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                           <div class="form-group has-feedback">
                             <label for="bankacBank">Bank Name: <span class="required">*</span></label>
-                            <input type="text" class="form-control" id="bankacBank" placeholder="BOC Bank"
+                            <input type="text" class="form-control" id="bankacBank" placeholder="Sampath Bank"
                               name="bankacBank" data-editable="true">
                           </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                           <div class="form-group has-feedback">
-                            <label for="bankacBranch">Bank Branch: <span class="required">*</span></label>
-                            <input type="text" class="form-control" id="bankacBranch" placeholder="Hanwella Branch"
-                              name="bankacBranch" data-editable="true">
+                            <label for="bankacRefnumber">Reference Number: <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="bankacRefnumber" placeholder="225457456"
+                              name="bankacRefnumber" data-editable="true">
                           </div>
                         </div>
                       </div>

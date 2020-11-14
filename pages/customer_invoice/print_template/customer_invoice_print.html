@@ -38,7 +38,7 @@
       </div>
     </div>
     <div class="invoice-body">
-      <div class="row">
+      <div class="row" id="customerInfo" style="display: none;">
         <div class="col-md-12">
           <div class="panel panel-default">
             <div class="panel-heading">
@@ -51,9 +51,6 @@
 
                 <dt>Contact Number</dt>
                 <dd>#{customerMobile}</dd>
-
-                <dt>Paymet Method</dt>
-                <dd>#{customerPaymentMethod}</dd>
             </div>
           </div>
         </div>
@@ -76,23 +73,24 @@
             #{productPackageRows}
           </tbody>
         </table>
+        <div class="panel panel-default" style="margin-bottom: 0;">
+          <div class="panel-body">
+            <div class="col-xs-4">
+              Grand Total: Rs. #{grandTotal}
+            </div>
+            <div class="col-xs-4">
+              Discount Ratio: #{discountRatio}%
+            </div>
+            <div class="col-xs-4">
+              Net Total: Rs. #{netTotal}
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="row">
         <div class="col-xs-12">
-          <div class="panel panel-default">
-            <div class="panel-body">
-              <div class="col-xs-4">
-                Grand Total: Rs. #{grandTotal}
-              </div>
-              <div class="col-xs-4">
-                Discount Ratio: #{discountRatio}%
-              </div>
-              <div class="col-xs-4">
-                Net Total: Rs. #{netTotal}
-              </div>
-            </div>
-          </div>
+
         </div>
       </div>
 
@@ -107,7 +105,19 @@
                 <b>Payed: Rs. #{payedAmount}</b>
               </div>
               <div class="col-xs-4">
-                <b>Total Balance: Rs. #{balance}</b>
+                <b>Total Arrears: Rs. #{balance}</b>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div class="col-xs-12">
+                Payment Method: #{customerPaymentMethod}
               </div>
             </div>
           </div>
