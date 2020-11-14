@@ -229,6 +229,11 @@ const registerEventListeners = () => {
 		const method = $("#customerPaymentMethodId option:selected").text();
 		showPaymentMethod(method);
 	});
+
+	// make delivered amount equal to request amount when requested amount is changing
+	$("#requestedQty").on("keyup change", function (e) {
+		$("#deliveredQty").val(e.target.value);
+	});
 };
 
 /*-------------------------------------------------------------------------------------------------------
@@ -333,7 +338,6 @@ const showCustomerOrderInfo = async (customerOrderId) => {
 };
 
 const showCustomerInfo = (customerType) => {
-	console.log(customerType);
 	switch (customerType) {
 		case "Registered Customer":
 			$("#customerInfo").show();
@@ -379,10 +383,7 @@ const addEntry = async () => {
 	const { status, data } = validateForm();
 
 	if (!status) {
-		mainWindow.showOutputModal(
-			"Sorry!. Please fix these problems first.",
-			data
-		);
+		mainWindow.showOutputModal("Sorry!", data);
 		return;
 	}
 
@@ -642,6 +643,15 @@ const validateForm = () => {
 	if (containsInvalidValues) {
 		errors +=
 			"There are invalid data in the product packages list!. Please check again. <br>";
+	}
+
+	// if customer is unregistered and there is balance
+	const customerType = $(
+		"#customerInvoiceCustomerTypeId option:selected"
+	).text();
+	const customerBalance = parseFloat($("#balance").val()) || 0;
+	if (customerType == "Unregistered Customer" && customerBalance > 0) {
+		errors += "Unregistered customers must make the full payment!. <br>";
 	}
 
 	if (errors == "") {
