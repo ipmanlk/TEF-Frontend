@@ -258,26 +258,22 @@ const showProductPackageInfo = async (productPackageId) => {
 };
 
 const showCustomerOrdersAndInfo = async (customerId) => {
-	// // fill customer details
-	// let response = await Request.send("/api/customers", "GET", {
-	// 	data: {
-	// 		id: customerId,
-	// 	},
-	// });
+	// fill customer details
+	let response = await Request.send("/api/customers", "GET", {
+		data: {
+			id: customerId,
+		},
+	});
 
-	// // if request failed
-	// if (!response.status) return;
+	// if request failed
+	if (!response.status) return;
 
-	// const customer = response.data;
+	const customer = response.data;
 
 	// // save globally
 	// tempData.selectedCustomer = customer;
-
-	// $("#customerName").val(
-	// 	customer.companyName ? customer.companyName : customer.customerName
-	// );
-	// $("#customerMobile").val(customer.customerMobile);
-	// $("#nic").val(customer.nic);
+	$("#existingArrears").val(customer.toBePaid);
+	$("#maxArrears").val(customer.maxToBePaid);
 
 	// show customer orders
 	response = await Request.send("/api/customer_orders", "GET", {
@@ -652,6 +648,12 @@ const validateForm = () => {
 	const customerBalance = parseFloat($("#balance").val()) || 0;
 	if (customerType == "Unregistered Customer" && customerBalance > 0) {
 		errors += "Unregistered customers must make the full payment!. <br>";
+	}
+
+	// if customer type is registered check balance is greater than allowed arrears
+	const maxArrears = parseFloat($("#maxArrears").val()) || 0;
+	if (customerType == "Registered Customer" && maxArrears < customerBalance) {
+		errors += "Total arrears can't exceed the maximum allowed amount!. <br>";
 	}
 
 	if (errors == "") {
