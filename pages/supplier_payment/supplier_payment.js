@@ -130,7 +130,7 @@ const registerEventListeners = () => {
 	});
 
 	$("#grnId").on("changed.bs.select", function (e) {
-		showGrnInfo(e.target.value);
+		showGrnAndSupplierInfo(e.target.value);
 	});
 
 	// update balance
@@ -177,7 +177,7 @@ const showSupplierGrns = async (supplierId, grnStatusName = "Pending") => {
 };
 
 // show grn total net amount and suppllier total amount with arreas
-const showGrnInfo = async (grnId) => {
+const showGrnAndSupplierInfo = async (grnId) => {
 	const response = await Request.send("/api/grns", "GET", {
 		data: {
 			id: grnId,
@@ -198,6 +198,10 @@ const showGrnInfo = async (grnId) => {
 	$("#grnNetTotal").val(grnNetTotal.toFixed(2));
 	$("#supTotalAmount").val(supplierArreas.toFixed(2));
 	$("#grnBalance").val((grnNetTotal - grnPayedAmount).toFixed(2));
+
+	// show supplier arrears info
+	$("#existingArrears").val(supplier.arrears);
+	$("#maxArrears").val(supplier.maxArrears);
 };
 
 // calcualte balance from supplier total and pay amount
@@ -389,6 +393,15 @@ const validateForm = () => {
 
 	if (payAmount > grnNetTotal - grnPayedAmount) {
 		errors += "GRN pay amount can't exceed the GRN net total!.";
+	}
+
+	// total balance left to pay (arrears)
+	const supplierBalance = parseFloat($("#balance").val()) || 0;
+
+	//  check balance is greater than allowed arrears
+	const maxArrears = parseFloat($("#maxArrears").val()) || 0;
+	if (maxArrears < supplierBalance) {
+		errors += "Total arrears can't exceed the maximum allowed amount!. <br>";
 	}
 
 	if (errors == "") {
