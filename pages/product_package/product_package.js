@@ -10,6 +10,15 @@ class productPackageForm extends Form {
 				);
 			}
 		});
+
+		// format decimal inputs automatically
+		$("#salePrice, #price, #weight").on("blur", (e) => {
+			const value = e.target.value;
+			if (!isNaN(value)) {
+				e.target.value = parseFloat(value).toFixed(2);
+				$(e.target).trigger("keyup");
+			}
+		});
 	}
 
 	// overwrrite load entry

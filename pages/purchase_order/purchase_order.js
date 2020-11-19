@@ -143,6 +143,15 @@ const registerEventListeners = () => {
 			$("#lineTotal").val("0.00");
 		}
 	});
+
+	// format decimal inputs automatically
+	$("#qty").on("blur", (e) => {
+		const value = e.target.value;
+		if (!isNaN(value)) {
+			e.target.value = parseFloat(value).toFixed(2);
+			$(e.target).trigger("keyup");
+		}
+	});
 };
 
 /*-------------------------------------------------------------------------------------------------------

@@ -143,6 +143,15 @@ const registerEventListeners = () => {
 		const method = $("#supplierPaymentMethodId option:selected").text();
 		showPaymentMethod(method);
 	});
+
+	// format decimal inputs automatically
+	$("#payAmount").on("blur", (e) => {
+		const value = e.target.value;
+		if (!isNaN(value)) {
+			e.target.value = parseFloat(value).toFixed(2);
+			$(e.target).trigger("keyup");
+		}
+	});
 };
 
 // this function will run when supplierId select box is changed

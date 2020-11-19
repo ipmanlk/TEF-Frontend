@@ -135,6 +135,15 @@ const registerEventListeners = () => {
 		if (validFrom.val() == "") return;
 		validTo.attr("min", new Date(validFrom.val()).addDays(1).formatForInput());
 	});
+
+	// format decimal inputs automatically
+	$("#purchasePrice, #availableQty, #minimumRequestQty").on("blur", (e) => {
+		const value = e.target.value;
+		if (!isNaN(value)) {
+			e.target.value = parseFloat(value).toFixed(2);
+			$(e.target).trigger("keyup");
+		}
+	});
 };
 
 // this function will run when supplierId select box is changed

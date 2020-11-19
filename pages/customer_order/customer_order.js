@@ -178,6 +178,15 @@ const registerEventListeners = () => {
 			$("#customerId").selectpicker("render");
 		});
 	});
+
+	// format decimal inputs automatically
+	$("#discountRatio").on("blur", (e) => {
+		const value = e.target.value;
+		if (!isNaN(value)) {
+			e.target.value = parseFloat(value).toFixed(2);
+			$(e.target).trigger("keyup");
+		}
+	});
 };
 
 // show customer view in an iframe

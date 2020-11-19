@@ -234,6 +234,15 @@ const registerEventListeners = () => {
 	$("#requestedQty").on("keyup change", function (e) {
 		$("#deliveredQty").val(e.target.value);
 	});
+
+	// format decimal inputs automatically
+	$("#discountRatio, #payedAmount").on("blur", (e) => {
+		const value = e.target.value;
+		if (!isNaN(value)) {
+			e.target.value = parseFloat(value).toFixed(2);
+			$(e.target).trigger("keyup");
+		}
+	});
 };
 
 /*-------------------------------------------------------------------------------------------------------

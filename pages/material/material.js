@@ -84,6 +84,15 @@ async function loadModule(permissionStr) {
 			")."
 		);
 	});
+
+	// format decimal inputs automatically
+	$("#unitPrice").on("blur", (e) => {
+		const value = e.target.value;
+		if (!isNaN(value)) {
+			e.target.value = parseFloat(value).toFixed(2);
+			$(e.target).trigger("keyup");
+		}
+	});
 }
 
 // reload main table data and from after making a change

@@ -155,6 +155,15 @@ const registerEventListeners = () => {
 			$("#netTotal").val("0.00");
 		}
 	});
+
+	// format decimal inputs automatically
+	$("#purchasePrice, #discountRatio, #receivedQty").on("blur", (e) => {
+		const value = e.target.value;
+		if (!isNaN(value)) {
+			e.target.value = parseFloat(value).toFixed(2);
+			$(e.target).trigger("keyup");
+		}
+	});
 };
 
 /*-------------------------------------------------------------------------------------------------------
