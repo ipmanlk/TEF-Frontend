@@ -30,6 +30,13 @@ async function loadModule(permissionStr) {
 
 	await loadFormDropdowns();
 	registerEventListeners();
+
+	// hide add button
+	if (permission[0] == 0) {
+		$("#btnTopAddEntry").hide();
+	} else {
+		$("#btnTopAddEntry").show();
+	}
 }
 
 const registerEventListeners = () => {
