@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Report</title>
+  <link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../css/pages/common.css" />
+</head>
+
+<body>
+  <div class="container">
+    <div class="row" style="margin-top: 40px;">
+      <div class="col-xs-3">
+        <label for="cmbReportType">Type: </label><br>
+        <select name="cmbReportType" id="cmbReportType" class="form-control">
+          <option value="today">Today</option>
+          <option value="day">By Day</option>
+          <option value="week">By Week</option>
+          <option value="month">By Month</option>
+          <option value="year">By Year</option>
+        </select>
+      </div>
+      <div class="col-xs-3">
+        <label id="lblStartDate">Start Date</label><br>
+        <input id="txtStartDate" type="date" class="form-control">
+      </div>
+      <div class="col-xs-3">
+        <label id="lblEndDate">End Date</label><br>
+        <input id="txtEndDate" type="date" class="form-control">
+      </div>
+      <div class="col-xs-3">
+        <label style="color: white;">.</label><br>
+        <input style="width: 100%;" type="button" id="btnViewReport" class="btn btn-primary" value="View Report">
+      </div>
+    </div>
+  </div>
+
+  <div class="container" style="margin-top: 20px;">
+    <ul class="nav nav-tabs">
+      <li class="active"><a data-toggle="tab" href="#tabChart">Chart View</a></li>
+      <li><a data-toggle="tab" href="#tabTable">Table View</a></li>
+    </ul>
+
+    <div class="tab-content">
+      <div id="tabChart" class="tab-pane fade in active">
+        <div class="container" style="padding-bottom: 200px">
+          <canvas id="salesChart" width="80%" height="35px"></canvas>
+        </div>
+      </div>
+      <div id="tabTable" class="tab-pane fade">
+        <table id="salesTable" class="table table-bordered" style="margin-top: 20px;">
+
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- libs -->
+  <script src="../../lib/jquery/jquery.min.js"></script>
+  <script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
+  <script src="../../lib/chartjs/chart.js"></script>
+  <script src="../../lib/moment/moment.min.js"></script>
+
+  <!-- common stuff -->
+  <script src=" ../../js/Request.js"></script>
+  <script src="../../js/Form.js"></script>
+  <script src="../../js/FormUtil.js"></script>
+  <script src="../../js/MiscUtil.js"></script>
+
+  <!-- main js -->
+  <script src="./sales_report.js"></script>
+
+  <script>
+    // var ctx = document.getElementById('salesChart');
+    // var myChart = new Chart(ctx, {
+    //   type: 'bar',
+
+    //   data: {
+    //     labels: [
+    //       "2020-04-0",
+    //       "2020-04-1",
+    //       "2020-04-2",
+    //       "2020-04-3",
+    //       "2020-04-4",
+    //       "2020-04-5",
+    //       "2020-04-6",
+    //       "2020-04-7",
+    //       "2020-04-8",
+    //       "2020-04-9",
+    //       "2020-04-10",
+    //       "2020-04-11",
+    //       "2020-04-12",
+    //       "2020-04-13",
+    //       "2020-04-14",
+    //       "2020-04-15",
+    //       "2020-04-16",
+    //       "2020-04-17",
+    //       "2020-04-18",
+    //       "2020-04-19"
+    //     ],
+    //     datasets: [{
+    //       label: 'No of Sales',
+    //       data: [96,
+    //         35,
+    //         22,
+    //         35,
+    //         57,
+    //         68,
+    //         60,
+    //         26,
+    //         59,
+    //         51,
+    //         77,
+    //         54,
+    //         47,
+    //         44,
+    //         92,
+    //         74,
+    //         42,
+    //         37,
+    //         71,
+    //         82],
+    //       backgroundColor: "rgba(54, 162, 235, 0.2)",
+    //       borderWidth: 1
+    //     }]
+    //   },
+    //   options: {
+    //     scales: {
+    //       yAxes: [{
+    //         ticks: {
+    //           beginAtZero: true
+    //         },
+    //         scaleLabel: {
+    //           display: true,
+    //           labelString: 'Sales'
+    //         }
+    //       }],
+    //       xAxes: [{
+    //         scaleLabel: {
+    //           display: true,
+    //           labelString: 'Dates'
+    //         }
+    //       }]
+    //     }
+    //   }
+    // });
+  </script>
+</body>
+
+</html>

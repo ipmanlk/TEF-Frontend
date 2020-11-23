@@ -172,6 +172,10 @@ const getRoutes = () => {
 			title: "Production Inventory View",
 			path: "./pages/production_inventory/production_inventory.html",
 		},
+		sales_report: {
+			title: "Sales Report",
+			path: "./pages/sales_report/sales_report.html",
+		},
 		noauth: {
 			title: "Auth Failure",
 			path: "./pages/noauth.html",
