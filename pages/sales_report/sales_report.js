@@ -189,7 +189,7 @@ const showCharts = (formattedData, reportType) => {
 				{
 					label: "No of Sales",
 					data: formattedData.y,
-					backgroundColor: "rgba(54, 162, 235, 0.2)",
+					backgroundColor: "rgb(54, 162, 235, 0.6)",
 					borderWidth: 1,
 				},
 			],
@@ -216,6 +216,35 @@ const showCharts = (formattedData, reportType) => {
 					},
 				],
 			},
+		},
+	});
+
+	/* 
+  Show Sales Income Chart
+  */
+	const ctx2 = document.getElementById("salesIncomeChart");
+	if (window.salesIncomeChartObj) window.salesIncomeChartObj.destroy();
+	$("#salesIncomeChart").empty();
+
+	const netTotal = formattedData.entries
+		.map((i) => i.netTotal)
+		.reduce((a, b) => a + parseFloat(b), 0);
+
+	const payedAmount = formattedData.entries
+		.map((i) => i.payedAmount)
+		.reduce((a, b) => a + parseFloat(b), 0);
+
+	// create chart object
+	window.salesIncomeChartObj = new Chart(ctx2, {
+		type: "pie",
+		data: {
+			labels: ["Net Total (Rs.)", "Arrears Amount (Rs.)"],
+			datasets: [
+				{
+					data: [netTotal, netTotal - payedAmount],
+					backgroundColor: ["rgb(75, 192, 192, 0.8)", "rgb(255, 99, 132, 0.8)"],
+				},
+			],
 		},
 	});
 };

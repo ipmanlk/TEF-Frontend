@@ -7,6 +7,23 @@
   <title>Sales Report</title>
   <link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="../../css/pages/common.css" />
+
+  <style>
+    .tab-pane {
+      padding-bottom: 400px;
+    }
+
+    .tab-pane div:first-child,
+    table:first-child {
+      margin-top: 30px;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 40vh;
+      width: 70vw;
+    }
+  </style>
 </head>
 
 <body>
@@ -39,18 +56,27 @@
 
   <div class="container" style="margin-top: 20px;">
     <ul class="nav nav-tabs">
-      <li class="active"><a data-toggle="tab" href="#tabChart">Chart View</a></li>
+      <li class="active"><a data-toggle="tab" href="#tabSalesChart">Sales Chart</a></li>
+      <li><a data-toggle="tab" href="#tabIncomeChart">Net Total & Arrears Chart</a></li>
       <li><a data-toggle="tab" href="#tabTable">Table View</a></li>
     </ul>
 
     <div class="tab-content">
-      <div id="tabChart" class="tab-pane fade in active">
-        <div class="container" style="padding-bottom: 200px">
-          <canvas id="salesChart" width="80%" height="35px"></canvas>
+
+      <div id="tabSalesChart" class="tab-pane fade in active">
+        <div class="chart-container">
+          <canvas id="salesChart"></canvas>
         </div>
       </div>
+
+      <div id="tabIncomeChart" class="tab-pane fade">
+        <div class="chart-container">
+          <canvas id="salesIncomeChart"></canvas>
+        </div>
+      </div>
+
       <div id="tabTable" class="tab-pane fade">
-        <table id="salesTable" class="table table-bordered" style="margin-top: 20px;">
+        <table id="salesTable" class="table table-bordered">
 
         </table>
       </div>
