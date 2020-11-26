@@ -244,6 +244,7 @@ const showEditEntryModal = async (id, readOnly = false) => {
 
 const showNewEntryModal = () => {
 	mainForm.reset();
+	mainForm.updateFormUI(1);
 
 	// change customer number field text
 	$("#mainForm #number").val("Customer number will be displayed after adding.");
