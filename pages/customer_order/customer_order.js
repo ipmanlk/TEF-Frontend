@@ -249,8 +249,8 @@ const addEntry = async () => {
 		reloadModule();
 		mainWindow.showOutputToast("Success!", response.msg);
 		mainWindow.showOutputModal(
-			"Purchase order created!.",
-			`<h4>Purchase Order Code: ${response.data.pocode}</h4>`
+			"Customer order created!.",
+			`<h4>Customer Order Code: ${response.data.pocode}</h4>`
 		);
 	}
 };
@@ -296,7 +296,7 @@ const loadEntry = async (id) => {
 
 	// hide from deleted button when deleted
 	if (
-		$("#mainForm #purchaseOrderStatusId option:selected").text() == "Deleted"
+		$("#mainForm #customerOrderStatusId option:selected").text() == "Deleted"
 	) {
 		$(".btnFmDelete").hide();
 	}
@@ -401,7 +401,7 @@ const getFormData = () => {
 		});
 	});
 
-	// add purchase order mateirals to data
+	// add customer order product packages to data
 	data["customerOrderProductPackages"] = customerOrderProductPackages;
 
 	return data;
@@ -610,7 +610,7 @@ const addRowToProductPackageTable = (row = {}) => {
 	refreshProductPackageTable();
 };
 
-// updates index column of the mateiral table and purchase order total
+// updates index column of the mateiral table and customer order total
 const refreshProductPackageTable = () => {
 	$("#productPackageTable tbody tr").each((index, tr) => {
 		const indexTd = $(tr).children().first();
