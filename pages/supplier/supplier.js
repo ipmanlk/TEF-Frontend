@@ -3,14 +3,6 @@ class SupplierForm extends Form {
 	loadAddons() {
 		// hide company info initially
 		$(`#${this.formId} .company_info`).hide();
-
-		// when supplier type select is changed, show hide components
-		$(`#${this.formId} #supplierTypeId`).on("change", (e) => {
-			// 1 = individual
-			// 2 = company
-			const val = e.target.value;
-			this.updateFormUI(val);
-		});
 	}
 
 	// overwrrite load entry
@@ -121,6 +113,14 @@ class SupplierForm extends Form {
 				$(e.target).trigger("keyup");
 			}
 		});
+
+		// when supplier type select is changed, show hide components
+		$(`#${this.formId} #supplierTypeId`).on("change", (e) => {
+			// 1 = individual
+			// 2 = company
+			const val = e.target.value;
+			this.updateFormUI(val);
+		});
 	}
 }
 
@@ -145,7 +145,7 @@ async function loadModule(permissionStr) {
 		return responseData.map((entry) => {
 			return {
 				Code: entry.code,
-				Company: entry.companyName,
+				Company: entry.companyName ? entry.companyName : "None",
 				Person: entry.personName,
 				Mobile: entry.personMobile,
 				Status: entry.supplierStatus.name,
@@ -245,13 +245,15 @@ const showEditEntryModal = async (id, readOnly = false) => {
 
 const showNewEntryModal = () => {
 	mainForm.reset();
-
+	mainForm.updateFormUI(1);
 	// change supplier code field text
 	$("#mainForm #code").val("Supplier code will be displayed after adding.");
 
 	// set created employee number
-	$("#mainForm #createdEmployeeNumber").val(
-		mainWindow.tempData.profile.employee.number
+	const employeeNumber = mainWindow.tempData.profile.employee.number;
+	const employeeCallingName = mainWindow.tempData.profile.employee.callingName;
+	$("#mainForm #createdEmployee").val(
+		`${employeeCallingName} (${employeeNumber})`
 	);
 
 	// set date of assignment
