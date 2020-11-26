@@ -226,22 +226,30 @@ const showCharts = (formattedData, reportType) => {
 	if (window.salesIncomeChartObj) window.salesIncomeChartObj.destroy();
 	$("#salesIncomeChart").empty();
 
-	const netTotal = formattedData.entries
-		.map((i) => i.netTotal)
-		.reduce((a, b) => a + parseFloat(b), 0);
+	let totNetTotal = 0,
+		totPayedAmount = 0;
 
-	const payedAmount = formattedData.entries
-		.map((i) => i.payedAmount)
-		.reduce((a, b) => a + parseFloat(b), 0);
+	formattedData.entries.forEach((i) => {
+		totNetTotal += parseFloat(i.netTotal);
+		totPayedAmount += parseFloat(i.payedAmount);
+	});
+
+	// calculate percentages
+	const sum = totNetTotal + totPayedAmount;
+	const perNetTotal = ((totNetTotal / sum) * 100).toFixed(2);
+	const perArrearsAmount = (
+		((totNetTotal - totPayedAmount) / sum) *
+		100
+	).toFixed(2);
 
 	// create chart object
 	window.salesIncomeChartObj = new Chart(ctx2, {
 		type: "pie",
 		data: {
-			labels: ["Net Total (Rs.)", "Arrears Amount (Rs.)"],
+			labels: ["Net Total (%)", "Arrears Amount (%)"],
 			datasets: [
 				{
-					data: [netTotal, netTotal - payedAmount],
+					data: [perNetTotal, perArrearsAmount],
 					backgroundColor: ["rgb(75, 192, 192, 0.8)", "rgb(255, 99, 132, 0.8)"],
 				},
 			],
@@ -259,7 +267,8 @@ const showTable = (formattedData, reportType) => {
 	const thead = `
   <thead>
     <th>Index</th>
-    <th>${reportTypeColumnName}</th>
+		<th>${reportTypeColumnName}</th>
+		<th>Count</th>
     <th>Net Total</th>
     <th>Payed Amount</th>
   </head>
@@ -267,16 +276,44 @@ const showTable = (formattedData, reportType) => {
 
 	let tbodyRows = "";
 
+	let totTransactions = 0,
+		totNetTotal = 0,
+		totPayedAmount = 0;
+
 	formattedData.entries.forEach((i, index) => {
 		tbodyRows += "<tr>";
 		tbodyRows += `
       <td>${index + 1}</td>
-      <td>${i[reportType]}</td>
+			<td>${i[reportType]}</td>
+      <td>${i.transactions}</td>
       <td>${i.netTotal}</td>
       <td>${i.payedAmount}</td>
     `;
 		tbodyRows += "</tr>";
+
+		totTransactions += parseInt(i.transactions);
+		totNetTotal += parseFloat(i.netTotal);
+		totPayedAmount += parseFloat(i.payedAmount);
 	});
+
+	// add sum row
+	tbodyRows += `
+	<tr style="background-color: #cccccc">
+		<td><b>Total</b></td>
+		<td></td>
+		<td><b>${totTransactions}</b></td>
+		<td><b>Rs. ${formatToLKR(totNetTotal)}</b></td>
+		<td><b>Rs. ${formatToLKR(totPayedAmount)}</b></td>
+	</tr>
+	
+	<tr style="background-color: #cccccc">
+		<td><b>Total Arrears</b></td>
+		<td></td>
+		<td></td>
+		<td></td>
+		<td><b>Rs. ${formatToLKR(totNetTotal - totPayedAmount)}</b></td>
+	</tr>
+	`;
 
 	const tbody = `<tbody>${tbodyRows}</tbody>`;
 
