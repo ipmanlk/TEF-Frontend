@@ -1,34 +1,8 @@
 class customerForm extends Form {
 	// overwrrite register additional event listners from method
 	loadAddons() {
-		$(`#${this.formId} #nic`).on("paste change keyup", (e) => {
-			const nic = e.target.value;
-			// get details from nic
-			const gender = NIClkUtil.getGender(nic).toString().capitalize();
-
-			// set gender
-			this.selectDropdownOptionByText("genderId", gender);
-		});
-
 		// hide company info initially
 		$(`#${this.formId} .company_info`).hide();
-
-		// when customer type select is changed, show hide components
-		$(`#${this.formId} #customerTypeId`).on("change", (e) => {
-			// 1 = individual
-			// 2 = company
-			const val = e.target.value;
-			this.updateFormUI(val);
-		});
-
-		// format decimal inputs automatically
-		$("#maxToBePaid").on("blur", (e) => {
-			const value = e.target.value;
-			if (!isNaN(value)) {
-				e.target.value = parseFloat(value).toFixed(2);
-				$(e.target).trigger("keyup");
-			}
-		});
 	}
 
 	// overwrrite load entry
@@ -120,6 +94,33 @@ class customerForm extends Form {
 			// 2 = company
 			const val = e.target.value;
 			this.updateFormUI(val);
+		});
+
+		// select gender from nic
+		$(`#${this.formId} #nic`).on("paste change keyup", (e) => {
+			const nic = e.target.value;
+			// get details from nic
+			const gender = NIClkUtil.getGender(nic).toString().capitalize();
+
+			// set gender
+			this.selectDropdownOptionByText("genderId", gender);
+		});
+
+		// when customer type select is changed, show hide components
+		$(`#${this.formId} #customerTypeId`).on("change", (e) => {
+			// 1 = individual
+			// 2 = company
+			const val = e.target.value;
+			this.updateFormUI(val);
+		});
+
+		// format decimal inputs automatically
+		$("#maxToBePaid").on("blur", (e) => {
+			const value = e.target.value;
+			if (!isNaN(value)) {
+				e.target.value = parseFloat(value).toFixed(2);
+				$(e.target).trigger("keyup");
+			}
 		});
 	}
 }
