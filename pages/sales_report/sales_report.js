@@ -56,6 +56,7 @@ const setReportType = (reportType) => {
 const showReport = async () => {
 	const start = $("#txtStartDate").val().trim();
 	const end = $("#txtEndDate").val().trim();
+
 	const reportType = $("#cmbReportType").val();
 
 	if (start == "" && end == "") {
@@ -235,8 +236,8 @@ const showCharts = (formattedData, reportType) => {
 	});
 
 	// calculate percentages
-	const sum = totNetTotal + totPayedAmount;
-	const perNetTotal = ((totNetTotal / sum) * 100).toFixed(2);
+	const sum = totNetTotal;
+	const perPayedAmount = ((totPayedAmount / sum) * 100).toFixed(2);
 	const perArrearsAmount = (
 		((totNetTotal - totPayedAmount) / sum) *
 		100
@@ -246,10 +247,10 @@ const showCharts = (formattedData, reportType) => {
 	window.salesIncomeChartObj = new Chart(ctx2, {
 		type: "pie",
 		data: {
-			labels: ["Net Total (%)", "Arrears Amount (%)"],
+			labels: ["Payed Amount (%)", "Arrears Amount (%)"],
 			datasets: [
 				{
-					data: [perNetTotal, perArrearsAmount],
+					data: [perPayedAmount, perArrearsAmount],
 					backgroundColor: ["rgb(75, 192, 192, 0.8)", "rgb(255, 99, 132, 0.8)"],
 				},
 			],
