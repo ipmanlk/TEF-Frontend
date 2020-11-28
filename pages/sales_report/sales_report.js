@@ -279,7 +279,8 @@ const showTable = (formattedData, reportType) => {
 		<th>${reportTypeColumnName}</th>
 		<th>Count</th>
     <th>Net Total</th>
-    <th>Payed Amount</th>
+		<th>Payed Amount</th>
+		<th>Arrears</th>
   </head>
   `;
 
@@ -287,22 +288,30 @@ const showTable = (formattedData, reportType) => {
 
 	let totTransactions = 0,
 		totNetTotal = 0,
-		totPayedAmount = 0;
+		totPayedAmount = 0,
+		totArrearsAmount = 0;
 
 	formattedData.entries.forEach((i, index) => {
+		const transactions = parseInt(i.transactions),
+			netTotal = parseFloat(i.netTotal),
+			payedAmount = parseFloat(i.payedAmount),
+			arrears = netTotal - payedAmount;
+
 		tbodyRows += "<tr>";
 		tbodyRows += `
       <td>${index + 1}</td>
 			<td>${i[reportType]}</td>
-      <td>${i.transactions}</td>
-      <td>${formatToLKR(parseFloat(i.netTotal))}</td>
-      <td>${formatToLKR(parseFloat(i.payedAmount))}</td>
+      <td>${transactions}</td>
+      <td>${formatToLKR(netTotal)}</td>
+			<td>${formatToLKR(payedAmount)}</td>
+			<td>${formatToLKR(arrears)}</td>
     `;
 		tbodyRows += "</tr>";
 
-		totTransactions += parseInt(i.transactions);
-		totNetTotal += parseFloat(i.netTotal);
-		totPayedAmount += parseFloat(i.payedAmount);
+		totTransactions += transactions;
+		totNetTotal += netTotal;
+		totPayedAmount += payedAmount;
+		totArrearsAmount += arrears;
 	});
 
 	// add sum row
@@ -313,16 +322,7 @@ const showTable = (formattedData, reportType) => {
 		<td><b id="lblTotSales">${totTransactions}</b></td>
 		<td><b id="lblTotNetTotal">Rs. ${formatToLKR(totNetTotal)}</b></td>
 		<td><b id="lblTotPayedAmount">Rs. ${formatToLKR(totPayedAmount)}</b></td>
-	</tr>
-	
-	<tr style="background-color: #cccccc">
-		<td><b>Total Arrears</b></td>
-		<td></td>
-		<td></td>
-		<td></td>
-		<td><b id="lblTotArrears">Rs. ${formatToLKR(
-			totNetTotal - totPayedAmount
-		)}</b></td>
+		<td><b id="lblTotArrears">Rs. ${formatToLKR(totArrearsAmount)}</b></td>
 	</tr>
 	`;
 
@@ -347,7 +347,7 @@ const printReport = async () => {
 		endDate: $("#txtEndDate").val(),
 		totalSales: $("#lblTotSales").text(),
 		netTotal: $("#lblTotNetTotal").text(),
-		payedAmount: $("#lblTotPayedAmount").text(),
+		payedTotal: $("#lblTotPayedAmount").text(),
 		arrearsTotal: $("#lblTotArrears").text(),
 		salesTable: $("#tabTable").html(),
 		genDateTime: moment().format("YYYY-MM-DD HH:mm:ss"),
