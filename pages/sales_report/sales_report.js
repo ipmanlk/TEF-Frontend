@@ -16,6 +16,10 @@ const registerEventListeners = () => {
 		showReport();
 	});
 
+	$("#btnPrintReport").click(() => {
+		printReport();
+	});
+
 	// report type change
 	$("#cmbReportType").on("change", function () {
 		const reportType = $("#cmbReportType").val();
@@ -181,8 +185,8 @@ const showCharts = (formattedData, reportType) => {
 	const ctx = document.getElementById("salesChart");
 	if (window.salesChartObj) window.salesChartObj.destroy();
 	$("#salesChart").empty();
-	// create chart object
-	window.salesChartObj = new Chart(ctx, {
+
+	const salesChartOptions = {
 		type: "bar",
 		data: {
 			labels: formattedData.x,
@@ -218,7 +222,11 @@ const showCharts = (formattedData, reportType) => {
 				],
 			},
 		},
-	});
+	};
+
+	// create chart object
+	window.salesChartObj = new Chart(ctx, salesChartOptions);
+	window.salesChartOptions = salesChartOptions;
 
 	/* 
   Show Sales Income Chart
@@ -287,8 +295,8 @@ const showTable = (formattedData, reportType) => {
       <td>${index + 1}</td>
 			<td>${i[reportType]}</td>
       <td>${i.transactions}</td>
-      <td>${i.netTotal}</td>
-      <td>${i.payedAmount}</td>
+      <td>${formatToLKR(parseFloat(i.netTotal))}</td>
+      <td>${formatToLKR(parseFloat(i.payedAmount))}</td>
     `;
 		tbodyRows += "</tr>";
 
@@ -302,9 +310,9 @@ const showTable = (formattedData, reportType) => {
 	<tr style="background-color: #cccccc">
 		<td><b>Total</b></td>
 		<td></td>
-		<td><b>${totTransactions}</b></td>
-		<td><b>Rs. ${formatToLKR(totNetTotal)}</b></td>
-		<td><b>Rs. ${formatToLKR(totPayedAmount)}</b></td>
+		<td><b id="lblTotSales">${totTransactions}</b></td>
+		<td><b id="lblTotNetTotal">Rs. ${formatToLKR(totNetTotal)}</b></td>
+		<td><b id="lblTotPayedAmount">Rs. ${formatToLKR(totPayedAmount)}</b></td>
 	</tr>
 	
 	<tr style="background-color: #cccccc">
@@ -312,11 +320,49 @@ const showTable = (formattedData, reportType) => {
 		<td></td>
 		<td></td>
 		<td></td>
-		<td><b>Rs. ${formatToLKR(totNetTotal - totPayedAmount)}</b></td>
+		<td><b id="lblTotArrears">Rs. ${formatToLKR(
+			totNetTotal - totPayedAmount
+		)}</b></td>
 	</tr>
 	`;
 
 	const tbody = `<tbody>${tbodyRows}</tbody>`;
 
 	$("#salesTable").html(`${thead} ${tbody}`);
+};
+
+const printReport = async () => {
+	const salesChartImg = document.getElementById("salesChart").toDataURL();
+
+	// get report temple
+	let template = await (await fetch("./print_template/print.html")).text();
+
+	const employeeNumber = mainWindow.tempData.profile.employee.number;
+	const employeeCallingName = mainWindow.tempData.profile.employee.callingName;
+
+	// fill values
+	const placeholderValues = {
+		reportType: $("#cmbReportType option:selected").text(),
+		startDate: $("#txtStartDate").val(),
+		endDate: $("#txtEndDate").val(),
+		totalSales: $("#lblTotSales").text(),
+		netTotal: $("#lblTotNetTotal").text(),
+		payedAmount: $("#lblTotPayedAmount").text(),
+		arrearsTotal: $("#lblTotArrears").text(),
+		salesTable: $("#tabTable").html(),
+		genDateTime: moment().format("YYYY-MM-DD HH:mm:ss"),
+		requestedEmployee: `${employeeCallingName} (${employeeNumber})`,
+		salesChartImg: salesChartImg,
+	};
+
+	Object.keys(placeholderValues).forEach((key) => {
+		template = template.replace(
+			new RegExp(`#{${key}}`, "g"),
+			placeholderValues[key]
+		);
+	});
+
+	const win = window.open("", "Print", "width=1000,height=600");
+	win.document.write(template);
+	setTimeout(() => {});
 };
