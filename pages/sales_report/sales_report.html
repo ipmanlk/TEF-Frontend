@@ -51,18 +51,20 @@
         <label style="color: white;">.</label><br>
         <input style="width: 100%;" type="button" id="btnViewReport" class="btn btn-primary" value="View Report">
       </div>
-      <div class="col-xs-2">
-        <label style="color: white;">.</label><br>
-        <input style="width: 100%;" type="button" id="btnPrintReport" class="btn btn-primary" value="Print Report">
-      </div>
     </div>
   </div>
 
-  <div class="container" style="margin-top: 20px;">
+  <div id="outputContainer" class="container" style="margin-top: 20px; display: none;">
     <ul class="nav nav-tabs">
       <li class="active"><a data-toggle="tab" href="#tabSalesChart">Sales Chart</a></li>
       <li><a data-toggle="tab" href="#tabIncomeChart">Payments & Arrears Chart</a></li>
       <li><a data-toggle="tab" href="#tabTable">Table View</a></li>
+      <li style="float: right;">
+        <button id="btnPrintReport" class="btn btn-default">
+          <i class="glyphicon glyphicon-print" aria-hidden="true"></i>
+          Print
+        </button>
+      </li>
     </ul>
 
     <div class="tab-content">

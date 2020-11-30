@@ -13,6 +13,39 @@ function loadModule(permissionStr) {
 
 const registerEventListeners = () => {
 	$("#btnViewReport").click(() => {
+		// const startDate = $("#txtStartDate").val().trim();
+		// const endDate = $("#txtEndDate").val().trim();
+
+		// // check if start and end durations are selected or not
+		// if (startDate == "" || endDate == "") {
+		// 	mainWindow.showOutputModal(
+		// 		"Sorry!",
+		// 		"Please select start and end dates first!"
+		// 	);
+		// 	return;
+		// }
+
+		// // check for future dates
+		// const today = new Date();
+		// const dtStartDate = new Date(startDate);
+		// const dtEndDate = new Date(endDate);
+
+		// if (today < dtStartDate || today < dtEndDate) {
+		// 	mainWindow.showOutputModal(
+		// 		"Sorry!",
+		// 		"You can't select future dates for start and end."
+		// 	);
+		// 	return;
+		// }
+
+		// if (dtStartDate > dtEndDate) {
+		// 	mainWindow.showOutputModal(
+		// 		"Sorry!",
+		// 		"End date can't be older than the start date."
+		// 	);
+		// 	return;
+		// }
+
 		showReport();
 	});
 
@@ -80,6 +113,19 @@ const showReport = async () => {
 
 	// data received from the server.
 	const data = response.data;
+
+	// if there aren't any records
+	if (data.length == 0) {
+		mainWindow.showOutputModal(
+			"Sorry!",
+			"There aren't any sales happened during the selected time period."
+		);
+		$("#outputContainer").fadeOut();
+		return;
+	}
+
+	// display output container
+	$("#outputContainer").fadeIn();
 
 	// get those data formatted for chat.js
 	const formattedData = formatData(data, reportType);
@@ -364,5 +410,8 @@ const printReport = async () => {
 
 	const win = window.open("", "Print", "width=1000,height=600");
 	win.document.write(template);
-	setTimeout(() => {});
+	setTimeout(() => {
+		win.print();
+		win.close();
+	}, 500);
 };
