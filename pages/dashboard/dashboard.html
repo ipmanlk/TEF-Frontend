@@ -2,269 +2,88 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
-    <link rel="stylesheet" href="../../lib/metrobootstrap/css/metro-bootstrap.min.css">
-    <link rel="stylesheet" href="../../lib/fontawesome/css/font-awesome.min.css">
-    <style>
-        .fa-links h1 {
-            font-size: 30px;
-        }
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title></title>
 
-        @media (min-width: 992px) {
-            .col-md-4 {
-                width: auto;
-            }
-        }
-    </style>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+		integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+	<link rel="stylesheet" href="../../lib/fontawesome/css/font-awesome.min.css">
+
+	<style>
+		.container-fluid {
+			margin: 25px 10px 25px 10px;
+			padding-bottom: 40px;
+		}
+
+		.TILE {
+			font-size: 20px;
+			color: #FFFFFF;
+		}
+
+		.TILE h1 {
+			font-size: 20px;
+		}
+
+		.TILE:hover {
+			opacity: 1 !important;
+		}
+
+		.card-deck {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+			grid-gap: 2rem;
+		}
+
+		.side-bar .card-body {
+			padding: 0;
+		}
+	</style>
 </head>
 
 <body>
-    <div class="container-fluid" style="margin: 30px 50px 50px 50px;">
-        <div class="row">
-            <div class="col-md-12">
-                <h2>Quick Access</h2>
-                <hr>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12" style="margin: 0 0 20px 5px">
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
-                    <input id="txtFilterCards" type="text" class="form-control input-lg" placeholder="Filter cards..."
-                        style="width: 97%;">
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="EMPLOYEE TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-blue" onclick="mainWindow.loadRoute('employee')">
-                    <a href="#" class="fa-links">
-                        <h1>Employee</h1>
-                        <i class="fa fa-3x fa-address-card"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="USER TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-green" onclick="mainWindow.loadRoute('user')">
-                    <a href="#" class="fa-links">
-                        <h1>User</h1>
-                        <i class="fa fa-3x fa-users"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="ROLE TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-red" onclick="mainWindow.loadRoute('role')">
-                    <a href="#" class="fa-links">
-                        <h1>Role</h1>
-                        <i class="fa fa-3x fa-user-circle"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="PRIVILEGE TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-purple" onclick="mainWindow.loadRoute('privilege')">
-                    <a href="#" class="fa-links">
-                        <h1>Privilege</h1>
-                        <i class="fa fa-3x fa-lock"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="DESIGNATION TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-teal" onclick="mainWindow.loadRoute('designation')">
-                    <a href="#" class="fa-links">
-                        <h1>Designation</h1>
-                        <i class="fa fa-3x fa-sitemap"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="EMPLOYEE_STATUS TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-alizarin" onclick="mainWindow.loadRoute('employee_status')">
-                    <a href="#" class="fa-links">
-                        <h1>Employee Status</h1>
-                        <i class="fa fa-3x fa-handshake-o"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="CUSTOMER TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-alizarin" onclick="mainWindow.loadRoute('customer')">
-                    <a href="#" class="fa-links">
-                        <h1>Customer</h1>
-                        <i class="fa fa-3x fa-male"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="MATERIAL TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-yellow" onclick="mainWindow.loadRoute('material')">
-                    <a href="#" class="fa-links">
-                        <h1>Material</h1>
-                        <i class="fa fa-3x fa-th-large"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="PRODUCT TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-lime" onclick="mainWindow.loadRoute('product')">
-                    <a href="#" class="fa-links">
-                        <h1>Product</h1>
-                        <i class="fa fa-3x fa-cube"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="MATERIAL_ANALYSIS TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-yellow" onclick="mainWindow.loadRoute('material_analysis')">
-                    <a href="#" class="fa-links">
-                        <h1>Material Analysis</h1>
-                        <i class="fa fa-3x fa-connectdevelop"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="PRODUCT_PACKAGE TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-teal" onclick="mainWindow.loadRoute('product_package')">
-                    <a href="#" class="fa-links">
-                        <h1>Product Package</h1>
-                        <i class="fa fa-3x fa-cubes"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="SUPPLIER TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-yellow" onclick="mainWindow.loadRoute('supplier')">
-                    <a href="#" class="fa-links">
-                        <h1>Supplier</h1>
-                        <i class="fa fa-3x fa-truck"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="SUPPLIER_MATERIAL TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-blue" onclick="mainWindow.loadRoute('supplier_material')">
-                    <a href="#" class="fa-links">
-                        <h1>Supplier Materials</h1>
-                        <i class="fa fa-3x fa-bitbucket"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="QUOTATION_REQUEST TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-blue" onclick="mainWindow.loadRoute('quotation_request')">
-                    <a href="#" class="fa-links">
-                        <h1>Quotation Request</h1>
-                        <i class="fa fa-3x  fa-file-text-o"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="QUOTATION TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-blue" onclick="mainWindow.loadRoute('quotation')">
-                    <a href="#" class="fa-links">
-                        <h1>Quotations</h1>
-                        <i class="fa fa-3x fa-file-text-o"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="MATERIAL_INVENTORY TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-blue" onclick="mainWindow.loadRoute('material_inventory')">
-                    <a href="#" class="fa-links">
-                        <h1>Material Inventory</h1>
-                        <i class="fa fa-3x fa-braille"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="PURCHASE_ORDER TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-blue" onclick="mainWindow.loadRoute('purchase_order')">
-                    <a href="#" class="fa-links">
-                        <h1>Purchase Order</h1>
-                        <i class="fa fa-3x fa-file-text-o"></i>
-                    </a>
-                </div>
-            </div>
-            <div class="GRN TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-blue" onclick="mainWindow.loadRoute('grn')">
-                    <a href="#" class="fa-links">
-                        <h1>GRN</h1>
-                        <i class="fa fa-3x fa-file-text-o"></i>
-                    </a>
-                </div>
-            </div>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-8">
+				<div class="input-group mb-3">
+					<div class="input-group-prepend">
+						<span class="input-group-text"><i class="fa fa-search"></i></span>
+					</div>
+					<input id="txtFilterCards" type="text" class="form-control" placeholder="Enter Keyword....">
+				</div>
 
-            <div class="SUPPLIER_PAYMENT TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-blue" onclick="mainWindow.loadRoute('supplier_payment')">
-                    <a href="#" class="fa-links">
-                        <h1>Supplier Payments</h1>
-                        <i class="fa fa-3x fa-file-text-o"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="CUSTOMER_ORDER TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-red" onclick="mainWindow.loadRoute('customer_order')">
-                    <a href="#" class="fa-links">
-                        <h1>Customer Orders</h1>
-                        <i class="fa fa-3x fa-file-text-o"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="CUSTOMER_INVOICE TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-red" onclick="mainWindow.loadRoute('customer_invoice')">
-                    <a href="#" class="fa-links">
-                        <h1>Customer Invocies</h1>
-                        <i class="fa fa-3x fa-file-text-o"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="PRODUCTION_ORDER TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-red" onclick="mainWindow.loadRoute('production_order')">
-                    <a href="#" class="fa-links">
-                        <h1>Production Orders</h1>
-                        <i class="fa fa-3x fa-file-text-o"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="PRODUCTION_ORDER_CONFIRM TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-red"
-                    onclick="mainWindow.loadRoute('production_order_confirm')">
-                    <a href="#" class="fa-links">
-                        <h1>Production Order Confirm</h1>
-                        <i class="fa fa-3x fa-file-text-o"></i>
-                    </a>
-                </div>
-            </div>
+				<div id="tileList" class="card-deck">
 
 
-            <div class="MATERIAL_INVENTORY TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-orange" onclick="mainWindow.loadRoute('material_inventory')">
-                    <a href="#" class="fa-links">
-                        <h1>Material Inventory</h1>
-                        <i class="fa fa-3x fa-th"></i>
-                    </a>
-                </div>
-            </div>
+				</div>
+			</div>
 
-            <div class="PRODUCTION_INVENTORY TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-orange"
-                    onclick="mainWindow.loadRoute('production_inventory')">
-                    <a href="#" class="fa-links">
-                        <h1>Production Inventory</h1>
-                        <i class="fa fa-3x fa-th"></i>
-                    </a>
-                </div>
-            </div>
+			<div class="col-4 side-bar">
+				<div class="card">
+					<div class="card-header">Upcoming Orders</div>
+					<div class="card-body">
+						<ul class="list-group">
+							<li class="list-group-item">First item</li>
+							<li class="list-group-item">Second item</li>
+							<li class="list-group-item">Third item</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-            <div class="SALES_REPORT TILE col-md-4">
-                <div class="thumbnail tile tile-wide tile-green" onclick="mainWindow.loadRoute('sales_report')">
-                    <a href="#" class="fa-links">
-                        <h1>Sales Report</h1>
-                        <i class="fa fa-3x fa-line-chart"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- libs -->
-    <script src="../../lib/jquery/jquery.min.js"></script>
+	<!-- libs -->
+	<script src="../../lib/jquery/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
+		crossorigin="anonymous"></script>
 
-    <!-- main js -->
-    <script src="dashboard.js"></script>
+
+	<!-- main js -->
+	<script src="dashboard.js"></script>
 </body>
 
 </html>
