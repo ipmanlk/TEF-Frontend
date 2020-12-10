@@ -1,5 +1,5 @@
 // load routes
-const loadRoute = (route) => {
+const loadRoute = (route, optionParams = "") => {
 	let routes = getRoutes();
 
 	// if route doesn't exist
@@ -8,7 +8,7 @@ const loadRoute = (route) => {
 		return;
 	}
 
-	$("#iframeMain").attr("src", routes[route].path);
+	$("#iframeMain").attr("src", routes[route].path + optionParams);
 
 	// hide open modals
 	$(".modal").modal("hide");
@@ -22,9 +22,8 @@ const loadRoute = (route) => {
 
 // handle iframe src changing
 const updateRouteInfo = () => {
-	let path = document.getElementById("iframeMain").contentWindow.location.href;
-
-	path = `.${path.substring(path.indexOf("/pages"), path.length)}`;
+	const path = document.getElementById("iframeMain").contentWindow.location
+		.href;
 
 	// handle non authenticated cases
 	if (path.indexOf("noauth.html") > -1) {
@@ -32,10 +31,13 @@ const updateRouteInfo = () => {
 		return;
 	}
 
+	// get route params
+	const urlParams = new URLSearchParams(window.location.search);
+	const page = urlParams.get("page");
+
 	// proceed with title update
 	let routes = getRoutes();
-	routes = Object.values(routes).filter((route) => route.path == path);
-	$("#txtNavbarTitle").text(routes[0].title);
+	$("#txtNavbarTitle").text(routes[page].title);
 
 	// public data for iframe access
 	const mainWindowData = {
@@ -52,15 +54,13 @@ const updateRouteInfo = () => {
 	iframeWindow.mainWindow = mainWindowData;
 
 	// if location is dashboard, update tile visibility
-	if (path.indexOf("dashboard.html") > -1) {
+	if (page == "dashboard") {
 		iframeWindow.updateTiles();
 	}
 
 	// set permissions for forms and other components inside iframe
 	if (iframeWindow.loadModule) {
-		path = path.replace(".html", "");
-		const pathParts = path.split("/");
-		const moduleName = pathParts[pathParts.length - 1].toUpperCase().trim();
+		const moduleName = page.toUpperCase().trim();
 		const permission = tempData.privileges[moduleName];
 		iframeWindow.loadModule(permission);
 	}

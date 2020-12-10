@@ -302,14 +302,20 @@
         //localStorage.setItem("privileges", JSON.stringify(tempData.privileges));
 
         // check window location and load correct page (route)
-        const locationParts = window.location.href.split("?page=");
-        let routeName = locationParts[locationParts.length - 1].trim();
+        const urlParams = new URLSearchParams(window.location.search);
+        let routeName = urlParams.get("page");
 
-        // if route name is not given in the url, load dhasboard
-        if (!routeName || locationParts.length == 1) routeName = "dashboard";
+        // if route name is not given in the url, load dashboard
+        if (!routeName || routeName.trim() == "") routeName = "dashboard";
+
+        // show parameter is for showing a specific entry in some modules. 
+        // ex: Customer Order when calender entry is clicked
+        const show = urlParams.get("show");
 
         // load route
-        if (routeName !== "") {
+        if (show) {
+          loadRoute(routeName, `?show=${show}`);
+        } else {
           loadRoute(routeName);
         }
 
