@@ -50,6 +50,15 @@
 		.side-bar .card-body {
 			padding: 0;
 		}
+
+		.card-list .card-body {
+			max-height: 145px;
+			overflow-y: scroll;
+		}
+
+		.card-body .list-group-item {
+			padding: 8px;
+		}
 	</style>
 </head>
 
@@ -71,8 +80,30 @@
 			</div>
 
 			<div class="col-4 side-bar">
-				<div class="card">
+				<div class="card card-list">
 					<div class="card-header">Upcoming Orders</div>
+					<div class="card-body">
+						<ul class="list-group">
+							<li class="list-group-item">First item</li>
+							<li class="list-group-item">Second item</li>
+							<li class="list-group-item">Third item</li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="card card-list mt-3">
+					<div class="card-header">Low Inventory Product Packages</div>
+					<div class="card-body">
+						<ul class="list-group">
+							<li class="list-group-item">First item</li>
+							<li class="list-group-item">Second item</li>
+							<li class="list-group-item">Third item</li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="card mt-3">
+					<div class="card-header">Low Inventory Materials</div>
 					<div class="card-body">
 						<ul class="list-group">
 							<li class="list-group-item">First item</li>
