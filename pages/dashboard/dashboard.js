@@ -145,9 +145,9 @@ const updateSideBar = async () => {
 		$("#cardLowMaterialsList").empty();
 		lowMaterials.forEach((m) => {
 			$("#cardLowMaterialsList").append(`
-				<li class="list-group-item">
+				<a href="/?page=material_inventory" target="_blank" class="list-group-item">
 					${m.material.name} (${m.material.code})
-				</li>
+				</a>
 			`);
 		});
 	} else {
@@ -158,9 +158,9 @@ const updateSideBar = async () => {
 		$("#cardLowProductPackagesList").empty();
 		lowProductPackages.forEach((i) => {
 			$("#cardLowProductPackagesList").append(`
-				<li class="list-group-item">
+				<a href="/?page=production_inventory" target="_blank" class="list-group-item">
 					${i.productPackage.name} (${i.productPackage.code})
-				</li>
+				</a>
 			`);
 		});
 	} else {
@@ -168,37 +168,33 @@ const updateSideBar = async () => {
 	}
 
 	// show calender stuff
-	const chequeData = cheques.map((i) => {
-		return {
+	const calenderEvents = [];
+
+	// TODO: Check permissions when pushing to calender events
+	cheques.forEach((i) => {
+		calenderEvents.push({
 			date: new Date(i.chequeDate).getTime().toString(),
 			type: "deposit",
-			title: `Cheque No: ${i.chequeNo} (From Invoice: ${i.code})`,
+			title: `Cheque Deposit: No-${i.chequeNo} (From Invoice: ${i.code})`,
 			description: "You have to deposit this cheque on this day.",
 			url: `/?page=customer_invoice&show=${i.id}`,
-		};
+		});
 	});
 
-	$("#chequeCalender").eventCalendar({
-		jsonData: chequeData,
-		dateFormat: "dddd MM-D-YYYY",
-		eventsLimit: 3,
-		openEventInNewWindow: true,
-	});
-
-	const customerOrderData = customerOrders.map((i) => {
-		return {
+	customerOrders.forEach((i) => {
+		calenderEvents.push({
 			date: new Date(i.requiredDate).getTime().toString(),
 			type: "order",
-			title: `Code: ${i.cocode} (From: ${i.customer.customerName}-${i.customer.number})`,
+			title: `Customer Order: ${i.cocode} (From: ${i.customer.customerName}-${i.customer.number})`,
 			description: "You have to deliver this order on this day.",
 			url: `http://localhost:3000/?page=customer_order&show=${i.id}`,
-		};
+		});
 	});
 
-	$("#orderCalender").eventCalendar({
-		jsonData: customerOrderData,
+	$("#eventCalendar").eventCalendar({
+		jsonData: calenderEvents,
 		dateFormat: "dddd MM-D-YYYY",
-		eventsLimit: 3,
+		eventsLimit: 5,
 		openEventInNewWindow: true,
 	});
 };
