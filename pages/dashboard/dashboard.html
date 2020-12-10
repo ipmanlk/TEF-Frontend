@@ -80,21 +80,11 @@
 			</div>
 
 			<div class="col-4 side-bar">
-				<div class="card card-list">
-					<div class="card-header">Upcoming Orders</div>
-					<div class="card-body">
-						<ul class="list-group">
-							<li class="list-group-item">First item</li>
-							<li class="list-group-item">Second item</li>
-							<li class="list-group-item">Third item</li>
-						</ul>
-					</div>
-				</div>
 
-				<div class="card card-list mt-3">
+				<div class="card card-list" id="cardLowProductPackages">
 					<div class="card-header">Low Inventory Product Packages</div>
 					<div class="card-body">
-						<ul class="list-group">
+						<ul class="list-group" id="cardLowProductPackagesList">
 							<li class="list-group-item">First item</li>
 							<li class="list-group-item">Second item</li>
 							<li class="list-group-item">Third item</li>
@@ -102,10 +92,10 @@
 					</div>
 				</div>
 
-				<div class="card mt-3">
+				<div class="card mt-3" id="cardLowMaterials">
 					<div class="card-header">Low Inventory Materials</div>
 					<div class="card-body">
-						<ul class="list-group">
+						<ul class="list-group" id="cardLowMaterialsList">
 							<li class="list-group-item">First item</li>
 							<li class="list-group-item">Second item</li>
 							<li class="list-group-item">Third item</li>
@@ -145,24 +135,6 @@
 
 	<!-- main js -->
 	<script src="dashboard.js"></script>
-
-	<script>
-		$(document).ready(function () {
-			$("#orderCalender").eventCalendar({
-				jsonData: [
-					{ "date": "1607484762000", "type": "meeting", "title": "Test Project 7 Brainstorming", "description": "Lorem Ipsum dolor set", "url": "http://www.event3.com/" }
-				],
-				dateFormat: 'dddd MM-D-YYYY'
-			});
-
-			$("#chequeCalender").eventCalendar({
-				jsonData: [
-					{ "date": "1607484762000", "type": "meeting", "title": "Test Project 7 Brainstorming", "description": "Lorem Ipsum dolor set", "url": "http://www.event3.com/" }
-				],
-				dateFormat: 'dddd MM-D-YYYY'
-			});
-		});
-	</script>
 </body>
 
 </html>

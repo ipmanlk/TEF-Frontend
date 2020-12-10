@@ -69,14 +69,14 @@ const tileInfo = {
 	SALES_REPORT: { title: "Sales Report", icon: "fa-line-chart" },
 };
 
-$(document).ready(function () {
+$(document).ready(() => {
 	// event listener for filtering cards
 	$("#txtFilterCards").on("keyup change", (e) => {
 		const keyword = e.target.value.trim().toLowerCase();
 
 		// when keyword is empty
 		if (keyword.trim() == "") {
-			updateTiles();
+			$(".TILE").show();
 			return;
 		}
 
@@ -90,8 +90,14 @@ $(document).ready(function () {
 			}
 		});
 	});
+
+	// show sidebar info
+	updateSideBar().catch((e) => {
+		console.log(e);
+	});
 });
 
+// this function will be called from router.js upon loading dashboard
 function updateTiles() {
 	// show hide tiles based on privileges
 	const privileges = mainWindow.tempData.privileges;
@@ -122,3 +128,77 @@ function updateTiles() {
 		$("#tileList").append(tile);
 	});
 }
+
+const updateSideBar = async () => {
+	const response = await (await fetch("/api/summery/dashboard")).json();
+
+	const {
+		lowMaterials,
+		lowProductPackages,
+		cheques,
+		customerOrders,
+		upcomingCustomerOrders,
+	} = response.data;
+
+	// show list box stuff
+	if (lowMaterials.length != 0) {
+		$("#cardLowMaterialsList").empty();
+		lowMaterials.forEach((m) => {
+			$("#cardLowMaterialsList").append(`
+				<li class="list-group-item">
+					${m.material.name} (${m.material.code})
+				</li>
+			`);
+		});
+	} else {
+		$("#cardLowMaterials").hide();
+	}
+
+	if (lowProductPackages.length != 0) {
+		$("#cardLowProductPackagesList").empty();
+		lowProductPackages.forEach((i) => {
+			$("#cardLowProductPackagesList").append(`
+				<li class="list-group-item">
+					${i.productPackage.name} (${i.productPackage.code})
+				</li>
+			`);
+		});
+	} else {
+		$("#cardLowProductPackages").hide();
+	}
+
+	// show calender stuff
+	const chequeData = cheques.map((i) => {
+		return {
+			date: new Date(i.chequeDate).getTime().toString(),
+			type: "deposit",
+			title: `Cheque No: ${i.chequeNo} (From Invoice: ${i.code})`,
+			description: "You have to deposit this cheque on this day.",
+			url: "/?page=customer_invoice",
+		};
+	});
+
+	$("#chequeCalender").eventCalendar({
+		jsonData: chequeData,
+		dateFormat: "dddd MM-D-YYYY",
+		eventsLimit: 3,
+		openEventInNewWindow: true,
+	});
+
+	const customerOrderData = customerOrders.map((i) => {
+		return {
+			date: new Date(i.requiredDate).getTime().toString(),
+			type: "order",
+			title: `Code: ${i.cocode} (From: ${i.customer.customerName}-${i.customer.number})`,
+			description: "You have to deliver this order on this day.",
+			url: "http://localhost:3000/?page=customer_order",
+		};
+	});
+
+	$("#orderCalender").eventCalendar({
+		jsonData: customerOrderData,
+		dateFormat: "dddd MM-D-YYYY",
+		eventsLimit: 3,
+		openEventInNewWindow: true,
+	});
+};
