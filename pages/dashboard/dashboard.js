@@ -174,7 +174,7 @@ const updateSideBar = async () => {
 			type: "deposit",
 			title: `Cheque No: ${i.chequeNo} (From Invoice: ${i.code})`,
 			description: "You have to deposit this cheque on this day.",
-			url: "/?page=customer_invoice",
+			url: `/?page=customer_invoice&show=${i.id}`,
 		};
 	});
 
@@ -191,7 +191,7 @@ const updateSideBar = async () => {
 			type: "order",
 			title: `Code: ${i.cocode} (From: ${i.customer.customerName}-${i.customer.number})`,
 			description: "You have to deliver this order on this day.",
-			url: "http://localhost:3000/?page=customer_order",
+			url: `http://localhost:3000/?page=customer_order&show=${i.id}`,
 		};
 	});
 

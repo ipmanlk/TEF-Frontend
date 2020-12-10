@@ -56,6 +56,13 @@ async function loadModule(permissionStr) {
 		dataBuilderFunction,
 		"Purchase Orders List"
 	);
+
+	// if customer invoice id is provided in url
+	const urlParams = new URLSearchParams(window.location.search);
+	const show = urlParams.get("show");
+	if (show) {
+		showEditEntryModal(show, true);
+	}
 }
 
 const loadFormDropdowns = async () => {
