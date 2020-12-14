@@ -137,7 +137,7 @@ const updateSideBar = async () => {
 		lowProductPackages,
 		cheques,
 		customerOrders,
-		upcomingCustomerOrders,
+		productionOrders,
 	} = response.data;
 
 	// show list box stuff
@@ -188,6 +188,16 @@ const updateSideBar = async () => {
 			title: `Customer Order: ${i.cocode} (From: ${i.customer.customerName}-${i.customer.number})`,
 			description: "You have to deliver this order on this day.",
 			url: `http://localhost:3000/?page=customer_order&show=${i.id}`,
+		});
+	});
+
+	productionOrders.forEach((i) => {
+		calenderEvents.push({
+			date: new Date(i.requiredDate).getTime().toString(),
+			type: "order",
+			title: `Production Order: ${i.code} (From: ${i.employee.callingName}-${i.employee.number})`,
+			description: "You have to deliver this order on this day.",
+			url: `http://localhost:3000/?page=production_order_confirm&show=${i.id}`,
 		});
 	});
 

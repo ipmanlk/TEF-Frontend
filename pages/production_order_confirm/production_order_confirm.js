@@ -30,6 +30,13 @@ async function loadModule(permissionStr) {
 		dataBuilderFunction,
 		"Production Orders List"
 	);
+
+	// if production order id is provided in url
+	const urlParams = new URLSearchParams(window.location.search);
+	const show = urlParams.get("show");
+	if (show) {
+		showEditEntryModal(show, true);
+	}
 }
 
 const loadFormDropdowns = async () => {
