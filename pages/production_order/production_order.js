@@ -31,19 +31,35 @@ async function loadModule(permissionStr) {
 
 	// load main table
 	const dataBuilderFunction = (responseData) => {
-		// parse resposne data and return in data table frendly format
+		// parse response data and return in data table friendly format
 		return responseData.map((entry) => {
+			const productionOrderStatusName = entry.productionOrderStatus.name;
+
+			// disable edit button when order is deleted, rejected or confirmed
+			const deleteBtnStatus = ["Deleted", "Rejected", "Confirmed"].includes(
+				productionOrderStatusName
+			)
+				? "disabled"
+				: "";
+
+			// disable edit button when order is rejected or confirmed
+			const editBtnStatus = ["Rejected", "Confirmed"].includes(
+				productionOrderStatusName
+			)
+				? "disabled"
+				: "";
+
+			const deleteBtnHTML = `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')" ${deleteBtnStatus}><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`;
+
+			const editBtnHTML = `<button class="btn btn-warning btn-sm" onclick="showEditEntryModal('${entry.id}')" ${editBtnStatus}><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`;
+
 			return {
 				Code: entry.code,
 				"Required Date": entry.requiredDate,
-				Status: entry.productionOrderStatus.name,
+				Status: productionOrderStatusName,
 				View: `<button class="btn btn-success btn-sm" onclick="showEditEntryModal('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
-				Edit: `<button class="btn btn-warning btn-sm" onclick="showEditEntryModal('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
-				Delete: `${
-					entry.productionOrderStatus.name == "Deleted"
-						? ""
-						: `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`
-				}`,
+				Edit: editBtnHTML,
+				Delete: deleteBtnHTML,
 			};
 		});
 	};

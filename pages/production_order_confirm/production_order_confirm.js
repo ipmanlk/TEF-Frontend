@@ -419,19 +419,19 @@ const showEditEntryModal = (id, readOnly = false) => {
 			`);
 		});
 
-		if (tempData.selectedEntry.productionOrderStatus.name == "Pending") {
-			$(".btnFmConfirm").show();
-			$(".btnFmReject").show();
-		}
+		const productionOrderStatusName =
+			tempData.selectedEntry.productionOrderStatus.name;
 
-		if (tempData.selectedEntry.productionOrderStatus.name == "Confirmed") {
+		if (
+			["Confirmed", "Rejected", "Deleted"].includes(productionOrderStatusName)
+		) {
 			$(".btnFmConfirm").hide();
 			$(".btnFmReject").hide();
 		}
 
-		if (tempData.selectedEntry.productionOrderStatus.name == "Rejected") {
+		if (productionOrderStatusName == "Pending") {
 			$(".btnFmConfirm").show();
-			$(".btnFmReject").hide();
+			$(".btnFmReject").show();
 		}
 
 		$("#modalMainForm").modal("show");
