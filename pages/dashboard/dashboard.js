@@ -90,11 +90,6 @@ $(document).ready(() => {
 			}
 		});
 	});
-
-	// show sidebar info
-	updateSideBar().catch((e) => {
-		console.log(e);
-	});
 });
 
 // this function will be called from router.js upon loading dashboard
@@ -127,9 +122,17 @@ function updateTiles() {
 
 		$("#tileList").append(tile);
 	});
+
+	// update right sidebar and calenders
+	updateSideBar().catch((e) => {
+		console.log(e);
+	});
 }
 
 const updateSideBar = async () => {
+	// get the role name sof logged in user
+	const userRoles = mainWindow.tempData.profile.userRoles.map((ur) => ur.name);
+
 	const response = await (await fetch("/api/summery/dashboard")).json();
 
 	const {
@@ -141,7 +144,10 @@ const updateSideBar = async () => {
 	} = response.data;
 
 	// show list box stuff
-	if (lowMaterials.length != 0) {
+	if (
+		lowMaterials.length != 0 &&
+		checkRoles(userRoles, ["Admin", "Factory Manager", "Factory Supervisor"])
+	) {
 		$("#cardLowMaterialsList").empty();
 		lowMaterials.forEach((m) => {
 			$("#cardLowMaterialsList").append(`
@@ -154,7 +160,10 @@ const updateSideBar = async () => {
 		$("#cardLowMaterials").hide();
 	}
 
-	if (lowProductPackages.length != 0) {
+	if (
+		lowProductPackages.length != 0 &&
+		checkRoles(userRoles, ["Admin", "Shop Manager"])
+	) {
 		$("#cardLowProductPackagesList").empty();
 		lowProductPackages.forEach((i) => {
 			$("#cardLowProductPackagesList").append(`
@@ -170,36 +179,48 @@ const updateSideBar = async () => {
 	// show calender stuff
 	const calenderEvents = [];
 
-	// TODO: Check permissions when pushing to calender events
-	cheques.forEach((i) => {
-		calenderEvents.push({
-			date: new Date(i.chequeDate).getTime().toString(),
-			type: "deposit",
-			title: `Cheque Deposit: No-${i.chequeNo} (From Invoice: ${i.code})`,
-			description: "You have to deposit this cheque on this day.",
-			url: `/?page=customer_invoice&show=${i.id}`,
+	if (checkRoles(userRoles, ["Admin", "Shop Manager"])) {
+		cheques.forEach((i) => {
+			calenderEvents.push({
+				date: new Date(i.chequeDate).getTime().toString(),
+				type: "deposit",
+				title: `Cheque Deposit: No-${i.chequeNo} (From Invoice: ${i.code})`,
+				description: "You have to deposit this cheque on this day.",
+				url: `/?page=customer_invoice&show=${i.id}`,
+			});
 		});
-	});
+	}
 
-	customerOrders.forEach((i) => {
-		calenderEvents.push({
-			date: new Date(i.requiredDate).getTime().toString(),
-			type: "order",
-			title: `Customer Order: ${i.cocode} (From: ${i.customer.customerName}-${i.customer.number})`,
-			description: "You have to deliver this order on this day.",
-			url: `http://localhost:3000/?page=customer_order&show=${i.id}`,
+	if (checkRoles(userRoles, ["Admin", "Shop Manager"])) {
+		customerOrders.forEach((i) => {
+			calenderEvents.push({
+				date: new Date(i.requiredDate).getTime().toString(),
+				type: "order",
+				title: `Customer Order: ${i.cocode} (From: ${i.customer.customerName}-${i.customer.number})`,
+				description: "You have to deliver this order on this day.",
+				url: `http://localhost:3000/?page=customer_order&show=${i.id}`,
+			});
 		});
-	});
+	}
 
-	productionOrders.forEach((i) => {
-		calenderEvents.push({
-			date: new Date(i.requiredDate).getTime().toString(),
-			type: "order",
-			title: `Production Order: ${i.code} (From: ${i.employee.callingName}-${i.employee.number})`,
-			description: "You have to deliver this order on this day.",
-			url: `http://localhost:3000/?page=production_order_confirm&show=${i.id}`,
+	if (
+		checkRoles(userRoles, [
+			"Admin",
+			"Factory Manager",
+			"Factory Supervisor",
+			"Shop Manager",
+		])
+	) {
+		productionOrders.forEach((i) => {
+			calenderEvents.push({
+				date: new Date(i.requiredDate).getTime().toString(),
+				type: "order",
+				title: `Production Order: ${i.code} (From: ${i.employee.callingName}-${i.employee.number})`,
+				description: "You have to deliver this order on this day.",
+				url: `http://localhost:3000/?page=production_order_confirm&show=${i.id}`,
+			});
 		});
-	});
+	}
 
 	$("#eventCalendar").eventCalendar({
 		jsonData: calenderEvents,
@@ -207,4 +228,19 @@ const updateSideBar = async () => {
 		eventsLimit: 5,
 		openEventInNewWindow: true,
 	});
+};
+
+// find if at least one of given array elements are included in an another array
+const checkRoles = (userRoles = [], allowedRoles = []) => {
+	let isAllowed = false;
+
+	allowedRoles.every((roleName) => {
+		if (userRoles.includes(roleName)) {
+			isAllowed = true;
+			return false;
+		}
+		return true;
+	});
+
+	return isAllowed;
 };
