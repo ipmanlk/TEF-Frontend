@@ -87,17 +87,32 @@ const calculateRequiredMaterials = async () => {
 	// store required material id and qty
 	const requiredMaterialAmounts = {};
 
-	for (let p of productPackages) {
-		// get required materials for the product from material analysis and multiply
-		let response = await Request.send("/api/material_analysis", "GET", {
+	for (let productionOrderProductPackage of productPackages) {
+		// get product package info
+		let response = await Request.send("/api/product_packages", "GET", {
 			data: {
-				productId: p.productPackageId,
+				id: productionOrderProductPackage.productPackageId,
 			},
 		});
 
+		// this is product package details (not production order production pkg)
+		const productPackage = response.data;
+
+		// get materials needed for a single product
+		response = await Request.send("/api/material_analysis", "GET", {
+			data: {
+				productId: productPackage.productId,
+			},
+		});
+
+		// multiply materials needed for a single product by how many products are in the product package.
+		// and then multiply it by how many product packages are requested
 		response.data.forEach((d) => {
 			const materialId = d.material.id;
-			const materialAmount = parseFloat(d.amount) * parseFloat(p.qty);
+			const materialAmount =
+				parseFloat(d.amount) *
+				parseFloat(productPackage.pieces) *
+				parseFloat(productionOrderProductPackage.qty);
 
 			if (requiredMaterialAmounts[materialId]) {
 				requiredMaterialAmounts[materialId] += materialAmount;
@@ -121,7 +136,7 @@ const checkMaterialInventory = async () => {
 	const materialInventory = {};
 
 	response.data.forEach((i) => {
-		materialInventory[i.id] = {
+		materialInventory[i.material.id] = {
 			id: i.id,
 			availableQty: parseFloat(i.availableQty),
 			code: i.material.code,
@@ -357,6 +372,7 @@ const refreshProductPackageTable = () => {
                                             Modals
 -------------------------------------------------------------------------------------------------------*/
 
+// readonly mode is not used in this module
 const showEditEntryModal = (id, readOnly = false) => {
 	loadEntry(id).then(async () => {
 		$("#modalMainFormTitle").text("View Production Order");
@@ -387,12 +403,16 @@ const showEditEntryModal = (id, readOnly = false) => {
 			$("#lowMaterialListTable tbody").empty();
 
 			inventoryStatus.lowMaterials.forEach((mat, index) => {
+				const requiredAmount = parseFloat(mat.requiredAmount);
+				const availableAmount = parseFloat(mat.availableAmount);
+
 				$("#lowMaterialListTable tbody").append(`
 				<tr>
 					<td>${index + 1}</td>
 					<td>${mat.name} (${mat.code})</td>
-					<td>${parseFloat(mat.availableAmount).toFixed(2)}</td>
-					<td>${parseFloat(mat.requiredAmount).toFixed(2)}</td>
+					<td>${requiredAmount.toFixed(2)}</td>
+					<td>${availableAmount.toFixed(2)}</td>
+					<td>${(requiredAmount - availableAmount).toFixed(2)}</td>
 					<td>${mat.unitType.name}</td>
 				</tr>
 				`);
@@ -404,7 +424,6 @@ const showEditEntryModal = (id, readOnly = false) => {
 			$(".btnFmConfirm").attr("disabled", true);
 		}
 
-		// show material summery
 		$("#materialListTable tbody").empty();
 
 		inventoryStatus.allMaterials.forEach((mat, index) => {
@@ -412,8 +431,8 @@ const showEditEntryModal = (id, readOnly = false) => {
 			<tr>
 				<td>${index + 1}</td>
 				<td>${mat.name} (${mat.code})</td>
-				<td>${parseFloat(mat.availableAmount).toFixed(2)}</td>
 				<td>${parseFloat(mat.requiredAmount).toFixed(2)}</td>
+				<td>${parseFloat(mat.availableAmount).toFixed(2)}</td>
 				<td>${mat.unitType.name}</td>
 			</tr>
 			`);
@@ -422,11 +441,13 @@ const showEditEntryModal = (id, readOnly = false) => {
 		const productionOrderStatusName =
 			tempData.selectedEntry.productionOrderStatus.name;
 
+		// if order isn't pending don't show material summery as well
 		if (
 			["Confirmed", "Rejected", "Deleted"].includes(productionOrderStatusName)
 		) {
 			$(".btnFmConfirm").hide();
 			$(".btnFmReject").hide();
+			$("#lowMaterialPanel").hide();
 		}
 
 		if (productionOrderStatusName == "Pending") {
