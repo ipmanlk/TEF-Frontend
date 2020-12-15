@@ -1,3 +1,7 @@
+const tempData = {
+	selectedProduct: null,
+};
+
 class productPackageForm extends Form {
 	// overwrrite register additional event listners from method
 	loadAddons() {
@@ -18,6 +22,36 @@ class productPackageForm extends Form {
 				e.target.value = parseFloat(value).toFixed(2);
 				$(e.target).trigger("keyup");
 			}
+		});
+
+		// product dropdown listener
+		// store currently selected product on tempData for price and weight calculation
+		$("#productId").on("change", (e) => {
+			Request.send("/api/products", "GET", {
+				data: {
+					id: e.target.value,
+				},
+			}).then((response) => {
+				tempData.selectedProduct = response.data;
+			});
+		});
+
+		// calculate weight and price
+		$("#pieces").on("keyup change", (e) => {
+			const selectedProduct = tempData.selectedProduct;
+			const qty = parseFloat(e.target.value);
+			const price = qty * parseFloat(selectedProduct.cost);
+			const salePrice = qty * parseFloat(selectedProduct.price);
+			const weight = qty * parseFloat(selectedProduct.weightActual);
+
+			$("#price").val(price.toFixed(2));
+			$("#salePrice").val(salePrice.toFixed(2));
+			$("#weight").val(weight.toFixed(2));
+
+			this.selectDropdownOptionByValue(
+				"unitTypeId",
+				selectedProduct.unitTypeId
+			);
 		});
 	}
 
@@ -49,7 +83,7 @@ class productPackageForm extends Form {
 		$(`#${this.formId} #photoPreview`).attr("src", imageURL);
 
 		// select product code
-		$("#productCode").selectpicker("val", entry.productCode);
+		$("#productId").selectpicker("val", entry.productId);
 
 		this.setButtionsVisibility("edit");
 	}
@@ -136,13 +170,13 @@ async function loadModule(permissionStr) {
 	const products = response.data;
 
 	products.forEach((product) => {
-		$("#productCode").append(
-			`<option data-tokens="${product.code} - ${product.name}" value="${product.code}">${product.code} - ${product.name}</option>`
+		$("#productId").append(
+			`<option data-tokens="${product.code} - ${product.name}" value="${product.id}">${product.code} - ${product.name}</option>`
 		);
 	});
 
 	// init bootstrap-select
-	$("#productCode").selectpicker();
+	$("#productId").selectpicker();
 
 	// catch promise rejections
 	$(window).on("unhandledrejection", (event) => {
