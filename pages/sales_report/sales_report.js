@@ -13,6 +13,8 @@ function loadModule(permissionStr) {
 
 const registerEventListeners = () => {
 	$("#btnViewReport").click(() => {
+		// TODO: Enable this validation before project review
+
 		// const startDate = $("#txtStartDate").val().trim();
 		// const endDate = $("#txtEndDate").val().trim();
 
@@ -137,81 +139,69 @@ const showReport = async () => {
 const formatData = (data, reportType) => {
 	let formattedData;
 
-	const entries = [],
+	let entries = [],
 		x = [],
 		y = [];
 
 	switch (reportType) {
 		case "today":
-			data.forEach((i) => {
+			x = Object.keys(data);
+
+			Object.values(data).forEach((i, index) => {
 				const entry = {
-					today: moment(i.sales_date).format("YYYY-MM-DD"),
-					netTotal: i.net_total,
-					payedAmount: i.payed_amount,
+					today: x[index],
+					netTotal: i.netTotal,
+					payedAmount: i.payedAmount,
 					transactions: i.transactions,
 				};
 				entries.push(entry);
-				x.push(entry.today);
 				y.push(entry.transactions);
 			});
 			formattedData = { entries, x, y };
 			break;
 		case "day":
-			data.forEach((i) => {
+			x = Object.keys(data);
+
+			Object.values(data).forEach((i, index) => {
 				const entry = {
-					day: moment(i.sales_date).format("YYYY-MM-DD"),
-					netTotal: i.net_total,
-					payedAmount: i.payed_amount,
-					transactions: i.transactions,
+					today: x[index],
+					netTotal: i ? i.netTotal : 0,
+					payedAmount: i ? i.payedAmount : 0,
+					transactions: i ? i.transactions : 0,
 				};
 				entries.push(entry);
-				x.push(entry.day);
 				y.push(entry.transactions);
 			});
 			formattedData = { entries, x, y };
+
 			break;
-		case "week":
-			data.forEach((i) => {
-				const entry = {
-					week: `${moment(i.week_beginning).format("YYYY-MM-DD")}-${moment(
-						i.week_beginning
-					)
-						.add(6, "days")
-						.format("YYYY-MM-DD")}`,
-					netTotal: i.net_total,
-					payedAmount: i.payed_amount,
-					transactions: i.transactions,
-				};
-				entries.push(entry);
-				x.push(entry.week);
-				y.push(entry.transactions);
-			});
-			formattedData = { entries, x, y };
-			break;
+
 		case "month":
-			data.forEach((i) => {
+			x = Object.keys(data);
+
+			Object.values(data).forEach((i, index) => {
 				const entry = {
-					month: moment(i.month_beginning).format("YYYY-MM"),
-					netTotal: i.net_total,
-					payedAmount: i.payed_amount,
-					transactions: i.transactions,
+					month: x[index],
+					netTotal: i ? i.netTotal : 0,
+					payedAmount: i ? i.payedAmount : 0,
+					transactions: i ? i.transactions : 0,
 				};
 				entries.push(entry);
-				x.push(entry.month);
 				y.push(entry.transactions);
 			});
 			formattedData = { entries, x, y };
 			break;
 		case "year":
-			data.forEach((i) => {
+			x = Object.keys(data);
+
+			Object.values(data).forEach((i, index) => {
 				const entry = {
-					year: i.year,
-					netTotal: i.net_total,
-					payedAmount: i.payed_amount,
-					transactions: i.transactions,
+					year: x[index],
+					netTotal: i ? i.netTotal : 0,
+					payedAmount: i ? i.payedAmount : 0,
+					transactions: i ? i.transactions : 0,
 				};
 				entries.push(entry);
-				x.push(entry.year);
 				y.push(entry.transactions);
 			});
 			formattedData = { entries, x, y };
