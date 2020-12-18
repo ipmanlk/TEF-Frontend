@@ -180,6 +180,10 @@ const getRoutes = () => {
 			title: "Revenue Report",
 			path: "./pages/revenue_report/revenue_report.html",
 		},
+		demand_report: {
+			title: "Demand Report",
+			path: "./pages/demand_report/demand_report.html",
+		},
 		noauth: {
 			title: "Auth Failure",
 			path: "./pages/noauth.html",
