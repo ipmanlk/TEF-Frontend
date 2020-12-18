@@ -1,0 +1,86 @@
+<html>
+
+<head>
+  <link rel="stylesheet" href="http://localhost:3000/lib/bootstrap/css/bootstrap.min.css" />
+  <script src="http://localhost:3000/lib/jquery/jquery.min.js"></script>
+  <script src="http://localhost:3000/lib/bootstrap/js/bootstrap.min.js"></script>
+  <script src="http://localhost:3000/lib/chartjs/chart.js"></script>
+  <title>Revenue Report</title>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Revenue Report</h2>
+
+    <h5>
+      Report Type: #{reportType} |
+      From: #{startDate} |
+      To: #{endDate}
+    </h5>
+    <hr>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-9">
+        <div class="panel panel-default">
+          <div class="panel-heading">Chart View</div>
+          <div class="panel-body">
+            <img src="#{revenueChartImg}" width="100%" />
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-3">
+        <div class="panel panel-default">
+          <div class="panel-heading">Summery</div>
+          <div class="panel-body">
+            <dl>
+              <dt>Total Sales</dt>
+              <dd>#{totalTransactions}</dd>
+              <dt>Total Revenue</dt>
+              <dd>#{totalRevenue}</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">Tabular View</div>
+          <div class="panel-body">
+            #{revenueTable}
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <div class="row" style="padding-bottom: 20px;">
+      <div class="col-xs-4">
+        <ul class="media-body list-unstyled">
+          <li><strong>Address</strong></li>
+          <li>Onelli Traders / Two Elephants Fireworks</li>
+          <li>Firework Manufacturers</li>
+          <li>No 107/3, Walpala, Andiambalama.</li>
+        </ul>
+      </div>
+      <div class="col-xs-4">
+        <ul class="media-body list-unstyled">
+          <li><strong>Inquiries</strong></li>
+          <li>+94 112 184 4545</li>
+          <li>twoelephantsfireworks@yahoo.com</li>
+        </ul>
+      </div>
+      <div class="col-xs-4">
+        <ul class="media-body list-unstyled">
+          <li><strong>Report Information</strong></li>
+          <li>Generated At: #{genDateTime}</li>
+          <li>Requested By: #{requestedEmployee}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

@@ -67,6 +67,15 @@ const tileInfo = {
 		icon: "fa-th",
 	},
 	SALES_REPORT: { title: "Sales Report", icon: "fa-line-chart" },
+	DEMAND_REPORT: { title: "Demand Report", icon: "fa-line-chart" },
+	PRODUCTION_COST_REPORT: {
+		title: "Production Cost Report",
+		icon: "fa-line-chart",
+	},
+	REVENUE_REPORT: {
+		title: "Revenue Report",
+		icon: "fa-line-chart",
+	},
 };
 
 $(document).ready(() => {
