@@ -155,7 +155,7 @@ const formatData = (data, reportType) => {
 
 			Object.values(data).forEach((i, index) => {
 				const entry = {
-					today: x[index],
+					day: x[index],
 					netTotal: i ? i.netTotal : 0,
 					payedAmount: i ? i.payedAmount : 0,
 					transactions: i ? i.transactions : 0,
@@ -243,7 +243,7 @@ const showCharts = (formattedData, reportType) => {
 					{
 						scaleLabel: {
 							display: true,
-							labelString: `${xLabelName}s`,
+							labelString: `${xLabelName}`,
 						},
 					},
 				],
