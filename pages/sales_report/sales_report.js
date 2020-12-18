@@ -13,40 +13,39 @@ function loadModule(permissionStr) {
 
 const registerEventListeners = () => {
 	$("#btnViewReport").click(() => {
-		// TODO: Enable this validation before project review
+		const startDate = $("#txtStartDate").val().trim();
+		const endDate = $("#txtEndDate").val().trim();
+		const reportType = $("#cmbReportType").val();
 
-		// const startDate = $("#txtStartDate").val().trim();
-		// const endDate = $("#txtEndDate").val().trim();
+		// check if start and end durations are selected or not
+		if (startDate == "" || endDate == "") {
+			mainWindow.showOutputModal(
+				"Sorry!",
+				`Please select start and end ${reportType}s first!`
+			);
+			return;
+		}
 
-		// // check if start and end durations are selected or not
-		// if (startDate == "" || endDate == "") {
-		// 	mainWindow.showOutputModal(
-		// 		"Sorry!",
-		// 		"Please select start and end dates first!"
-		// 	);
-		// 	return;
-		// }
+		// check for future dates
+		const today = new Date();
+		const dtStartDate = new Date(startDate);
+		const dtEndDate = new Date(endDate);
 
-		// // check for future dates
-		// const today = new Date();
-		// const dtStartDate = new Date(startDate);
-		// const dtEndDate = new Date(endDate);
+		if (today < dtStartDate || today < dtEndDate) {
+			mainWindow.showOutputModal(
+				"Sorry!",
+				"You can't select future dates for start and end."
+			);
+			return;
+		}
 
-		// if (today < dtStartDate || today < dtEndDate) {
-		// 	mainWindow.showOutputModal(
-		// 		"Sorry!",
-		// 		"You can't select future dates for start and end."
-		// 	);
-		// 	return;
-		// }
-
-		// if (dtStartDate > dtEndDate) {
-		// 	mainWindow.showOutputModal(
-		// 		"Sorry!",
-		// 		"End date can't be older than the start date."
-		// 	);
-		// 	return;
-		// }
+		if (dtStartDate > dtEndDate) {
+			mainWindow.showOutputModal(
+				"Sorry!",
+				"End date can't be older than the start date."
+			);
+			return;
+		}
 
 		showReport();
 	});
@@ -97,14 +96,6 @@ const showReport = async () => {
 	const end = $("#txtEndDate").val().trim();
 
 	const reportType = $("#cmbReportType").val();
-
-	if (start == "" && end == "") {
-		mainWindow.showOutputModal(
-			"Sorry!",
-			`Please select start and end ${reportType}s first!`
-		);
-		return;
-	}
 
 	// send a request and grab all the data
 	const response = await Request.send("/api/reports/sales", "GET", {
