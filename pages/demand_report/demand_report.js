@@ -13,39 +13,39 @@ function loadModule(permissionStr) {
 
 const registerEventListeners = () => {
 	$("#btnViewReport").click(() => {
-		// const startDate = $("#txtStartDate").val().trim();
-		// const endDate = $("#txtEndDate").val().trim();
-		// const reportType = $("#cmbReportType").val();
+		const startDate = $("#txtStartDate").val().trim();
+		const endDate = $("#txtEndDate").val().trim();
+		const reportType = $("#cmbReportType").val();
 
-		// // check if start and end durations are selected or not
-		// if (startDate == "" || endDate == "") {
-		// 	mainWindow.showOutputModal(
-		// 		"Sorry!",
-		// 		`Please select start and end ${reportType}s first!`
-		// 	);
-		// 	return;
-		// }
+		// check if start and end durations are selected or not
+		if (startDate == "" || endDate == "") {
+			mainWindow.showOutputModal(
+				"Sorry!",
+				`Please select start and end ${reportType}s first!`
+			);
+			return;
+		}
 
-		// // check for future dates
-		// const today = new Date();
-		// const dtStartDate = new Date(startDate);
-		// const dtEndDate = new Date(endDate);
+		// check for future dates
+		const today = new Date();
+		const dtStartDate = new Date(startDate);
+		const dtEndDate = new Date(endDate);
 
-		// if (today < dtStartDate || today < dtEndDate) {
-		// 	mainWindow.showOutputModal(
-		// 		"Sorry!",
-		// 		"You can't select future dates for start and end."
-		// 	);
-		// 	return;
-		// }
+		if (today < dtStartDate || today < dtEndDate) {
+			mainWindow.showOutputModal(
+				"Sorry!",
+				"You can't select future dates for start and end."
+			);
+			return;
+		}
 
-		// if (dtStartDate > dtEndDate) {
-		// 	mainWindow.showOutputModal(
-		// 		"Sorry!",
-		// 		"End date can't be older than the start date."
-		// 	);
-		// 	return;
-		// }
+		if (dtStartDate > dtEndDate) {
+			mainWindow.showOutputModal(
+				"Sorry!",
+				"End date can't be older than the start date."
+			);
+			return;
+		}
 
 		showReport();
 	});
@@ -120,85 +120,8 @@ const showReport = async () => {
 	// display output container
 	$("#outputContainer").fadeIn();
 
-	// get those data formatted for chat.js
-	// const formattedData = formatData(data, reportType);
-
 	showCharts(data, reportType);
 	showTable(data, reportType);
-};
-
-const formatData = (data, reportType) => {
-	let formattedData;
-
-	let entries = [],
-		x = [],
-		y = [];
-
-	switch (reportType) {
-		case "today":
-			x = Object.keys(data);
-
-			Object.values(data).forEach((i, index) => {
-				const entry = {
-					today: x[index],
-					netTotal: i.netTotal,
-					payedAmount: i.payedAmount,
-					transactions: i.transactions,
-				};
-				entries.push(entry);
-				y.push(entry.transactions);
-			});
-			formattedData = { entries, x, y };
-			break;
-		case "day":
-			x = Object.keys(data);
-
-			Object.values(data).forEach((i, index) => {
-				const entry = {
-					day: x[index],
-					netTotal: i ? i.netTotal : 0,
-					payedAmount: i ? i.payedAmount : 0,
-					transactions: i ? i.transactions : 0,
-				};
-				entries.push(entry);
-				y.push(entry.transactions);
-			});
-			formattedData = { entries, x, y };
-
-			break;
-
-		case "month":
-			x = Object.keys(data);
-
-			Object.values(data).forEach((i, index) => {
-				const entry = {
-					month: x[index],
-					netTotal: i ? i.netTotal : 0,
-					payedAmount: i ? i.payedAmount : 0,
-					transactions: i ? i.transactions : 0,
-				};
-				entries.push(entry);
-				y.push(entry.transactions);
-			});
-			formattedData = { entries, x, y };
-			break;
-		case "year":
-			x = Object.keys(data);
-
-			Object.values(data).forEach((i, index) => {
-				const entry = {
-					year: x[index],
-					netTotal: i ? i.netTotal : 0,
-					payedAmount: i ? i.payedAmount : 0,
-					transactions: i ? i.transactions : 0,
-				};
-				entries.push(entry);
-				y.push(entry.transactions);
-			});
-			formattedData = { entries, x, y };
-			break;
-	}
-	return formattedData;
 };
 
 const showCharts = (data, reportType) => {
