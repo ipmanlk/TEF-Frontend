@@ -184,6 +184,10 @@ const getRoutes = () => {
 			title: "Demand Report",
 			path: "./pages/demand_report/demand_report.html",
 		},
+		production_cost_report: {
+			title: "Production Cost Report",
+			path: "./pages/production_cost_report/production_cost_report.html",
+		},
 		noauth: {
 			title: "Auth Failure",
 			path: "./pages/noauth.html",
