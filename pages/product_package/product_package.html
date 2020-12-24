@@ -72,6 +72,27 @@
                 <select id="productId" class="form-control" title="PRO202000000" data-live-search="true">
                 </select>
               </div>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group has-feedback">
+                    <label for="pieces">Pieces: <span class="required">*</span></label>
+                    <input type="text" class="form-control" id="pieces" placeholder="20" name="pieces"
+                      data-editable="true">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group has-feedback">
+                    <label for="productPackageTypeId">Product Package Type: <span class="required">*</span></label>
+                    <select name="productPackageTypeId" id="productPackageTypeId" class="form-control"
+                      data-editable="true">
+
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+
               <div class="form-group has-feedback">
                 <label for="name">Name: <span class="required">*</span></label>
                 <input type="text" class="form-control" id="name" placeholder="Firecracker pack" name="name"
@@ -79,15 +100,7 @@
               </div>
 
               <div class="row">
-                <div class="col-md-4">
-                  <div class="form-group has-feedback">
-                    <label for="pieces">Pieces: <span class="required">*</span></label>
-                    <input type="text" class="form-control" id="pieces" placeholder="20" name="pieces"
-                      data-editable="true">
-                  </div>
-                </div>
-
-                <div class="col-md-4">
+                <div class="col-md-6">
                   <div class="form-group has-feedback">
                     <label for="weight">Weight: <span class="required">*</span></label>
                     <input type="text" class="form-control" id="weight" placeholder="15.00" name="weight"
@@ -95,7 +108,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-6">
                   <div class="form-group has-feedback">
                     <label for="unitTypeId">Weight Unit: <span class="required">*</span></label>
                     <select name="unitTypeId" id="unitTypeId" class="form-control" data-editable="true">
@@ -110,38 +123,19 @@
               <div class="row">
                 <div class="col-md-6">
                   <div class="form-group has-feedback">
-                    <label for="price">Price: <span class="required">*</span></label>
+                    <label for="productionCost">Production Cost: <span class="required">*</span></label>
                     <input type="text" class="form-control" id="price" placeholder="10.00" name="price"
                       data-editable="true">
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group has-feedback">
-                    <label for="salePrice">Sale Price: <span class="required">*</span></label>
-                    <input type="text" class="form-control" id="salePrice" placeholder="15.00" name="salePrice"
-                      data-editable="true">
-                  </div>
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="form-group has-feedback">
-                    <label for="productPackageTypeId">Product Package Type: <span class="required">*</span></label>
-                    <select name="productPackageTypeId" id="productPackageTypeId" class="form-control"
-                      data-editable="true">
-                      <option value="1">Married</option>
-                      <option value="2">Not Married</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-group has-feedback">
-                    <label for="rop">Re-Order Point: <span class="required">*</span></label>
+                    <label for="rop">Re-Order Point:</label>
                     <input type="text" class="form-control" id="rop" placeholder="20" name="rop" data-editable="true">
                   </div>
                 </div>
               </div>
+
 
               <div class="form-group has-feedback image-upload">
                 <label for="photo">Photo: <span class="required">*</span></label>
