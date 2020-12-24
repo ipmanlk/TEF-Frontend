@@ -88,7 +88,7 @@ async function loadModule(permissionStr) {
 	// format decimal inputs automatically
 	$("#unitPrice").on("blur", (e) => {
 		const value = e.target.value;
-		if (!isNaN(value)) {
+		if (!isNaN(value) && value.trim() != "") {
 			e.target.value = parseFloat(value).toFixed(2);
 			$(e.target).trigger("keyup");
 		}

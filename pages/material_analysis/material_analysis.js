@@ -86,20 +86,18 @@ const registerEventListeners = () => {
 		updateEntry();
 	});
 
-	$("#productId").on("changed.bs.select", function (
-		e,
-		clickedIndex,
-		isSelected,
-		previousValue
-	) {
-		const selectedProductId = e.target.value;
-		showMaterials(selectedProductId);
-	});
+	$("#productId").on(
+		"changed.bs.select",
+		function (e, clickedIndex, isSelected, previousValue) {
+			const selectedProductId = e.target.value;
+			showMaterials(selectedProductId);
+		}
+	);
 
 	// format decimal inputs automatically
 	$("#amount").on("blur", (e) => {
 		const value = e.target.value;
-		if (!isNaN(value)) {
+		if (!isNaN(value) && value.trim() != "") {
 			e.target.value = parseFloat(value).toFixed(2);
 			$(e.target).trigger("keyup");
 		}
