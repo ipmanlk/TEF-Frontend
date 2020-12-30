@@ -111,8 +111,7 @@ async function loadModule(permissionStr) {
 			return {
 				Code: entry.code,
 				Name: entry.name,
-				Price: entry.price,
-				"Sale Price": entry.salePrice,
+				"Production Cost": entry.productionCost,
 				Pieces: entry.pieces,
 				Type: entry.productPackageType.name,
 				Status: entry.productPackageStatus.name,

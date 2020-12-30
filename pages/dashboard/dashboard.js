@@ -33,6 +33,10 @@ const tileInfo = {
 		title: "Material Analysis",
 		icon: "fa-connectdevelop",
 	},
+	PRODUCT_PACKAGE_COST_ANALYSIS: {
+		title: "Product Package Cost Analysis",
+		icon: "fa-connectdevelop",
+	},
 	QUOTATION_REQUEST: {
 		title: "Quotation Request",
 		icon: " fa-file-text-o",
