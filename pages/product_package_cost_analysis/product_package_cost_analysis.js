@@ -69,18 +69,75 @@ const registerEventListeners = () => {
 		"changed.bs.select",
 		function (e, clickedIndex, isSelected, previousValue) {
 			const selectedProductId = e.target.value;
-			showMaterials(selectedProductId);
+			showProductPackageInfo(selectedProductId);
 		}
 	);
 
 	// format decimal inputs automatically
-	$("#salesPrice").on("blur", (e) => {
+	$("#salesPrice, #profitRatio").on("blur", (e) => {
 		const value = e.target.value;
 		if (!isNaN(value) && value.trim() != "") {
 			e.target.value = parseFloat(value).toFixed(2);
 			$(e.target).trigger("keyup");
 		}
 	});
+
+	// calculate sales price
+	$("#profitRatio").on("change keyup", (e) => {
+		const profitRatioValue = e.target.value;
+		const totalCostValue = $("#totalCost").val();
+
+		if (
+			isNaN(profitRatioValue) ||
+			profitRatioValue.trim() == "" ||
+			isNaN(totalCostValue) ||
+			totalCostValue.trim() == ""
+		)
+			return;
+
+		const profitRatio = parseFloat(e.target.value);
+		const totalCost = parseFloat(totalCostValue);
+
+		const salePrice = totalCost + totalCost * (profitRatio / 100);
+
+		$("#salePrice").val(salePrice.toFixed(2));
+	});
+};
+
+const showProductPackageInfo = async (productPackageId) => {
+	// get product details
+	let response = await Request.send("/api/product_packages", "GET", {
+		data: { id: productPackageId },
+	});
+
+	const productPackage = response.data;
+	const productionCost = parseFloat(productPackage.productionCost);
+
+	// show production cost
+	$("#productionCost").val(productPackage.productionCost);
+
+	/** calculate material cost **/
+
+	// get materials needed for a single product
+	response = await Request.send("/api/material_analysis", "GET", {
+		data: {
+			productId: productPackage.productId,
+		},
+	});
+
+	let singlePieceMaterialCost = 0;
+
+	response.data.forEach((d) => {
+		singlePieceMaterialCost +=
+			parseFloat(d.amount) * parseFloat(d.material.unitPrice);
+	});
+
+	const productPackageMaterialCost =
+		singlePieceMaterialCost * parseFloat(productPackage.pieces);
+
+	$("#materialCost").val(productPackageMaterialCost.toFixed(2));
+
+	$("#totalCost").val((productionCost + productPackageMaterialCost).toFixed(2));
 };
 
 // update entry in the database
@@ -115,9 +172,15 @@ const updateEntry = async () => {
 -------------------------------------------------------------------------------------------------------*/
 const addToSalesPriceTable = () => {
 	const productPackageId = $("#productPackageId").val();
+	const profitRatio = $("#profitRatio").val();
 	const salePrice = $("#salePrice").val().trim();
 	const validFrom = $("#validFrom").val();
 	const validTo = $("#validTo").val();
+	const addedDate = moment().format("YYYY-MM-DD");
+
+	const productionCost = $("#productionCost").val();
+	const materialCost = $("#materialCost").val();
+	const totalCost = $("#totalCost").val();
 
 	// check values are invalid
 	if (productPackageId.trim() == "") {
@@ -136,6 +199,18 @@ const addToSalesPriceTable = () => {
 		mainWindow.showOutputModal(
 			"Sorry.",
 			"Please enter a valid sale price first!."
+		);
+		return;
+	}
+
+	if (
+		profitRatio == "" ||
+		isNaN(profitRatio) ||
+		!/^[\d]{1,7}\.[\d]{2}$/.test(profitRatio)
+	) {
+		mainWindow.showOutputModal(
+			"Sorry.",
+			"Please enter a valid profit ratio first!."
 		);
 		return;
 	}
@@ -163,8 +238,8 @@ const addToSalesPriceTable = () => {
 	let dateConflict = false;
 	$("#salePriceTable tbody tr").each((i, tr) => {
 		const tds = $(tr).children("td");
-		const tableFromDate = new Date($(tds[1]).data("valid-from"));
-		const tableToDate = new Date($(tds[2]).data("valid-to"));
+		const tableFromDate = new Date($(tds[7]).data("valid-from"));
+		const tableToDate = new Date($(tds[8]).data("valid-to"));
 
 		if (
 			(validFromDate >= tableFromDate && validFromDate <= tableToDate) ||
@@ -182,20 +257,49 @@ const addToSalesPriceTable = () => {
 		return;
 	}
 
+	addRowToSalesPriceTable({
+		productPackageId,
+		productionCost,
+		materialCost,
+		totalCost,
+		profitRatio,
+		salePrice,
+		validFrom,
+		validTo,
+		addedDate,
+	});
+};
+
+const addRowToSalesPriceTable = (data) => {
+	const {
+		productPackageId,
+		productionCost,
+		materialCost,
+		totalCost,
+		profitRatio,
+		salePrice,
+		validFrom,
+		validTo,
+		addedDate,
+	} = data;
+
 	$("#salePriceTable tbody").append(`
-				<tr>
-					<td></td>
-					<td data-valid-from="${validFrom}">${validFrom}</td>
-					<td data-valid-to="${validTo}">${validTo}</td>
-					<td data-sale-price="${salePrice}">${salePrice}</td>
-					<td>
-						<button onClick="removeFromSalePriceTable(this)" class="btn btn-success btn-xs">Delete</button>
-					</td>
-          <td>
-            <button onClick="removeFromSalePriceTable(this)" class="btn btn-danger btn-xs">Delete</button>
-          </td>
-        </tr>
-		`);
+	<tr>
+		<td></td>
+		<td style="display:none" data-product-package-id="${productPackageId}"></td>
+		<td data-production-cost="${productionCost}">${productionCost}</td>
+		<td data-material-cost="${materialCost}">${materialCost}</td>
+		<td data-total-cost="${totalCost}">${totalCost}</td>
+		<td data-profit-ratio="${profitRatio}">${profitRatio}</td>
+		<td data-sale-price="${salePrice}">${salePrice}</td>
+		<td data-valid-from="${validFrom}">${validFrom}</td>
+		<td data-valid-to="${validTo}">${validTo}</td>
+		<td data-added-date="${addedDate}">${addedDate}</td>
+		<td>
+			<button onClick="removeFromSalePriceTable(this)" class="btn btn-danger btn-xs">Delete</button>
+		</td>
+	</tr>
+`);
 
 	updateSalesPriceTableIndex();
 };
@@ -215,24 +319,35 @@ const removeFromSalePriceTable = (button) => {
 	updateSalesPriceTableIndex();
 };
 
-// // build an object from material table data
-// const getMaterialTableData = () => {
-// 	const data = [];
-// 	$("#materialTable tbody tr").each((i, tr) => {
-// 		const tds = $(tr).children("td");
-// 		const tdMaterialId = $(tds[0]).data("material-id");
-// 		const tdAmount = $(tds[1]).data("amount");
-// 		const tdUnitTypeId = $(tds[2]).data("unit-type-id");
+const getSalePriceTableData = () => {
+	const data = [];
+	$("#salePriceTable tbody tr").each((i, tr) => {
+		const tds = $(tr).children("td");
+		const productPackageId = $(tds[1]).data("product-package-id");
+		const productionCost = $(tds[2]).data("production-cost");
+		const materialCost = $(tds[3]).data("material-cost");
+		const totalCost = $(tds[4]).data("total-cost");
+		const profitRatio = $(tds[5]).data("profit-ratio");
+		const salePrice = $(tds[6]).data("sale-price");
+		const validFrom = $(tds[7]).data("valid-from");
+		const validTo = $(tds[8]).data("valid-to");
+		const addedDate = $(tds[9]).data("added-date");
 
-// 		data.push({
-// 			materialId: tdMaterialId,
-// 			amount: tdAmount,
-// 			unitTypeId: tdUnitTypeId,
-// 		});
-// 	});
+		data.push({
+			productPackageId,
+			validFrom,
+			validTo,
+			productionCost,
+			materialCost,
+			totalCost,
+			profitRatio,
+			salePrice,
+			addedDate,
+		});
+	});
 
-// 	return data;
-// };
+	return data;
+};
 
 // const showMaterials = async (productId) => {
 // 	const response = await Request.send(
