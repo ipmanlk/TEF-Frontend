@@ -16,7 +16,7 @@ class productPackageForm extends Form {
 		});
 
 		// format decimal inputs automatically
-		$("#salePrice, #price, #weight").on("blur", (e) => {
+		$("#productionCost, #weight").on("blur", (e) => {
 			const value = e.target.value;
 			if (!isNaN(value) && value.trim() != "") {
 				e.target.value = parseFloat(value).toFixed(2);
@@ -25,7 +25,7 @@ class productPackageForm extends Form {
 		});
 
 		// product dropdown listener
-		// store currently selected product on tempData for price and weight calculation
+		// store currently selected product on tempData for weight calculation
 		$("#productId").on("change", (e) => {
 			Request.send("/api/products", "GET", {
 				data: {
@@ -40,12 +40,8 @@ class productPackageForm extends Form {
 		$("#pieces").on("keyup change", (e) => {
 			const selectedProduct = tempData.selectedProduct;
 			const qty = parseFloat(e.target.value);
-			const price = qty * parseFloat(selectedProduct.cost);
-			const salePrice = qty * parseFloat(selectedProduct.price);
 			const weight = qty * parseFloat(selectedProduct.weightActual);
 
-			$("#price").val(price.toFixed(2));
-			$("#salePrice").val(salePrice.toFixed(2));
 			$("#weight").val(weight.toFixed(2));
 
 			this.selectDropdownOptionByValue(
