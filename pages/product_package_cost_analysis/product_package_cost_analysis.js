@@ -23,17 +23,17 @@ async function loadModule(permissionStr) {
 
 const loadFormDropdowns = async () => {
 	// define needed attributes
-	let product_packages;
+	let productPackages;
 
 	// get data from the api for each dropbox
 	let response;
 	response = await Request.send("/api/product_packages?data[limit]=0", "GET");
-	product_packages = response.data;
+	productPackages = response.data;
 
 	// clean existing options and append new data
 	$("#productPackageId").empty();
 
-	product_packages.forEach((pro) => {
+	productPackages.forEach((pro) => {
 		$("#productPackageId").append(
 			`<option data-tokens="${pro.code} - ${pro.name}" value="${pro.id}">${pro.name} (${pro.code})</option>`
 		);
@@ -43,8 +43,8 @@ const loadFormDropdowns = async () => {
 	$("#productPackageId").selectpicker();
 
 	// select initial value
-	$("#productPackageId").selectpicker("val", product_packages[0].id);
-	// showMaterials(products[0].id);
+	$("#productPackageId").selectpicker("val", productPackages[0].id);
+	showProductPackageInfo(productPackages[0].id);
 };
 
 // event listeners for form inputs
@@ -54,11 +54,11 @@ const registerEventListeners = () => {
 		addToSalesPriceTable();
 	});
 
-	$(".btnFmReset").on("click", (e) => {
-		e.preventDefault();
-		$("#salesPriceTable tbody").empty();
-		$("input").val("");
-	});
+	// $(".btnFmReset").on("click", (e) => {
+	// 	e.preventDefault();
+	// 	$("#salesPriceTable tbody").empty();
+	// 	$("input").val("");
+	// });
 
 	$(".btnFmUpdate").on("click", (e) => {
 		e.preventDefault();
@@ -138,28 +138,58 @@ const showProductPackageInfo = async (productPackageId) => {
 	$("#materialCost").val(productPackageMaterialCost.toFixed(2));
 
 	$("#totalCost").val((productionCost + productPackageMaterialCost).toFixed(2));
+
+	/** Show existing price data */
+	response = await Request.send("/api/product_package_cost_analysis", "GET", {
+		data: {
+			productPackageId: productPackageId,
+		},
+	});
+
+	$("#salePriceTable tbody").empty();
+
+	response.data.forEach((r) => {
+		addRowToSalesPriceTable({
+			productPackageId: r.productPackageId,
+			productionCost: r.productionCost,
+			materialCost: r.materialCost,
+			totalCost: r.totalCost,
+			profitRatio: r.profitRatio,
+			salePrice: r.salePrice,
+			validFrom: r.validFrom,
+			validTo: r.validTo,
+			addedDate: r.addedDate,
+		});
+	});
 };
 
 // update entry in the database
 const updateEntry = async () => {
-	const productMaterials = getMaterialTableData();
-	const productId = $("#productId").val();
+	const salesPriceTableData = getSalePriceTableData();
+	const productPackageId = $("#productPackageId").val();
 
 	// check values are invalid
-	if (productId.trim() == "") {
-		mainWindow.showOutputModal("Sorry", "Please select a product first!.");
+	if (productPackageId.trim() == "") {
+		mainWindow.showOutputModal(
+			"Sorry",
+			"Please select a product package first!."
+		);
 		return;
 	}
 
 	const data = {
-		productId,
-		productMaterials,
+		productPackageId,
+		salePriceData: salesPriceTableData,
 	};
 
 	// send put reqeust to update data
-	const response = await Request.send("/api/material_analysis", "PUT", {
-		data: data,
-	});
+	const response = await Request.send(
+		"/api/product_package_cost_analysis",
+		"PUT",
+		{
+			data: data,
+		}
+	);
 
 	// show output modal based on response
 	if (response.status) {
