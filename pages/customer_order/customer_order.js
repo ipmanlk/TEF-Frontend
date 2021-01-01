@@ -294,7 +294,7 @@ const loadEntry = async (id) => {
 			productPackageName: `${pkg.productPackage.name} (${pkg.productPackage.code})`,
 			productPackageQty: pkg.qty,
 			lineTotal: pkg.lineTotal,
-			productPackageSalePrice: pkg.productPackage.salePrice,
+			productPackageSalePrice: pkg.salePrice,
 		});
 	});
 
