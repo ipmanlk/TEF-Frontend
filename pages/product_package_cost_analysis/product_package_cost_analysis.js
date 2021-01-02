@@ -42,9 +42,9 @@ const loadFormDropdowns = async () => {
 	// init bootstrap-select
 	$("#productPackageId").selectpicker();
 
-	// select initial value
-	$("#productPackageId").selectpicker("val", productPackages[0].id);
-	showProductPackageInfo(productPackages[0].id);
+	// // select initial value
+	// $("#productPackageId").selectpicker("val", productPackages[0].id);
+	// showProductPackageInfo(productPackages[0].id);
 };
 
 // event listeners for form inputs
