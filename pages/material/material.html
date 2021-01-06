@@ -1,177 +1,297 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>TwoElephantFireworks - Materials</title>
+		<link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css" />
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="../../lib/datatable/datatable.css"
+		/>
+		<link rel="stylesheet" type="text/css" href="../../css/pages/common.css" />
+	</head>
 
-<head>
-	<meta charset="UTF-8">
-	<title>TwoElephantFireworks - Materials</title>
-	<link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="../../lib/datatable/datatable.css" />
-	<link rel="stylesheet" type="text/css" href="../../css/pages/common.css" />
-</head>
-
-<body>
-	<div class="container-fluid" style="margin-top: 20px; margin-bottom:100px;">
-
-		<div id="actionButtonHolder" class="row" style="margin-bottom: 20px; padding-left: 35px;">
-			<div class="col-md-12">
-				<button id="btnTopAddEntry" class="btn btn-primary">
-					<i class="glyphicon glyphicon-plus-sign" aria-hidden="true"></i>
-					Add New Material
-				</button>
-				<button id="btnTopSupplierMaterial" class="btn btn-primary">
-					<i class="glyphicon glyphicon-plus-sign" aria-hidden="true"></i>
-					Set Supplier Material
-				</button>
+	<body>
+		<div class="container-fluid" style="margin-top: 20px; margin-bottom: 100px">
+			<div
+				id="actionButtonHolder"
+				class="row"
+				style="margin-bottom: 20px; padding-left: 35px"
+			>
+				<div class="col-md-12">
+					<button id="btnTopAddEntry" class="btn btn-primary">
+						<i class="glyphicon glyphicon-plus-sign" aria-hidden="true"></i>
+						Add New Material
+					</button>
+					<button id="btnTopSupplierMaterial" class="btn btn-primary">
+						<i class="glyphicon glyphicon-plus-sign" aria-hidden="true"></i>
+						Set Supplier Material
+					</button>
+				</div>
 			</div>
-		</div>
 
-		<div id="mainTableHolder" class="container-fluid" style="margin-top:30px">
+			<div
+				id="mainTableHolder"
+				class="container-fluid"
+				style="margin-top: 30px"
+			></div>
 
-		</div>
-
-		<div class="modal fade" id="modalMainForm" role="dialog">
-			<div class="modal-dialog modal-lg">
-				<div class="modal-content" style="margin-bottom: 100px;">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title" id="modalMainFormTitle">Modal Header</h4>
-					</div>
-					<div class="modal-body">
-						<form id="mainForm">
-
-							<div class="row">
-								<div class="col-md-12">
-									<div style="float: right;">
-										<b><span class="required">*</span> Required field</b>
+			<div class="modal fade" id="modalMainForm" role="dialog">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content" style="margin-bottom: 100px">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">
+								&times;
+							</button>
+							<h4 class="modal-title" id="modalMainFormTitle">Modal Header</h4>
+						</div>
+						<div class="modal-body">
+							<form id="mainForm">
+								<div class="row">
+									<div class="col-md-12">
+										<div style="float: right">
+											<b><span class="required">*</span> Required field</b>
+										</div>
 									</div>
 								</div>
-							</div>
 
-							<div class="form-group has-feedback">
-								<label for="code">Code: </label>
-								<input type="text" class="form-control" id="code" name="code" disabled>
-							</div>
-							<div class="row">
-								<div class="col-md-6">
-									<div class="form-group has-feedback">
-										<label for="name">Material Name: <span class="required">*</span></label>
-										<input type="text" class="form-control" id="name" placeholder="Plastic Powder" name="name"
-											data-editable="true">
+								<div class="form-group has-feedback">
+									<label for="code">Code: </label>
+									<input
+										type="text"
+										class="form-control"
+										id="code"
+										name="code"
+										disabled
+									/>
+								</div>
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group has-feedback">
+											<label for="name"
+												>Material Name: <span class="required">*</span></label
+											>
+											<input
+												type="text"
+												class="form-control"
+												id="name"
+												placeholder="Plastic Powder"
+												name="name"
+												data-editable="true"
+											/>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group has-feedback">
+											<label for="materialTypeId"
+												>Material Type: <span class="required">*</span></label
+											>
+											<select
+												name="materialTypeId"
+												id="materialTypeId"
+												class="form-control"
+												data-editable="true"
+											>
+												<option value="1">Married</option>
+												<option value="2">Not Married</option>
+											</select>
+										</div>
 									</div>
 								</div>
-								<div class="col-md-6">
-									<div class="form-group has-feedback">
-										<label for="materialTypeId">Material Type: <span class="required">*</span></label>
-										<select name="materialTypeId" id="materialTypeId" class="form-control" data-editable="true">
-											<option value="1">Married</option>
-											<option value="2">Not Married</option>
-										</select>
-									</div>
-								</div>
-							</div>
 
-							<div class="form-group has-feedback">
-								<label for="riskCategoryId">Risk Category: <span class="required">*</span></label>
-								<select name="riskCategoryId" id="riskCategoryId" class="form-control" data-editable="true">
-									<option value="1">Married</option>
-									<option value="2">Not Married</option>
-								</select>
-							</div>
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group has-feedback">
+											<label for="riskCategoryId"
+												>Risk Category: <span class="required">*</span></label
+											>
+											<select
+												name="riskCategoryId"
+												id="riskCategoryId"
+												class="form-control"
+												data-editable="true"
+											>
+												<option value="1">Married</option>
+												<option value="2">Not Married</option>
+											</select>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group has-feedback">
+											<label for="unitTypeId"
+												>Unit Type: <span class="required">*</span></label
+											>
+											<select
+												name="unitTypeId"
+												id="unitTypeId"
+												class="form-control"
+												data-editable="true"
+											>
+												<option value="1">Married</option>
+												<option value="2">Not Married</option>
+											</select>
+										</div>
+									</div>
+								</div>
 
-							<div class="row">
-								<div class="col-md-6">
+								<div class="row" style="display: none">
+									<div class="col-md-6">
+										<div class="form-group has-feedback">
+											<label for="unitPrice"
+												>Unit Price: <span class="required">*</span></label
+											>
+											<input
+												type="text"
+												class="form-control"
+												id="unitPrice"
+												placeholder="20.00"
+												name="unitPrice"
+												data-editable="true"
+												value="0.00"
+											/>
+										</div>
+									</div>
+									<div class="col-md-6"></div>
+								</div>
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group has-feedback">
+											<label for="rop"
+												>Re-Order Point: <span class="required">*</span></label
+											>
+											<input
+												type="text"
+												class="form-control"
+												id="rop"
+												placeholder="50"
+												name="rop"
+												data-editable="true"
+											/>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group has-feedback">
+											<label for="roq"
+												>Re-Order Quantity:
+												<span class="required">*</span></label
+											>
+											<input
+												type="text"
+												class="form-control"
+												id="roq"
+												placeholder="200"
+												name="roq"
+												data-editable="true"
+											/>
+										</div>
+									</div>
+								</div>
 
-									<div class="form-group has-feedback">
-										<label for="unitPrice">Unit Price: <span class="required">*</span></label>
-										<input type="text" class="form-control" id="unitPrice" placeholder="20.00" name="unitPrice"
-											data-editable="true">
-									</div>
+								<div class="form-group has-feedback">
+									<label for="description">Description: </label>
+									<textarea
+										class="form-control"
+										name="description"
+										id="description"
+										cols="30"
+										rows="3"
+										data-editable="true"
+										placeholder="This is one of the most explosive materials."
+									></textarea>
 								</div>
-								<div class="col-md-6">
-									<div class="form-group has-feedback">
-										<label for="unitTypeId">Unit Type: <span class="required">*</span></label>
-										<select name="unitTypeId" id="unitTypeId" class="form-control" data-editable="true">
-											<option value="1">Married</option>
-											<option value="2">Not Married</option>
-										</select>
-									</div>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-6">
-									<div class="form-group has-feedback">
-										<label for="rop">Re-Order Point: <span class="required">*</span></label>
-										<input type="text" class="form-control" id="rop" placeholder="50" name="rop" data-editable="true">
-									</div>
-								</div>
-								<div class="col-md-6">
-									<div class="form-group has-feedback">
-										<label for="roq">Re-Order Quantity: <span class="required">*</span></label>
-										<input type="text" class="form-control" id="roq" placeholder="200" name="roq" data-editable="true">
-									</div>
-								</div>
-							</div>
 
-							<div class="form-group has-feedback">
-								<label for="description">Description: </label>
-								<textarea class="form-control" name="description" id="description" cols="30" rows="3"
-									data-editable="true" placeholder="This is one of the most explosive materials."></textarea>
-							</div>
-
-							<div class="row">
-								<div class="col-md-6">
-									<div class="form-group has-feedback">
-										<label for="addedDate">Added Date: <span class="required">*</span></label>
-										<input type="text" class="form-control" id="addedDate" name="addedDate" disabled>
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group has-feedback">
+											<label for="addedDate"
+												>Added Date: <span class="required">*</span></label
+											>
+											<input
+												type="text"
+												class="form-control"
+												id="addedDate"
+												name="addedDate"
+												disabled
+											/>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group has-feedback">
+											<label for="materialStatusId"
+												>Material Status: <span class="required">*</span></label
+											>
+											<select
+												name="materialStatusId"
+												id="materialStatusId"
+												class="form-control"
+												data-editable="true"
+											>
+												<option value="1">Married</option>
+												<option value="2">Not Married</option>
+											</select>
+										</div>
 									</div>
 								</div>
-								<div class="col-md-6">
-									<div class="form-group has-feedback">
-										<label for="materialStatusId">Material Status: <span class="required">*</span></label>
-										<select name="materialStatusId" id="materialStatusId" class="form-control" data-editable="true">
-											<option value="1">Married</option>
-											<option value="2">Not Married</option>
-										</select>
-									</div>
+								<div class="form-group has-feedback">
+									<label for="number">Created Employee: </label>
+									<input
+										type="text"
+										class="form-control"
+										id="createdEmployee"
+										name="createdEmployee"
+										disabled
+									/>
 								</div>
-							</div>
-							<div class="form-group has-feedback">
-								<label for="number">Created Employee: </label>
-								<input type="text" class="form-control" id="createdEmployee" name="createdEmployee" disabled>
-							</div>
-							<div id="fmButtons">
-								<button type="button" class="btnFmAdd btn btn-success">Add</button>
-								<button type="button" class="btnFmUpdate btn btn-warning">Update</button>
-								<button type="button" class="btnFmPrint btn btn-info">Print</button>
-								<button type="button" class="btnFmReset btn btn-primary"
-									style="float: right; margin-left: 10px;">Reset</button>
-								<button type="button" class="btnFmDelete btn btn-danger" style="float: right;">Delete</button>
-							</div>
-						</form>
-					</div>
-					<div class="modal-footer">
-						<!-- <button id="btnModalYes" type="button" class="btn btn-danger" style="float:left">Yes</button>
+								<div id="fmButtons">
+									<button type="button" class="btnFmAdd btn btn-success">
+										Add
+									</button>
+									<button type="button" class="btnFmUpdate btn btn-warning">
+										Update
+									</button>
+									<button type="button" class="btnFmPrint btn btn-info">
+										Print
+									</button>
+									<button
+										type="button"
+										class="btnFmReset btn btn-primary"
+										style="float: right; margin-left: 10px"
+									>
+										Reset
+									</button>
+									<button
+										type="button"
+										class="btnFmDelete btn btn-danger"
+										style="float: right"
+									>
+										Delete
+									</button>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<!-- <button id="btnModalYes" type="button" class="btn btn-danger" style="float:left">Yes</button>
 				  <button id="btnModalNo" type="button" class="btn btn-default" data-dismiss="modal">No</button> -->
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
-	<!-- libs -->
-	<script src="../../lib/jquery/jquery.min.js"></script>
-	<script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
+		<!-- libs -->
+		<script src="../../lib/jquery/jquery.min.js"></script>
+		<script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
 
-	<script src="../../lib/datatable/datatable.v2.js"></script>
+		<script src="../../lib/datatable/datatable.v2.js"></script>
 
-	<!-- common stuff -->
-	<script src="../../js/Request.js"></script>
-	<script src="../../js/Form.js"></script>
-	<script src="../../js/FormUtil.js"></script>
-	<script src="../../js/MiscUtil.js"></script>
+		<!-- common stuff -->
+		<script src="../../js/Request.js"></script>
+		<script src="../../js/Form.js"></script>
+		<script src="../../js/FormUtil.js"></script>
+		<script src="../../js/MiscUtil.js"></script>
 
-	<!-- main js -->
-	<script src="material.js"></script>
-</body>
-
+		<!-- main js -->
+		<script src="material.js"></script>
+	</body>
 </html>

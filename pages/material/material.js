@@ -20,7 +20,6 @@ async function loadModule(permissionStr) {
 			return {
 				Code: entry.code,
 				Name: entry.name,
-				"Unit Price": entry.unitPrice,
 				Type: entry.materialType.name,
 				Status: entry.materialStatus.name,
 				View: `<button class="btn btn-success btn-sm" onclick="showEditEntryModal('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
