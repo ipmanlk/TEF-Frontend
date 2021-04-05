@@ -102,17 +102,24 @@
             <tr>
               <th>Index</th>
               <th>Material Name</th>
-              <th>Available Qty.</th>
-              <th>Minimum Qty.</th>
               <th>Purchase Price</th>
+              <th>Qty</th>
+              <th>Line Total</th>
+              <th>Unit Type</th>
             </tr>
           </thead>
           <tbody>
             #{materialRows}
           </tbody>
         </table>
-      </div>
 
+        <br>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <h5><b>Total Price:</b> #{total}</h5>
+        </div>
+      </div>
       <div class="row">
         <div class="col-xs-12">
           <div class="panel panel-default">
