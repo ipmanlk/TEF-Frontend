@@ -43,7 +43,7 @@ async function loadModule(permissionStr) {
 				Edit: `<button class="btn btn-warning btn-sm" onclick="showEditEntryModal('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit</button>`,
 				Delete: `${
 					entry.customerOrderStatus.name == "Deleted"
-						? ""
+						? '<button style="display:none">Delete</button>'
 						: `<button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry.id}')"><i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Delete</button>`
 				}`,
 			};
