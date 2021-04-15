@@ -74,8 +74,6 @@ async function loadModule(permissionStr) {
 			return {
 				Code: entry.code,
 				Name: entry.name,
-				Cost: entry.cost,
-				Price: entry.price,
 				Category: entry.category.name,
 				Status: entry.productStatus.name,
 				View: `<button class="btn btn-success btn-sm" onclick="showEditEntryModal('${entry.id}', true)"><i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i> View</button>`,
@@ -149,10 +147,10 @@ const reloadModule = () => {
 
 const showEditEntryModal = async (id, readOnly = false) => {
 	// get entry data from db and show in the form
-	const response = await Request.send("/api/products", "GET", {
+	let response = await Request.send("/api/products", "GET", {
 		data: { id: id },
 	});
-	const entry = response.data;
+	let entry = response.data;
 
 	mainForm.loadEntry(entry);
 
@@ -165,6 +163,22 @@ const showEditEntryModal = async (id, readOnly = false) => {
 	}
 
 	$("#modalMainForm").modal("show");
+
+	// calculate cost
+	response = await Request.send("/api/material_analysis", "GET", {
+		data: { productId: id },
+	});
+
+	let materials = response.data;
+	let cost = 0;
+
+	materials.forEach((m) => {
+		const unitPrice = parseFloat(m.material.unitPrice);
+		const amount = parseFloat(m.amount);
+		cost += unitPrice * amount;
+	});
+
+	$("#cost").val(cost.toFixed(2));
 };
 
 const showNewEntryModal = () => {
