@@ -10,7 +10,8 @@
 	<link rel="stylesheet" href="./lib/animate/animate.css">
 	<link rel="stylesheet" href="./lib/login/css/login.css">
 	<style>
-		body,div {
+		body,
+		div {
 			z-index: -1;
 		}
 
@@ -64,11 +65,11 @@
 				<input type="text" id="username" name="username" placeholder="Username" autocomplete="off">
 				<i class="typcn typcn-eye" id="eye"></i>
 				<input type="password" id="password" name="password" placeholder="Passsword" id="pwd" autocomplete="off">
-				<label>
+				<!-- <label>
 					<input type="checkbox">
 					<span></span>
 					<small class="rmb">Remember me</small>
-				</label>
+				</label> -->
 				<a href="#" class="forgetpass">Forget Password?</a>
 				<input type="submit" value="Sign in" class="btn1">
 			</form>
@@ -90,7 +91,7 @@
 	<script>
 		$(document).ready(() => {
 			$(".modal-placeholder").hide();
-			
+
 			$("form").on("submit", (e) => {
 				e.preventDefault();
 				logIn();
