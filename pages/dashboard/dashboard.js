@@ -159,7 +159,13 @@ const updateSideBar = async () => {
 	// show list box stuff
 	if (
 		lowMaterials.length != 0 &&
-		checkRoles(userRoles, ["Admin", "Factory Manager", "Factory Supervisor"])
+		checkRoles(userRoles, [
+			"Admin",
+			"Owner",
+			"Factory Manager",
+			"Factory Supervisor",
+			"Assistant Factory Manager",
+		])
 	) {
 		$("#cardLowMaterialsList").empty();
 		lowMaterials.forEach((m) => {
@@ -175,7 +181,7 @@ const updateSideBar = async () => {
 
 	if (
 		lowProductPackages.length != 0 &&
-		checkRoles(userRoles, ["Admin", "Shop Manager"])
+		checkRoles(userRoles, ["Admin", "Owner", "Shop Manager"])
 	) {
 		$("#cardLowProductPackagesList").empty();
 		lowProductPackages.forEach((i) => {
@@ -192,7 +198,14 @@ const updateSideBar = async () => {
 	// show calender stuff
 	const calenderEvents = [];
 
-	if (checkRoles(userRoles, ["Admin", "Shop Manager"])) {
+	if (
+		checkRoles(userRoles, [
+			"Admin",
+			"Owner",
+			"Shop Manager",
+			"Assistant Shop Manager",
+		])
+	) {
 		cheques.forEach((i) => {
 			calenderEvents.push({
 				date: new Date(i.chequeDate).getTime().toString(),
@@ -204,7 +217,14 @@ const updateSideBar = async () => {
 		});
 	}
 
-	if (checkRoles(userRoles, ["Admin", "Shop Manager"])) {
+	if (
+		checkRoles(userRoles, [
+			"Admin",
+			"Owner",
+			"Shop Manager",
+			"Assistant Shop Manager",
+		])
+	) {
 		customerOrders.forEach((i) => {
 			calenderEvents.push({
 				date: new Date(i.requiredDate).getTime().toString(),
@@ -219,6 +239,7 @@ const updateSideBar = async () => {
 	if (
 		checkRoles(userRoles, [
 			"Admin",
+			"Owner",
 			"Factory Manager",
 			"Factory Supervisor",
 			"Shop Manager",
