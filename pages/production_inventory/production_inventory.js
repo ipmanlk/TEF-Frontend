@@ -1,3 +1,7 @@
+const tempData = {
+	selectedProductionOrder: null,
+};
+
 /*-------------------------------------------------------------------------------------------------------
                                             General
 -------------------------------------------------------------------------------------------------------*/
@@ -46,27 +50,63 @@ const registerEventListeners = () => {
 	// event listeners for buttons
 	$("#btnTopAddEntry").on("click", showNewEntryModal);
 	$(".btnFmAdd").on("click", addEntry);
+
+	$("#productionOrderId").on("changed.bs.select", function (e) {
+		showProductionOrderProductPackages(e.target.value);
+	});
 };
 
 const loadFormDropdowns = async () => {
 	// define needed attributes
-	let productPackages;
+	let productionOrders;
 
 	// get data from the api for each dropbox
-	response = await Request.send("/api/product_packages?data[limit]=0", "GET");
-	productPackages = response.data;
+	let response = await Request.send("/api/production_orders_by_status", "GET", {
+		data: { productionOrderStatusName: "Confirmed" },
+	});
+	productionOrders = response.data;
 
 	// clean existing options and append new data
-	$("#productPackageId").empty();
+	$("#productionOrderId").empty();
 
-	productPackages.forEach((pkg) => {
-		$("#productPackageId").append(
-			`<option value="${pkg.id}">${pkg.name} (${pkg.code})</option>`
+	productionOrders.forEach((po) => {
+		$("#productionOrderId").append(
+			`<option value="${po.id}">${po.code}</option>`
 		);
 	});
 
 	// init bootstrap-select
-	$("#productPackageId").selectpicker();
+	$("#productionOrderId").selectpicker();
+};
+
+const showProductionOrderProductPackages = async (productionOrderId) => {
+	const response = await Request.send("/api/production_orders", "GET", {
+		data: { id: productionOrderId },
+	});
+
+	const entry = response.data;
+
+	// save globally
+	tempData.selectedProductionOrder = entry;
+
+	// fill mini table
+	$("#productPackageTable tbody").empty();
+
+	entry.productionOrderProductPackages.forEach((pkg, index) => {
+		$("#productPackageTable tbody").append(`
+    <tr>
+        <td>${index + 1}</td>
+        <td>
+          <span data-product-package-id="${pkg.productPackageId}">
+					${pkg.productPackage.name} (${pkg.productPackage.code})
+					</span>
+        </td>
+        <td>
+          <span data-requested-qty="${pkg.qty}">${pkg.qty}</span>
+        </td>
+    </tr>
+    `);
+	});
 };
 
 /*-------------------------------------------------------------------------------------------------------
@@ -89,30 +129,21 @@ const showNewEntryModal = () => {
                                 Entry Related Requests (POST, PUT, DELETE, PRINT)
 -------------------------------------------------------------------------------------------------------*/
 const addEntry = async () => {
-	const productPackageId = $("#productPackageId").val();
-	const productPackageName = $("#productPackageId option:selected").text();
-	const qty = $("#qty").val();
-
-	if (isNaN(productPackageId) || isNaN(qty)) {
-		mainWindow.showOutputModal(
-			"Sorry!. Please fix these problems first.",
-			"Please select a valid product package and qty first!."
-		);
-		return;
-	}
+	const productionOrder = tempData.selectedProductionOrder;
 
 	// confirm the action
 	const confirm = window.confirm(
-		`This will add ${qty} ${productPackageName} to the inventory. Do you want to continue?.`
+		`These product packages will be added to the inventory and production order ${productionOrder.code} will be marked as completed. Do you wish to continue?.`
 	);
 
 	if (!confirm) return;
 
+	let response;
 	// send post reqeust to save data
-	const response = await Request.send("/api/production_inventory", "POST", {
+	response = await Request.send("/api/production_inventory", "POST", {
 		data: {
-			productPackageId,
-			qty,
+			productionOrderId: productionOrder.id,
+			productPackages: productionOrder.productionOrderProductPackages,
 		},
 	});
 

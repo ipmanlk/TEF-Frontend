@@ -49,18 +49,34 @@
               </div>
 
               <div class="form-group has-feedback">
-                <label for="productPackageId">Product Package: <span class="required">*</span></label>
-                <select name="productPackageId" id="productPackageId" class="form-control" data-editable="true"
-                  data-live-search="true" title="Please select a product package">
+                <label for="productionOrderId">Production Order: <span class="required">*</span></label>
+                <select name="productionOrderId" id="productionOrderId" class="form-control" data-editable="true"
+                  data-live-search="true" title="Please select a production order">
 
                 </select>
               </div>
 
-              <div class="form-group has-feedback">
-                <label for="qty">Qty: <span class="required">*</span></label>
-                <input type="number" class="form-control" id="qty" placeholder="10" name="qty">
-              </div>
+              <div class="panel panel-default">
+                <div class="panel-heading">Product Packages</div>
+                <div class="panel-body">
 
+                  <div class="form-group">
+                    <table id="productPackageTable" class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Index</th>
+                          <th>Name</th>
+                          <th>Requested Qty</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+              </div>
 
               <div id="fmButtons">
                 <button type="button" class="btnFmAdd btn btn-success">Add</button>
