@@ -143,7 +143,7 @@
 								</div>
 
 								<div class="row">
-									<div class="col-md-6">
+									<div class="col-md-4">
 										<div class="form-group has-feedback">
 											<label for="weight"
 												>Weight: <span class="required">*</span></label
@@ -159,7 +159,7 @@
 										</div>
 									</div>
 
-									<div class="col-md-6">
+									<div class="col-md-4">
 										<div class="form-group has-feedback">
 											<label for="unitTypeId"
 												>Weight Unit: <span class="required">*</span></label
@@ -173,6 +173,22 @@
 												<option value="1">Married</option>
 												<option value="2">Not Married</option>
 											</select>
+										</div>
+									</div>
+
+									<div class="col-md-4">
+										<div class="form-group has-feedback">
+											<label for="rop"
+												>Re-Order Point: <span class="required">*</span></label
+											>
+											<input
+												type="text"
+												class="form-control"
+												id="rop"
+												placeholder="20"
+												name="rop"
+												data-editable="true"
+											/>
 										</div>
 									</div>
 								</div>
@@ -197,14 +213,16 @@
 									</div>
 									<div class="col-md-6">
 										<div class="form-group has-feedback">
-											<label for="rop">Re-Order Point:</label>
+											<label for="salePrice">Current Sale Price:</label>
 											<input
 												type="text"
 												class="form-control"
-												id="rop"
-												placeholder="20"
-												name="rop"
-												data-editable="true"
+												id="salePrice"
+												placeholder="200.00"
+												name="salePrice"
+												data-editable="false"
+												value="0.00"
+												disabled
 											/>
 										</div>
 									</div>
