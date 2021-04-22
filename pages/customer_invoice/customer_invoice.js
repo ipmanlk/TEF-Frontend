@@ -760,7 +760,7 @@ const addToProductPackageTable = () => {
 	}
 
 	// check if available qty
-	if (availableQty < deliveredQty) {
+	if (parseFloat(availableQty) < parseFloat(deliveredQty)) {
 		mainWindow.showOutputModal(
 			"Sorry",
 			"Delivered quantity is higher than the available quantity!."
