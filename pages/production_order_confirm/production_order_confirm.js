@@ -443,7 +443,9 @@ const showEditEntryModal = (id, readOnly = false) => {
 
 		// if order isn't pending don't show material summery as well
 		if (
-			["Confirmed", "Rejected", "Deleted"].includes(productionOrderStatusName)
+			["Confirmed", "Rejected", "Deleted", "Completed"].includes(
+				productionOrderStatusName
+			)
 		) {
 			$(".btnFmConfirm").hide();
 			$(".btnFmReject").hide();
