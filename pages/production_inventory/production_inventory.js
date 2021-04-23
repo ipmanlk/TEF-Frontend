@@ -1,5 +1,6 @@
 const tempData = {
 	selectedProductionOrder: null,
+	permission: [0, 0, 0, 0],
 };
 
 /*-------------------------------------------------------------------------------------------------------
@@ -9,6 +10,8 @@ const tempData = {
 async function loadModule(permissionStr) {
 	// create an array from permission string
 	const permission = permissionStr.split("").map((p) => parseInt(p));
+
+	tempData.permission = permission;
 
 	// load main table
 	const dataBuilderFunction = (responseData) => {
@@ -32,14 +35,12 @@ async function loadModule(permissionStr) {
 		"Production Inventory"
 	);
 
-	await loadFormDropdowns();
-	registerEventListeners();
-
-	// hide add button
 	if (permission[0] == 0) {
 		$("#btnTopAddEntry").hide();
 	} else {
 		$("#btnTopAddEntry").show();
+		await loadFormDropdowns();
+		registerEventListeners();
 	}
 }
 
