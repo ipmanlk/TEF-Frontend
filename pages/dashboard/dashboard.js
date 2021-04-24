@@ -242,7 +242,6 @@ const updateSideBar = async () => {
 			"Owner",
 			"Factory Manager",
 			"Factory Supervisor",
-			"Shop Manager",
 		])
 	) {
 		productionOrders.forEach((i) => {
