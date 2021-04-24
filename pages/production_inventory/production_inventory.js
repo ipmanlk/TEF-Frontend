@@ -157,11 +157,33 @@ const addEntry = async () => {
 			"Success!.",
 			"Product packages have been added!"
 		);
+
+		// get data from the api for each dropbox
+		response = await Request.send("/api/production_orders_by_status", "GET", {
+			data: { productionOrderStatusName: "Confirmed" },
+		});
+
+		const productionOrders = response.data;
+
+		// clean existing options and append new data
+		$("#productionOrderId").first().empty();
+
+		productionOrders.forEach((po) => {
+			$("#productionOrderId")
+				.first()
+				.append(`<option value="${po.id}">${po.code}</option>`);
+		});
+
+		// refresh select picker
+		$("#productionOrderId").selectpicker("refresh");
+		$("#productionOrderId").selectpicker("render");
 	}
 };
 
 const resetForm = () => {
 	$("#mainForm input").val("");
+
+	$("#productPackageTable tbody").empty();
 
 	// deselect select pickers
 	$("#productPackageId").val("");
