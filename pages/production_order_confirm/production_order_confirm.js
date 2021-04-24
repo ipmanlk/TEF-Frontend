@@ -1,6 +1,7 @@
 const tempData = {
 	selectedEntry: null,
 	selectedEntryMaterials: null,
+	permissions: [1, 1, 1, 1],
 };
 
 /*-------------------------------------------------------------------------------------------------------
@@ -8,6 +9,10 @@ const tempData = {
 -------------------------------------------------------------------------------------------------------*/
 
 async function loadModule(permissionStr) {
+	// add permissions to global
+	const permission = permissionStr.split("").map((p) => parseInt(p));
+	tempData.permission = permission;
+
 	await loadFormDropdowns();
 	registerEventListeners();
 
@@ -35,7 +40,9 @@ async function loadModule(permissionStr) {
 	const urlParams = new URLSearchParams(window.location.search);
 	const show = urlParams.get("show");
 	if (show) {
-		showEditEntryModal(show, true);
+		setTimeout(() => {
+			showEditEntryModal(show, true);
+		}, 1000);
 	}
 }
 
@@ -445,16 +452,22 @@ const showEditEntryModal = (id, readOnly = false) => {
 		if (
 			["Confirmed", "Rejected", "Deleted", "Completed"].includes(
 				productionOrderStatusName
-			)
+			) ||
+			tempData.permission[0] == 0
 		) {
 			$(".btnFmConfirm").hide();
 			$(".btnFmReject").hide();
 			$("#lowMaterialPanel").hide();
 		}
 
-		if (productionOrderStatusName == "Pending") {
+		if (productionOrderStatusName == "Pending" && tempData.permission[0] != 0) {
 			$(".btnFmConfirm").show();
 			$(".btnFmReject").show();
+			$("#lowMaterialPanel").show();
+		}
+
+		if (inventoryStatus.lowMaterials.length == 0) {
+			$("#lowMaterialPanel").hide();
 		}
 
 		$("#modalMainForm").modal("show");
