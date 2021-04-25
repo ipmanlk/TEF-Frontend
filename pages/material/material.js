@@ -13,6 +13,10 @@ async function loadModule(permissionStr) {
 	// create an array from permission string
 	const permission = permissionStr.split("").map((p) => parseInt(p));
 
+	if (permission[0] == 0) {
+		$("#btnTopAddEntry").hide();
+	}
+
 	// load main table
 	const dataBuilderFunction = (responseData) => {
 		// parse resposne data and return in data table frendly format

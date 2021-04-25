@@ -24,7 +24,9 @@ async function loadModule(permissionStr) {
 
 	// create an array from permission string
 	const permission = permissionStr.split("").map((p) => parseInt(p));
+
 	tempData.permission = permission;
+
 	if (permission[0] == 0) {
 		$("#btnTopAddEntry").hide();
 	}
