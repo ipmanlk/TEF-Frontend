@@ -32,7 +32,14 @@ async function loadModule(permissionStr) {
 		"/api/production_inventory",
 		permission,
 		dataBuilderFunction,
-		"Production Inventory"
+		"Production Inventory",
+		() => {
+			$("table tbody tr").each((index, element) => {
+				if ($(element).children("td").last().text() == "Status:  Low") {
+					$(element).css({ color: "#ff7700" });
+				}
+			});
+		}
 	);
 
 	if (permission[0] == 0) {

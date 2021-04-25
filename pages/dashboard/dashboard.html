@@ -1,130 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Dashboard</title>
 
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Dashboard</title>
+		<link rel="stylesheet" href="../../lib/bootstrap-4/css/bootstrap.min.css" />
+		<link
+			rel="stylesheet"
+			href="../../lib/fontawesome/css/font-awesome.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			href="../../lib/event-calendar/css/eventCalendar.css"
+		/>
+		<link
+			rel="stylesheet"
+			href="../../lib/event-calendar/css/eventCalendar_theme_responsive.css"
+		/>
 
-	<link rel="stylesheet" href="../../lib/bootstrap-4/css/bootstrap.min.css">
-	<link rel="stylesheet" href="../../lib/fontawesome/css/font-awesome.min.css">
-	<link rel="stylesheet" href="../../lib/event-calendar/css/eventCalendar.css">
-	<link rel="stylesheet" href="../../lib/event-calendar/css/eventCalendar_theme_responsive.css">
+		<style>
+			.container-fluid {
+				margin: 25px 10px 25px 10px;
+				padding-bottom: 40px;
+			}
 
+			.TILE {
+				font-size: 20px;
+				color: #ffffff;
+			}
 
-	<style>
-		.container-fluid {
-			margin: 25px 10px 25px 10px;
-			padding-bottom: 40px;
-		}
+			.TILE h1 {
+				font-size: 20px;
+			}
 
-		.TILE {
-			font-size: 20px;
-			color: #FFFFFF;
-		}
+			.TILE:hover {
+				opacity: 1 !important;
+			}
 
-		.TILE h1 {
-			font-size: 20px;
-		}
+			#tileList {
+				display: flex;
+				flex-wrap: wrap;
+			}
 
-		.TILE:hover {
-			opacity: 1 !important;
-		}
+			#tileList .card {
+				width: calc(100% / 3);
+				width: 250px;
+				margin: 10px;
+			}
 
-		#tileList {
-			display: flex;
-			flex-wrap: wrap;
-		}
+			#tileList .card .card-body {
+				width: 100%;
+				height: 100%;
+			}
 
-		#tileList .card {
-			width: calc(100%/3);
-			width: 250px;
-			margin: 10px;
-		}
+			.side-bar .card-body {
+				padding: 0;
+			}
 
-		#tileList .card .card-body {
-			width: 100%;
-			height: 100%;
-		}
+			.card-list .card-body {
+				max-height: 145px;
+				overflow-y: scroll;
+			}
 
-		.side-bar .card-body {
-			padding: 0;
-		}
+			.card-body .list-group-item {
+				padding: 8px;
+			}
+		</style>
+	</head>
 
-		.card-list .card-body {
-			max-height: 145px;
-			overflow-y: scroll;
-		}
-
-		.card-body .list-group-item {
-			padding: 8px;
-		}
-	</style>
-</head>
-
-<body>
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-8">
-				<div class="input-group mb-3">
-					<div class="input-group-prepend">
-						<span class="input-group-text"><i class="fa fa-search"></i></span>
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-8">
+					<div class="input-group mb-3">
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="fa fa-search"></i></span>
+						</div>
+						<input
+							id="txtFilterCards"
+							type="text"
+							class="form-control"
+							placeholder="Enter Keyword...."
+						/>
 					</div>
-					<input id="txtFilterCards" type="text" class="form-control" placeholder="Enter Keyword....">
+
+					<div id="tileList"></div>
 				</div>
 
-				<div id="tileList">
-
-
-				</div>
-			</div>
-
-			<div class="col-4 side-bar">
-
-				<div class="card card-list" id="cardLowProductPackages">
-					<div class="card-header">Low Inventory Product Packages</div>
-					<div class="card-body">
-						<ul class="list-group" id="cardLowProductPackagesList">
-							<li class="list-group-item">First item</li>
-							<li class="list-group-item">Second item</li>
-							<li class="list-group-item">Third item</li>
-						</ul>
+				<div class="col-4 side-bar">
+					<div class="card card-list" id="cardLowProductPackages">
+						<div class="card-header">Low Inventory Product Packages</div>
+						<div class="card-body">
+							<ul class="list-group" id="cardLowProductPackagesList">
+								<li class="list-group-item">First item</li>
+								<li class="list-group-item">Second item</li>
+								<li class="list-group-item">Third item</li>
+							</ul>
+						</div>
 					</div>
-				</div>
 
-				<div class="card mt-3" id="cardLowMaterials">
-					<div class="card-header">Low Inventory Materials</div>
-					<div class="card-body">
-						<ul class="list-group" id="cardLowMaterialsList">
-							<li class="list-group-item">First item</li>
-							<li class="list-group-item">Second item</li>
-							<li class="list-group-item">Third item</li>
-						</ul>
+					<div class="card mt-3" id="cardLowMaterials">
+						<div class="card-header">Low Inventory Materials</div>
+						<div class="card-body">
+							<ul class="list-group" id="cardLowMaterialsList">
+								<li class="list-group-item">First item</li>
+								<li class="list-group-item">Second item</li>
+								<li class="list-group-item">Third item</li>
+							</ul>
+						</div>
 					</div>
-				</div>
 
-				<div class="card mt-3">
-					<div class="card-header">Event Calender</div>
-					<div class="card-body">
-						<div id="eventCalendar">
-
+					<div class="card mt-3">
+						<div class="card-header">Event Calender</div>
+						<div class="card-body">
+							<div id="eventCalendar"></div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
+		<!-- libs -->
 
-	<!-- libs -->
+		<!-- custom jqeury version for calender plugin -->
+		<script src="../../lib/event-calendar/js/jquery.min.js"></script>
+		<script src="../../lib/event-calendar/js/jquery.eventCalendar.js"></script>
+		<script src="../../lib/bootstrap-4/js/bootstrap.bundle.min.js"></script>
 
-	<!-- custom jqeury version for calender plugin -->
-	<script src="../../lib/event-calendar/js/jquery.min.js"></script>
-	<script src="../../lib/event-calendar/js/jquery.eventCalendar.js"></script>
-	<script src="../../lib/bootstrap-4/js/bootstrap.bundle.min.js"></script>
-
-	<!-- main js -->
-	<script src="dashboard.js"></script>
-</body>
-
+		<!-- main js -->
+		<script src="dashboard.js"></script>
+	</body>
 </html>
