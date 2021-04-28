@@ -94,6 +94,14 @@ const registerEventListeners = () => {
 		}
 	);
 
+	$("#materialId").on(
+		"changed.bs.select",
+		function (e, clickedIndex, isSelected, previousValue) {
+			const materialId = e.target.value;
+			showMaterialUnitType(materialId);
+		}
+	);
+
 	// format decimal inputs automatically
 	$("#amount").on("blur", (e) => {
 		const value = e.target.value;
@@ -250,4 +258,14 @@ const showMaterials = async (productId) => {
     </tr>
   `);
 	});
+};
+
+const showMaterialUnitType = async (materialId) => {
+	const response = await Request.send("/api/materials", "GET", {
+		data: {
+			id: materialId,
+		},
+	});
+
+	FormUtil.selectDropdownOptionByValue("unitTypeId", response.data.unitTypeId);
 };
