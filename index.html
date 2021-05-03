@@ -1,414 +1,577 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Two Elephants Fireworks</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="./lib/fontawesome/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="./lib/dashboard/css/theme.css" />
+		<link rel="stylesheet" href="./lib/jquerytoast/css/jquery.toast.min.css" />
+	</head>
 
-<head>
-  <meta charset="UTF-8">
-  <title>Two Elephants Fireworks</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css">
-  <link rel="stylesheet" href="./lib/fontawesome/css/font-awesome.min.css">
-  <link rel="stylesheet" href="./lib/dashboard/css/theme.css">
-  <link rel="stylesheet" href="./lib/jquerytoast/css/jquery.toast.min.css">
-
-</head>
-
-<body>
-  <aside class="side-nav" id="show-side-navigation1">
-    <i class="fa fa-bars close-aside hidden-sm hidden-md hidden-lg" data-close="show-side-navigation1"></i>
-    <div class="heading" onclick="loadRoute('dashboard')">
-      <img id="imgAvatar" src="./img/avatar.png" alt="">
-      <div class="info">
-        <h3><a id="txtEmployeeName">Jhon Doe</a></h3>
-        <p id="txtEmployeeRole">Unknown</p>
-      </div>
-    </div>
-    <!-- <div class="search">
+	<body>
+		<aside class="side-nav" id="show-side-navigation1">
+			<i
+				class="fa fa-bars close-aside hidden-sm hidden-md hidden-lg"
+				data-close="show-side-navigation1"
+			></i>
+			<div class="heading" onclick="loadRoute('dashboard')">
+				<img id="imgAvatar" src="./img/avatar.png" alt="" />
+				<div class="info">
+					<h3><a id="txtEmployeeName">Jhon Doe</a></h3>
+					<p id="txtEmployeeRole">Unknown</p>
+				</div>
+			</div>
+			<!-- <div class="search">
       <input type="text" placeholder="Type here"><i class="fa fa-search"></i>
     </div> -->
-    <ul class="categories">
-      <li>
-        <i class="fa fa-home fa-fw" aria-hidden="true">
-        </i>
-        <span onclick="loadRoute('dashboard')">Dashboard</span>
-      </li>
-      <li><i class="fa fa-user fa-fw"></i><a>Admin</a>
-        <ul class="side-nav-dropdown">
-          <li>
-            <a onclick="loadRoute('employee')" class="EMPLOYEE LEFTMENU-ITEM">Employee</a>
-          </li>
-          <li>
-            <a onclick="loadRoute('user')" class="USER LEFTMENU-ITEM">User</a>
-          </li>
-          <li>
-            <a onclick="loadRoute('role')" class="ROLE LEFTMENU-ITEM">Role</a>
-          </li>
-          <li>
-            <a onclick="loadRoute('privilege')" class="PRIVILEGE LEFTMENU-ITEM">Privilages</a>
-          </li>
-          <li>
-            <a onclick="loadRoute('designation')" class="DESIGNATION LEFTMENU-ITEM">Designation</a>
-          </li>
-          <li>
-            <a onclick="loadRoute('employee_status')" class="EMPLOYEE_STATUS LEFTMENU-ITEM">Employee Status</a>
-          </li>
-        </ul>
-      </li>
+			<ul class="categories">
+				<li>
+					<i class="fa fa-home fa-fw" aria-hidden="true"> </i>
+					<span onclick="loadRoute('dashboard')">Dashboard</span>
+				</li>
+				<li>
+					<i class="fa fa-user fa-fw"></i><a>Admin</a>
+					<ul class="side-nav-dropdown">
+						<li>
+							<a onclick="loadRoute('employee')" class="EMPLOYEE LEFTMENU-ITEM"
+								>Employee</a
+							>
+						</li>
+						<li>
+							<a onclick="loadRoute('user')" class="USER LEFTMENU-ITEM">User</a>
+						</li>
+						<li>
+							<a onclick="loadRoute('role')" class="ROLE LEFTMENU-ITEM">Role</a>
+						</li>
+						<li>
+							<a
+								onclick="loadRoute('privilege')"
+								class="PRIVILEGE LEFTMENU-ITEM"
+								>Privilages</a
+							>
+						</li>
+						<li>
+							<a
+								onclick="loadRoute('designation')"
+								class="DESIGNATION LEFTMENU-ITEM"
+								>Designation</a
+							>
+						</li>
+						<li>
+							<a
+								onclick="loadRoute('employee_status')"
+								class="EMPLOYEE_STATUS LEFTMENU-ITEM"
+								>Employee Status</a
+							>
+						</li>
+					</ul>
+				</li>
 
-      <li><i class="fa fa-male fa-fw"></i><a>Customer</a>
-        <ul class="side-nav-dropdown">
-          <li>
-            <a onclick="loadRoute('customer')" class="CUSTOMER LEFTMENU-ITEM">Customers</a>
-          </li>
-          <li>
-            <a onclick="loadRoute('customer_order')" class="CUSTOMER_ORDER LEFTMENU-ITEM">Customer Orders</a>
-          </li>
-          <li>
-            <a onclick="loadRoute('customer_invoice')" class="CUSTOMER_ORDER LEFTMENU-ITEM">Customer Invoices</a>
-          </li>
-        </ul>
-      </li>
+				<li>
+					<i class="fa fa-male fa-fw"></i><a>Customer</a>
+					<ul class="side-nav-dropdown">
+						<li>
+							<a onclick="loadRoute('customer')" class="CUSTOMER LEFTMENU-ITEM"
+								>Customers</a
+							>
+						</li>
+						<li>
+							<a
+								onclick="loadRoute('customer_order')"
+								class="CUSTOMER_ORDER LEFTMENU-ITEM"
+								>Customer Orders</a
+							>
+						</li>
+						<li>
+							<a
+								onclick="loadRoute('customer_invoice')"
+								class="CUSTOMER_ORDER LEFTMENU-ITEM"
+								>Customer Invoices</a
+							>
+						</li>
+					</ul>
+				</li>
 
-      <li><i class="fa fa-th fa-fw"></i><a>Inventory</a>
-        <ul class="side-nav-dropdown">
-          <li>
-            <a class="MATERIAL_INVENTORY LEFTMENU-ITEM" onclick="loadRoute('material_inventory')">Material Inventory</a>
-          </li>
-          <li>
-            <a class="PRODUCTION_INVENTORY LEFTMENU-ITEM" onclick="loadRoute('production_inventory')">Production
-              Inventory</a>
-          </li>
-        </ul>
-      </li>
+				<li>
+					<i class="fa fa-th fa-fw"></i><a>Inventory</a>
+					<ul class="side-nav-dropdown">
+						<li>
+							<a
+								class="MATERIAL_INVENTORY LEFTMENU-ITEM"
+								onclick="loadRoute('material_inventory')"
+								>Material Inventory</a
+							>
+						</li>
+						<li>
+							<a
+								class="PRODUCTION_INVENTORY LEFTMENU-ITEM"
+								onclick="loadRoute('production_inventory')"
+								>Production Inventory</a
+							>
+						</li>
+					</ul>
+				</li>
 
-      <li><i class="fa fa-archive fa-fw"></i><a>Product</a>
-        <ul class="side-nav-dropdown">
-          <li>
-            <a class="PRODUCT LEFTMENU-ITEM" onclick="loadRoute('product')">Products</a>
-          </li>
-          <li>
-            <a class="PRODUCT_PACKAGE LEFTMENU-ITEM" onclick="loadRoute('product_package')">Product Packages</a>
-          </li>
-          <li>
-            <a class="MATERIAL_ANALYSIS LEFTMENU-ITEM" onclick="loadRoute('material_analysis')">Material Analysis</a>
-          </li>
-          <li>
-            <a class="PRODUCT_PACKAGE_COST_ANALYSIS LEFTMENU-ITEM"
-              onclick="loadRoute('product_package_cost_analysis')">Product Package Cost
-              Analysis</a>
-          </li>
-        </ul>
-      </li>
-      <li><i class="fa fa-shopping-cart fa-fw"></i><a>Purchase</a>
-        <ul class="side-nav-dropdown">
-          <li>
-            <a class="SUPPLIER LEFTMENU-ITEM" onclick="loadRoute('supplier')">Suppliers</a>
-          </li>
-          <li>
-            <a onclick="loadRoute('material')" class="MATERIAL LEFTMENU-ITEM">Meterials</a>
-          </li>
-          <li>
-            <a onclick="loadRoute('supplier_material')" class="SUPPLIER_MATERIAL LEFTMENU-ITEM">Supplier Materials</a>
-          </li>
-          <li>
-            <a onclick="loadRoute('quotation_request')" class="QUOTATION_REQUEST LEFTMENU-ITEM">Quotation Requests</a>
-          </li>
-          <li>
-            <a onclick="loadRoute('quotation')" class="QUOTATION LEFTMENU-ITEM">Quotations</a>
-          </li>
-          <li>
-            <a class="PURCHASE_ORDER LEFTMENU-ITEM" onclick="loadRoute('purchase_order')">Purchase Orders</a>
-          </li>
-          <li>
-            <a class="GRN LEFTMENU-ITEM" onclick="loadRoute('grn')">GRN</a>
-          </li>
-          <li>
-            <a class="SUPPLIER_PAYMENT LEFTMENU-ITEM" onclick="loadRoute('supplier_payment')">Supplier Payments</a>
-          </li>
-        </ul>
-      </li>
-      <li><i class="fa fa-building fa-fw"></i><a>Production</a>
-        <ul class="side-nav-dropdown">
-          <li>
-            <a class="PRODUCTION_ORDER LEFTMENU-ITEM" onclick="loadRoute('production_order')">Production Orders</a>
-          </li>
-          <li>
-            <a class="PRODUCTION_ORDER_CONFIRM LEFTMENU-ITEM" onclick="loadRoute('production_order_confirm')">Production
-              Order
-              Confirm</a>
-          </li>
-        </ul>
-      </li>
-      <li><i class="fa fa-line-chart fa-fw"></i><a>Reports</a>
-        <ul class="side-nav-dropdown">
-          <li>
-            <a class="SALES_REPORT LEFTMENU-ITEM" onclick="loadRoute('sales_report')">Sales Report</a>
-          </li>
-          <li>
-            <a class="REVENUE_REPORT LEFTMENU-ITEM" onclick="loadRoute('revenue_report')">Revenue Report</a>
-          </li>
-          <li>
-            <a class="DEMAND_REPORT LEFTMENU-ITEM" onclick="loadRoute('demand_report')">Demand Report</a>
-          </li>
-          <li>
-            <a class="PRODUCTION_COST_REPORT LEFTMENU-ITEM" onclick="loadRoute('production_cost_report')">Production
-              Cost Report</a>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </aside>
-  <section id="contents">
-    <nav class="navbar navbar-default" style="margin-bottom: 100px;">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-            data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-            <i class="fa fa-align-right"></i>
-          </button>
-          <a class="navbar-brand"><span onclick="loadRoute('dashboard')">Two Elephants Fireworks</span> | <span
-              id="txtNavbarTitle" class="main-color">Dashboard</span></a>
-        </div>
-        <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav">
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                aria-expanded="false">My profile <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="./?page=profile"><i class="fa fa-user-o fw"></i> My account</a></li>
-                <li role="separator" class="divider"></li>
-                <li onclick="logOut();"><a href="#"><i class="fa fa-sign-out"></i> Log out</a></li>
-              </ul>
-            </li>
-            <li><a><i data-show="show-side-navigation1" class="fa fa-bars show-side-btn"></i></a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+				<li>
+					<i class="fa fa-archive fa-fw"></i><a>Product</a>
+					<ul class="side-nav-dropdown">
+						<li>
+							<a class="PRODUCT LEFTMENU-ITEM" onclick="loadRoute('product')"
+								>Products</a
+							>
+						</li>
+						<li>
+							<a
+								class="PRODUCT_PACKAGE LEFTMENU-ITEM"
+								onclick="loadRoute('product_package')"
+								>Product Packages</a
+							>
+						</li>
+						<li>
+							<a
+								class="MATERIAL_ANALYSIS LEFTMENU-ITEM"
+								onclick="loadRoute('material_analysis')"
+								>Material Analysis</a
+							>
+						</li>
+						<li>
+							<a
+								class="PRODUCT_PACKAGE_COST_ANALYSIS LEFTMENU-ITEM"
+								onclick="loadRoute('product_package_cost_analysis')"
+								>Product Package Cost Analysis</a
+							>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<i class="fa fa-shopping-cart fa-fw"></i><a>Purchase</a>
+					<ul class="side-nav-dropdown">
+						<li>
+							<a class="SUPPLIER LEFTMENU-ITEM" onclick="loadRoute('supplier')"
+								>Suppliers</a
+							>
+						</li>
+						<li>
+							<a onclick="loadRoute('material')" class="MATERIAL LEFTMENU-ITEM"
+								>Meterials</a
+							>
+						</li>
+						<li>
+							<a
+								onclick="loadRoute('supplier_material')"
+								class="SUPPLIER_MATERIAL LEFTMENU-ITEM"
+								>Supplier Materials</a
+							>
+						</li>
+						<li>
+							<a
+								onclick="loadRoute('quotation_request')"
+								class="QUOTATION_REQUEST LEFTMENU-ITEM"
+								>Quotation Requests</a
+							>
+						</li>
+						<li>
+							<a
+								onclick="loadRoute('quotation')"
+								class="QUOTATION LEFTMENU-ITEM"
+								>Quotations</a
+							>
+						</li>
+						<li>
+							<a
+								class="PURCHASE_ORDER LEFTMENU-ITEM"
+								onclick="loadRoute('purchase_order')"
+								>Purchase Orders</a
+							>
+						</li>
+						<li>
+							<a class="GRN LEFTMENU-ITEM" onclick="loadRoute('grn')">GRN</a>
+						</li>
+						<li>
+							<a
+								class="SUPPLIER_PAYMENT LEFTMENU-ITEM"
+								onclick="loadRoute('supplier_payment')"
+								>Supplier Payments</a
+							>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<i class="fa fa-building fa-fw"></i><a>Production</a>
+					<ul class="side-nav-dropdown">
+						<li>
+							<a
+								class="PRODUCTION_ORDER LEFTMENU-ITEM"
+								onclick="loadRoute('production_order')"
+								>Production Orders</a
+							>
+						</li>
+						<li>
+							<a
+								class="PRODUCTION_ORDER_CONFIRM LEFTMENU-ITEM"
+								onclick="loadRoute('production_order_confirm')"
+								>Production Order Confirm</a
+							>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<i class="fa fa-line-chart fa-fw"></i><a>Reports</a>
+					<ul class="side-nav-dropdown">
+						<li>
+							<a
+								class="SALES_REPORT LEFTMENU-ITEM"
+								onclick="loadRoute('sales_report')"
+								>Sales Report</a
+							>
+						</li>
+						<li>
+							<a
+								class="REVENUE_REPORT LEFTMENU-ITEM"
+								onclick="loadRoute('revenue_report')"
+								>Revenue Report</a
+							>
+						</li>
+						<li>
+							<a
+								class="DEMAND_REPORT LEFTMENU-ITEM"
+								onclick="loadRoute('demand_report')"
+								>Demand Report</a
+							>
+						</li>
+						<li>
+							<a
+								class="PRODUCTION_COST_REPORT LEFTMENU-ITEM"
+								onclick="loadRoute('production_cost_report')"
+								>Production Cost Report</a
+							>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</aside>
+		<section id="contents">
+			<nav class="navbar navbar-default" style="margin-bottom: 100px">
+				<div class="container-fluid">
+					<div class="navbar-header">
+						<button
+							type="button"
+							class="navbar-toggle collapsed"
+							data-toggle="collapse"
+							data-target="#bs-example-navbar-collapse-1"
+							aria-expanded="false"
+						>
+							<i class="fa fa-align-right"></i>
+						</button>
+						<a class="navbar-brand"
+							><span onclick="loadRoute('dashboard')"
+								>Two Elephants Fireworks</span
+							>
+							| <span id="txtNavbarTitle" class="main-color">Dashboard</span></a
+						>
+					</div>
+					<div
+						class="collapse navbar-collapse navbar-right"
+						id="bs-example-navbar-collapse-1"
+					>
+						<ul class="nav navbar-nav">
+							<li class="dropdown">
+								<a
+									href="#"
+									class="dropdown-toggle"
+									data-toggle="dropdown"
+									role="button"
+									aria-haspopup="true"
+									aria-expanded="false"
+									>My profile <span class="caret"></span
+								></a>
+								<ul class="dropdown-menu">
+									<li>
+										<a href="./?page=profile"
+											><i class="fa fa-user-o fw"></i> My account</a
+										>
+									</li>
+									<li role="separator" class="divider"></li>
+									<li onclick="logOut();">
+										<a href="#"><i class="fa fa-sign-out"></i> Log out</a>
+									</li>
+								</ul>
+							</li>
+							<li>
+								<a
+									><i
+										data-show="show-side-navigation1"
+										class="fa fa-bars show-side-btn"
+									></i
+								></a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</nav>
 
-    <!-- iframe content -->
-    <div class="container-fluid" style="background-color: white; padding-right: 0; padding-left: 0;">
-      <div class="iframeMainHolder">
-        <iframe id="iframeMain" class="full-size" src="" frameborder="0"></iframe>
-      </div>
-    </div>
+			<!-- iframe content -->
+			<div
+				class="container-fluid"
+				style="background-color: white; padding-right: 0; padding-left: 0"
+			>
+				<div class="iframeMainHolder">
+					<iframe
+						id="iframeMain"
+						class="full-size"
+						src=""
+						frameborder="0"
+					></iframe>
+				</div>
+			</div>
+		</section>
 
-  </section>
+		<!-- modal for showing outputs -->
+		<div class="modal fade" id="modalOutput" role="dialog">
+			<div class="modal-dialog" id="modalOutputCss">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							&times;
+						</button>
+						<h4 class="modal-title" id="modalOutputTitle">Modal Header</h4>
+					</div>
+					<div class="modal-body" id="modalOutputBody"></div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">
+							Close
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
+		<!-- modal for showing different pages -->
+		<div class="modal fade" id="modalView" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-body" id="modalOutputBody">
+						<iframe
+							id="modalViewIframe"
+							frameborder="0"
+							style="width: 100%; height: 100%"
+						></iframe>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">
+							Close
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
-  <!-- modal for showing outputs -->
-  <div class="modal fade" id="modalOutput" role="dialog">
-    <div class="modal-dialog" id="modalOutputCss">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title" id="modalOutputTitle">Modal Header</h4>
-        </div>
-        <div class="modal-body" id="modalOutputBody">
+		<!-- modal for confirming -->
+		<div class="modal fade" id="modalConfirm" role="dialog">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							&times;
+						</button>
+						<h4 class="modal-title" id="modalConfirmTitle">Modal Header</h4>
+					</div>
+					<div class="modal-body" id="modalConfirmBody"></div>
+					<div class="modal-footer">
+						<button
+							id="btnModalYes"
+							type="button"
+							class="btn btn-danger"
+							style="float: left"
+						>
+							Yes
+						</button>
+						<button
+							id="btnModalNo"
+							type="button"
+							class="btn btn-default"
+							data-dismiss="modal"
+						>
+							No
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
+		<!-- libraries -->
+		<script src="./lib/jquery/jquery.min.js"></script>
+		<script src="./lib/jquerytoast/js/jquery.toast.min.js"></script>
+		<script src="./lib/bootstrap/js/bootstrap.min.js"></script>
+		<script src="./lib/dashboard/js/theme.js"></script>
 
-  <!-- modal for showing different pages -->
-  <div class="modal fade" id="modalView" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-body" id="modalOutputBody">
-          <iframe id="modalViewIframe" frameborder="0" style="width: 100%; height: 100%"></iframe>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
+		<!-- other -->
+		<script src="./js/MiscUtil.js"></script>
+		<script src="./js/router.js"></script>
 
-  <!-- modal for confirming -->
-  <div class="modal fade" id="modalConfirm" role="dialog">
-    <div class="modal-dialog modal-sm">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title" id="modalConfirmTitle">Modal Header</h4>
-        </div>
-        <div class="modal-body" id="modalConfirmBody">
-
-        </div>
-        <div class="modal-footer">
-          <button id="btnModalYes" type="button" class="btn btn-danger" style="float:left">Yes</button>
-          <button id="btnModalNo" type="button" class="btn btn-default" data-dismiss="modal">No</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- libraries -->
-  <script src="./lib/jquery/jquery.min.js"></script>
-  <script src="./lib/jquerytoast/js/jquery.toast.min.js"></script>
-  <script src="./lib/bootstrap/js/bootstrap.min.js"></script>
-  <script src="./lib/dashboard/js/theme.js"></script>
-
-  <!-- other -->
-  <script src="./js/MiscUtil.js"></script>
-  <script src="./js/router.js"></script>
-
-  <script>
-    /*-------------------------------------------------------------------------------------------------------
+		<script>
+			/*-------------------------------------------------------------------------------------------------------
                                               Window Data
     -------------------------------------------------------------------------------------------------------*/
-    // privileges will have {module name: 0101} style 
-    window.tempData = { profile: null, privileges: {} };
+			// privileges will have {module name: 0101} style
+			window.tempData = { profile: null, privileges: {} };
 
-    $(document).ready(() => {
-      // get profile using fetch api
-      fetch("http://localhost:3000/api/profile").then(res => {
-        return res.json();
+			// refresh on back button (when url changes)
+			window.addEventListener("popstate", function (event) {
+				window.location.reload();
+			});
 
-      }).then(response => {
-        if (!response.status) {
-          showOutputModal("Error", "Unable to retrive employee profile!.");
-          window.location = "./login.html";
-          return;
-        }
+			$(document).ready(() => {
+				// get profile using fetch api
+				fetch("http://localhost:3000/api/profile")
+					.then((res) => {
+						return res.json();
+					})
+					.then((response) => {
+						if (!response.status) {
+							showOutputModal("Error", "Unable to retrive employee profile!.");
+							window.location = "./login.html";
+							return;
+						}
 
-        // get data from the response
-        const data = response.data;
+						// get data from the response
+						const data = response.data;
 
-        // show avatar on dhashboard side menu
-        const avatarUrl = MiscUtil.getURLfromBuffer(data.employee.photo);
+						// show avatar on dhashboard side menu
+						const avatarUrl = MiscUtil.getURLfromBuffer(data.employee.photo);
 
-        // set global object
-        tempData.profile = data;
+						// set global object
+						tempData.profile = data;
 
-        // show employee details
-        $("#txtEmployeeName").text(data.employee.fullName);
-        $("#txtEmployeeRole").text(data.employee.designation.name);
+						// show employee details
+						$("#txtEmployeeName").text(data.employee.fullName);
+						$("#txtEmployeeRole").text(data.employee.designation.name);
 
+						$("#imgAvatar").attr("src", avatarUrl);
 
-        $("#imgAvatar").attr("src", avatarUrl);
+						// hide all menu items
+						$(".LEFTMENU-ITEM").hide();
 
-        // hide all menu items
-        $(".LEFTMENU-ITEM").hide();
+						// hide all menu titles
+						$(".LEFTMENU-ITEM").parent().parent().parent().hide();
 
-        // hide all menu titles
-        $(".LEFTMENU-ITEM").parent().parent().parent().hide();
+						// build privileges from the response and update UI
+						Object.keys(data.privileges).forEach((moduleName) => {
+							const permission = data.privileges[moduleName];
+							tempData.privileges[moduleName] = permission;
+							// update ui
+							$(".LEFTMENU-ITEM").each((i, menuItem) => {
+								if (
+									$(menuItem).hasClass(moduleName) &&
+									permission.split("")[1] == 1
+								) {
+									$(menuItem).show();
+									$(menuItem).parent().parent().parent().show();
+								}
+							});
+						});
 
+						// save privilages for later use
+						//localStorage.setItem("privileges", JSON.stringify(tempData.privileges));
 
-        // build privileges from the response and update UI
-        Object.keys(data.privileges).forEach(moduleName => {
-          const permission = data.privileges[moduleName];
-          tempData.privileges[moduleName] = permission;
-          // update ui
-          $(".LEFTMENU-ITEM").each((i, menuItem) => {
-            if ($(menuItem).hasClass(moduleName) && permission.split("")[1] == 1) {
-              $(menuItem).show();
-              $(menuItem).parent().parent().parent().show();
-            }
-          });
-        });
+						// check window location and load correct page (route)
+						const urlParams = new URLSearchParams(window.location.search);
+						let routeName = urlParams.get("page");
 
+						// if route name is not given in the url, load dashboard
+						if (!routeName || routeName.trim() == "") routeName = "dashboard";
 
-        // save privilages for later use
-        //localStorage.setItem("privileges", JSON.stringify(tempData.privileges));
+						// show parameter is for showing a specific entry in some modules.
+						// ex: Customer Order when calender entry is clicked
+						const show = urlParams.get("show");
 
-        // check window location and load correct page (route)
-        const urlParams = new URLSearchParams(window.location.search);
-        let routeName = urlParams.get("page");
+						// load route
+						if (show) {
+							loadRoute(routeName, `?show=${show}`);
+						} else {
+							loadRoute(routeName);
+						}
+					})
+					.catch((e) => {
+						console.log(e);
+						showOutputModal(
+							"Error",
+							"Something went wrong while reading your profile!."
+						);
+						return;
+					});
+			});
 
-        // if route name is not given in the url, load dashboard
-        if (!routeName || routeName.trim() == "") routeName = "dashboard";
+			// when iframe is load
+			$("#iframeMain").on("load", () => {
+				// check logged in
+				updateRouteInfo();
+			});
 
-        // show parameter is for showing a specific entry in some modules. 
-        // ex: Customer Order when calender entry is clicked
-        const show = urlParams.get("show");
+			// logout from the system
+			const logOut = () => {
+				fetch("http://localhost:3000/api/logOut")
+					.then((res) => {
+						return res.json();
+					})
+					.then((data) => {
+						if (data.status) {
+							loadRoute("noauth");
+						} else {
+							showOutputModal("Error!.", "You need to be logged in first!.");
+						}
+					})
+					.catch((e) => {
+						showOutputModal("Error!.", "Unable to send a logout request.");
+					});
+			};
 
-        // load route
-        if (show) {
-          loadRoute(routeName, `?show=${show}`);
-        } else {
-          loadRoute(routeName);
-        }
+			// controls modal for showing various outputs
+			const showOutputModal = (title, body, size = "sm") => {
+				$("#modalOutputCss").addClass(`modal-${size}`);
+				$("#modalOutputTitle").text(title);
+				$("#modalOutputBody").html("Unknown");
+				$("#modalOutputBody").html(body);
+				$("#modalOutput").modal();
+			};
 
-      }).catch(e => {
-        console.log(e);
-        showOutputModal("Error", "Something went wrong while reading your profile!.");
-        return;
-      });
-    });
+			// controls modal for showing different views inside iframe
+			const showViewModal = (src, height = "100vh") => {
+				$("#modalViewIframe").attr("src", src);
+				$("#modalViewIframe").css("min-height", height);
+				$("#modalView").modal();
+			};
 
+			// controls toast for showing various outputs
+			const showOutputToast = (title, body, type = "success") => {
+				$.toast({
+					heading: title,
+					text: body,
+					hideAfter: 4000,
+					position: "bottom-right",
+					icon: type,
+					stack: false,
+				});
+			};
 
-    // when iframe is load
-    $("#iframeMain").on("load", () => {
-      // check logged in
-      updateRouteInfo();
-    });
-
-    // logout from the system
-    const logOut = () => {
-      fetch("http://localhost:3000/api/logOut").then(res => {
-        return res.json();
-      }).then(data => {
-        if (data.status) {
-          loadRoute("noauth");
-        } else {
-          showOutputModal("Error!.", "You need to be logged in first!.");
-        }
-      }).catch(e => {
-        showOutputModal("Error!.", "Unable to send a logout request.");
-      });
-    }
-
-    // controls modal for showing various outputs
-    const showOutputModal = (title, body, size = "sm") => {
-      $("#modalOutputCss").addClass(`modal-${size}`);
-      $("#modalOutputTitle").text(title);
-      $("#modalOutputBody").html("Unknown");
-      $("#modalOutputBody").html(body);
-      $("#modalOutput").modal();
-    }
-
-    // controls modal for showing different views inside iframe
-    const showViewModal = (src, height = "100vh") => {
-      $("#modalViewIframe").attr("src", src);
-      $("#modalViewIframe").css("min-height", height);
-      $("#modalView").modal();
-    }
-
-    // controls toast for showing various outputs
-    const showOutputToast = (title, body, type = "success") => {
-      $.toast({
-        heading: title,
-        text: body,
-        hideAfter: 4000,
-        position: "bottom-right",
-        icon: type,
-        stack: false,
-      })
-    }
-
-    // show confirmation modal
-    const showConfirmModal = (title, body) => {
-      return new Promise((resolve, reject) => {
-        $("#modalConfirmTitle").text(title);
-        $("#modalConfirmBody").html("Unknown");
-        $("#modalConfirmBody").html(body);
-        $("#modalConfirm").modal();
-        $("#btnModalYes").on("click", () => {
-          resolve(true);
-          $("#modalConfirm").modal("hide");
-        });
-        $("#btnModalNo").on("click", () => {
-          resolve(false);
-        });
-      });
-    }
-  </script>
-
-</body>
-
+			// show confirmation modal
+			const showConfirmModal = (title, body) => {
+				return new Promise((resolve, reject) => {
+					$("#modalConfirmTitle").text(title);
+					$("#modalConfirmBody").html("Unknown");
+					$("#modalConfirmBody").html(body);
+					$("#modalConfirm").modal();
+					$("#btnModalYes").on("click", () => {
+						resolve(true);
+						$("#modalConfirm").modal("hide");
+					});
+					$("#btnModalNo").on("click", () => {
+						resolve(false);
+					});
+				});
+			};
+		</script>
+	</body>
 </html>
