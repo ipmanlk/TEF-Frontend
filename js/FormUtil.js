@@ -122,7 +122,7 @@ class FormUtil {
 		// create new window and print the table
 		const stylesheet =
 			"http://localhost:3000/lib/bootstrap/css/bootstrap.min.css";
-		const win = window.open("", "Print", "width=500,height=300");
+		const win = window.open("", "Print", "width=1000,height=600");
 		win.document.write(
 			`<html><head><link rel="stylesheet" href="${stylesheet}"></head><body>${table}</body></html>`
 		);
