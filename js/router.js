@@ -5,6 +5,7 @@ const loadRoute = (route, optionParams = "") => {
 	// if route doesn't exist
 	if (!routes[route]) {
 		window.alert("This route doesnt exist (404)");
+		window.location = "/index.html?page=dashboard";
 		return;
 	}
 
