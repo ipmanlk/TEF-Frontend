@@ -288,6 +288,11 @@ const loadEntry = async (id) => {
 	// add to product packages table
 	$("#productPackageTable tbody").empty();
 
+	FormUtil.selectDropdownOptionByValue(
+		"customerOrderStatusId",
+		entry.customerOrderStatus.id
+	);
+
 	entry.customerOrderProductPackages.forEach((pkg) => {
 		addRowToProductPackageTable({
 			productPackageId: pkg.productPackage.id,
@@ -306,6 +311,80 @@ const loadEntry = async (id) => {
 		$("#mainForm #customerOrderStatusId option:selected").text() == "Deleted"
 	) {
 		$(".btnFmDelete").hide();
+	}
+
+	// show if order is fulfillable or not
+	if (entry.customerOrderStatus.id == 1) {
+		showFulfillableStatus();
+	}
+};
+
+// show if the order is fulfillable
+const showFulfillableStatus = async () => {
+	const response = await Request.send("/api/production_inventory", "GET");
+
+	// this has all available product pkg qtys including respective product pkg objects
+	const productionInventory = response.data;
+
+	const lowProductPackages = [];
+	const orderProductPackages = [];
+
+	// compare current order product package qtys
+	tempData.selectedEntry.customerOrderProductPackages.forEach((pkg) => {
+		const productPackageId = pkg.productPackage.id;
+		const inventoryEntry = productionInventory.find(
+			(i) => i.productPackage.id == productPackageId
+		);
+
+		console.log(inventoryEntry);
+		if (inventoryEntry.availableQty < pkg.qty) {
+			lowProductPackages.push({
+				productPackage: pkg.productPackage,
+				availableQty: inventoryEntry.availableQty,
+				requiredQty: pkg.qty,
+				missingQty: pkg.qty - inventoryEntry.availableQty,
+			});
+		}
+
+		orderProductPackages.push({
+			productPackage: pkg.productPackage,
+			availableQty: inventoryEntry.availableQty,
+			requiredQty: pkg.qty,
+		});
+	});
+
+	// no low product packages
+	if (lowProductPackages.length > 0) {
+		$("#lowProductPkgListTable tbody").empty();
+		lowProductPackages.forEach((p, index) => {
+			$("#lowProductPkgListTable tbody").append(`
+					<tr>
+						<td>${index + 1}</td>
+						<td>${p.productPackage.name} (${p.productPackage.code})</td>
+						<td>${p.requiredQty}</td>
+						<td>${p.availableQty}</td>
+						<td>${p.missingQty}</td>
+					</tr>
+				`);
+		});
+
+		$("#lowProductPkgPanel").show();
+		$("#okProductPkgPanel").hide();
+	} else {
+		$("#okProductPkgListTable tbody").empty();
+		orderProductPackages.forEach((p, index) => {
+			$("#okProductPkgListTable tbody").append(`
+					<tr>
+						<td>${index + 1}</td>
+						<td>${p.productPackage.name} (${p.productPackage.code})</td>
+						<td>${p.requiredQty}</td>
+						<td>${p.availableQty}</td>
+					</tr>
+				`);
+		});
+
+		$("#lowProductPkgPanel").hide();
+		$("#okProductPkgPanel").show();
 	}
 };
 
