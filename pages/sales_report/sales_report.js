@@ -31,6 +31,10 @@ const registerEventListeners = () => {
 		const dtStartDate = new Date(startDate);
 		const dtEndDate = new Date(endDate);
 
+		today.setHours(0, 0, 0, 0);
+		dtStartDate.setHours(0, 0, 0, 0);
+		dtEndDate.setHours(0, 0, 0, 0);
+
 		if (today < dtStartDate || today < dtEndDate) {
 			mainWindow.showOutputModal(
 				"Sorry!",
