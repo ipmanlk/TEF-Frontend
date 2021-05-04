@@ -301,15 +301,41 @@ const showCustomerOrdersAndInfo = async (customerId) => {
 		},
 	});
 
-	// if request failed
-	if (!response.status) return;
-
 	const customerOrders = response.data;
+
+	// cross check each customer order with production inventory and filter out unfuilfiable ones
+	const invResponse = await Request.send("/api/production_inventory", "GET");
+
+	const productionInventory = invResponse.data;
+
+	const filteredCustomerOrders = [];
+
+	for (const co of customerOrders) {
+		const coRes = await Request.send("/api/customer_orders", "GET", {
+			data: { id: co.id },
+		});
+		const customerOrder = coRes.data;
+
+		let fulfillable = true;
+		for (const pkg of customerOrder.customerOrderProductPackages) {
+			const inventoryEntry = productionInventory.find(
+				(i) => i.productPackage.id == pkg.productPackage.id
+			);
+
+			if (inventoryEntry.availableQty < pkg.qty) {
+				fulfillable = false;
+			}
+		}
+
+		if (fulfillable) {
+			filteredCustomerOrders.push(co);
+		}
+	}
 
 	// update select picker options
 	$("#customerOrderId").first().empty();
 
-	customerOrders.forEach((co) => {
+	filteredCustomerOrders.forEach((co) => {
 		$("#customerOrderId")
 			.first()
 			.append(
