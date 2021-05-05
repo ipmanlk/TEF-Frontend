@@ -169,11 +169,7 @@ const showEditEntryModal = async (id, readOnly = false) => {
 	$("#modalMainForm").modal("show");
 
 	// calculate cost
-	response = await Request.send("/api/material_analysis", "GET", {
-		data: { productId: id },
-	});
-
-	let materials = response.data;
+	const materials = response.data.materialAnalysis;
 	let cost = 0;
 
 	materials.forEach((m) => {
