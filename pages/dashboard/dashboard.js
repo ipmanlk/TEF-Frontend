@@ -223,6 +223,7 @@ const updateSideBar = async () => {
 			"Owner",
 			"Shop Manager",
 			"Assistant Shop Manager",
+			"Cashier",
 		])
 	) {
 		customerOrders.forEach((i) => {
