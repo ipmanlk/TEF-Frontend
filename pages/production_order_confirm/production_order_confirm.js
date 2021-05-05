@@ -396,6 +396,7 @@ const showEditEntryModal = (id, readOnly = false) => {
 		$("#mainForm #confirmedDate").val(new Date().today());
 
 		const inventoryStatus = await checkMaterialInventory();
+		$("#lowMaterialPanel, #materialPanel").show();
 
 		if (inventoryStatus.status) {
 			// production order can be confirmed
@@ -468,6 +469,10 @@ const showEditEntryModal = (id, readOnly = false) => {
 
 		if (inventoryStatus.lowMaterials.length == 0) {
 			$("#lowMaterialPanel").hide();
+		}
+
+		if (productionOrderStatusName != "Pending") {
+			$("#lowMaterialPanel, #materialPanel").hide();
 		}
 
 		$("#modalMainForm").modal("show");
