@@ -102,6 +102,17 @@ const registerEventListeners = () => {
 
 		$("#salePrice").val(salePrice.toFixed(2));
 	});
+
+	// set day limits
+	const date = new Date();
+	const validFrom = $("#validFrom");
+	const validTo = $("#validTo");
+	validFrom.attr("min", date.formatForInput());
+	validTo.attr("min", date.addDays(1).formatForInput());
+
+	validFrom.on("change keyup", (e) => {
+		validTo.attr("min", new Date(e.target.value).addDays(1).formatForInput());
+	});
 };
 
 const showProductPackageInfo = async (productPackageId) => {

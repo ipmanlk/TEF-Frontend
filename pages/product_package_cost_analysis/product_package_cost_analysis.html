@@ -1,18 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>TwoElephantFireworks - Material Analysis</title>
+		<link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css" />
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="../../lib/datatable/datatable.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="../../lib/bootstrap-select/css/bootstrap-select.min.css"
+		/>
+		<link rel="stylesheet" type="text/css" href="../../css/pages/common.css" />
+	</head>
 
-<head>
-  <meta charset="UTF-8" />
-  <title>TwoElephantFireworks - Material Analysis</title>
-  <link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css" />
-  <link rel="stylesheet" type="text/css" href="../../lib/datatable/datatable.css" />
-  <link rel="stylesheet" type="text/css" href="../../lib/bootstrap-select/css/bootstrap-select.min.css" />
-  <link rel="stylesheet" type="text/css" href="../../css/pages/common.css" />
-</head>
-
-<body>
-  <div class="container" style="margin-top: 20px; margin-bottom: 100px">
-    <!-- <div id="actionButtonHolder" class="row" style="margin-bottom: 20px;">
+	<body>
+		<div class="container" style="margin-top: 20px; margin-bottom: 100px">
+			<!-- <div id="actionButtonHolder" class="row" style="margin-bottom: 20px;">
 			<div class="col-md-12">
 				<button id="btnTopAddSupplier" class="btn btn-primary">
 					<i class="glyphicon glyphicon-eye-open" aria-hidden="true"></i>
@@ -25,128 +32,188 @@
 			</div>
 		</div> -->
 
-    <form id="mainForm">
-      <div class="row">
-        <div class="col-md-12">
-          <div style="float: right;">
-            <b><span class="required">*</span> Required field</b>
-          </div>
-        </div>
-      </div>
+			<form id="mainForm">
+				<div class="row">
+					<div class="col-md-12">
+						<div style="float: right">
+							<b><span class="required">*</span> Required field</b>
+						</div>
+					</div>
+				</div>
 
+				<div class="form-group has-feedback">
+					<label for="productPackageId"
+						>Product Package: <span class="required">*</span></label
+					>
+					<br />
+					<select
+						id="productPackageId"
+						class="form-control"
+						title="Firecracker Small Pack (PKG202000000)"
+						data-live-search="true"
+					></select>
+				</div>
+				<div class="row">
+					<div class="col-md-4">
+						<div class="form-group has-feedback">
+							<label for="productionCost"
+								>Production Cost: <span class="required">*</span></label
+							>
+							<input
+								type="text"
+								class="form-control"
+								id="productionCost"
+								placeholder="20.00"
+								name="productionCost"
+								disabled
+							/>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group has-feedback">
+							<label for="materialCost"
+								>Material Cost: <span class="required">*</span></label
+							>
+							<input
+								type="text"
+								class="form-control"
+								id="materialCost"
+								placeholder="20.00"
+								name="materialCost"
+								disabled
+							/>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group has-feedback">
+							<label for="totalCost"
+								>Total Cost: <span class="required">*</span></label
+							>
+							<input
+								type="text"
+								class="form-control"
+								id="totalCost"
+								placeholder="20.00"
+								name="totalCost"
+								disabled
+							/>
+						</div>
+					</div>
+				</div>
 
-      <div class="form-group has-feedback">
-        <label for="productPackageId">Product Package: <span class="required">*</span></label>
-        <br />
-        <select id="productPackageId" class="form-control" title="Firecracker Small Pack (PKG202000000)"
-          data-live-search="true">
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group has-feedback">
+							<label for="profitRatio"
+								>Profit Ratio: <span class="required">*</span></label
+							>
+							<input
+								type="text"
+								class="form-control"
+								id="profitRatio"
+								placeholder="10.00"
+								name="profitRatio"
+								data-editable="true"
+							/>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group has-feedback">
+							<label for="salePrice"
+								>Sale Price: <span class="required">*</span></label
+							>
+							<input
+								type="text"
+								class="form-control"
+								id="salePrice"
+								placeholder="20.00"
+								name="salePrice"
+								data-editable="true"
+							/>
+						</div>
+					</div>
+				</div>
 
-        </select>
-      </div>
-      <div class="row">
-        <div class="col-md-4">
-          <div class="form-group has-feedback">
-            <label for="productionCost">Production Cost: <span class="required">*</span></label>
-            <input type="text" class="form-control" id="productionCost" placeholder="20.00" name="productionCost"
-              disabled />
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="form-group has-feedback">
-            <label for="materialCost">Material Cost: <span class="required">*</span></label>
-            <input type="text" class="form-control" id="materialCost" placeholder="20.00" name="materialCost"
-              disabled />
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="form-group has-feedback">
-            <label for="totalCost">Total Cost: <span class="required">*</span></label>
-            <input type="text" class="form-control" id="totalCost" placeholder="20.00" name="totalCost" disabled />
-          </div>
-        </div>
-      </div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group has-feedback">
+							<label for="validFrom"
+								>Valid From: <span class="required">*</span></label
+							>
+							<input
+								type="date"
+								class="form-control"
+								id="validFrom"
+								name="validFrom"
+								data-editable="true"
+							/>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group has-feedback">
+							<label for="validTo"
+								>Valid To: <span class="required">*</span></label
+							>
+							<input
+								type="date"
+								class="form-control"
+								id="validTo"
+								name="validTo"
+								data-editable="true"
+							/>
+						</div>
+					</div>
+				</div>
 
-      <div class="row">
-        <div class="col-md-6">
-          <div class="form-group has-feedback">
-            <label for="profitRatio">Profit Ratio: <span class="required">*</span></label>
-            <input type="text" class="form-control" id="profitRatio" placeholder="10.00" name="profitRatio"
-              data-editable="true" />
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form-group has-feedback">
-            <label for="salePrice">Sale Price: <span class="required">*</span></label>
-            <input type="text" class="form-control" id="salePrice" placeholder="20.00" name="salePrice"
-              data-editable="true" />
-          </div>
-        </div>
-      </div>
+				<div class="form-group">
+					<button id="btnAddSalePriceTable" class="btn btn-primary btn-block">
+						Add to List
+					</button>
+				</div>
 
-      <div class="row">
-        <div class="col-md-6">
-          <div class="form-group has-feedback">
-            <label for="validFrom">Valid From: <span class="required">*</span></label>
-            <input type="date" class="form-control" id="validFrom" name="validFrom" data-editable="true" />
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form-group has-feedback">
-            <label for="validTo">Valid To: <span class="required">*</span></label>
-            <input type="date" class="form-control" id="validTo" name="validTo" data-editable="true" />
-          </div>
-        </div>
-      </div>
-
-
-      <div class="form-group">
-        <button id="btnAddSalePriceTable" class="btn btn-primary btn-block">
-          Add to List
-        </button>
-      </div>
-
-      <div class="form-group" style="margin-top: 20px;">
-        <table id="salePriceTable" class="table table-bordered">
-          <thead>
-            <tr>
-              <th>Index</th>
-              <th>Production Cost</th>
-              <th>Material Cost</th>
-              <th>Total Cost</th>
-              <th>Profit Ratio</th>
-              <th>Sale Price</th>
-              <th>Valid From</th>
-              <th>Valid To</th>
-              <th>Added Date</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div id="fmButtons">
-        <button type="button" class="btnFmUpdate btn btn-warning">Update</button>
-        <!-- <button type="button" class="btnFmReset btn btn-danger" style="float: right">
+				<div class="form-group" style="margin-top: 20px">
+					<table id="salePriceTable" class="table table-bordered">
+						<thead>
+							<tr>
+								<th>Index</th>
+								<th>Production Cost</th>
+								<th>Material Cost</th>
+								<th>Total Cost</th>
+								<th>Profit Ratio</th>
+								<th>Sale Price</th>
+								<th>Valid From</th>
+								<th>Valid To</th>
+								<th>Added Date</th>
+								<th>Delete</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+				<div id="fmButtons">
+					<button type="button" class="btnFmUpdate btn btn-warning">
+						Update
+					</button>
+					<!-- <button type="button" class="btnFmReset btn btn-danger" style="float: right">
           Clear All
         </button> -->
-      </div>
-    </form>
-  </div>
+				</div>
+			</form>
+		</div>
 
-  <!-- libs -->
-  <script src="../../lib/jquery/jquery.min.js"></script>
-  <script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
-  <script src="../../lib/bootstrap-select/js/bootstrap-select.min.js"></script>
-  <script src="../../lib/datatable/datatable.v2.js"></script>
-  <script src="../../lib/moment/moment.min.js"></script>
-  <!-- common stuff -->
-  <script src="../../js/Request.js"></script>
-  <script src="../../js/Form.js"></script>
-  <script src="../../js/FormUtil.js"></script>
-  <script src="../../js/MiscUtil.js"></script>
+		<!-- libs -->
+		<script src="../../lib/jquery/jquery.min.js"></script>
+		<script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
+		<script src="../../lib/bootstrap-select/js/bootstrap-select.min.js"></script>
+		<script src="../../lib/datatable/datatable.v2.js"></script>
+		<script src="../../lib/moment/moment.min.js"></script>
+		<!-- common stuff -->
+		<script src="../../js/Request.js"></script>
+		<script src="../../js/Form.js"></script>
+		<script src="../../js/FormUtil.js"></script>
+		<script src="../../js/MiscUtil.js"></script>
 
-  <!-- main js -->
-  <script src="./product_package_cost_analysis.js"></script>
-</body>
-
+		<!-- main js -->
+		<script src="./product_package_cost_analysis.js"></script>
+	</body>
 </html>
