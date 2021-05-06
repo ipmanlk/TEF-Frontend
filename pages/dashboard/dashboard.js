@@ -123,17 +123,21 @@ function updateTiles() {
 		// get random color for tile
 		const color = colors[Math.floor(Math.random() * colors.length)];
 
-		// append tile
-		const tile = `
-        <div class="card TILE ${module}" style="background-color: ${color}; opacity: 0.8;" onclick="mainWindow.loadRoute('${module.toLowerCase()}')">
-            <div class="card-body text-center">
-                <h1>${tileInfo[module].title}</h1>
-                <i class="fa fa-3x ${tileInfo[module].icon}"></i>
-            </div>
-        </div>
-        `;
+		try {
+			// append tile
+			const tile = `
+		<div class="card TILE ${module}" style="background-color: ${color}; opacity: 0.8;" onclick="mainWindow.loadRoute('${module.toLowerCase()}')">
+				<div class="card-body text-center">
+						<h1>${tileInfo[module].title}</h1>
+						<i class="fa fa-3x ${tileInfo[module].icon}"></i>
+				</div>
+		</div>
+		`;
 
-		$("#tileList").append(tile);
+			$("#tileList").append(tile);
+		} catch (e) {
+			return;
+		}
 	});
 
 	// update right sidebar and calenders
