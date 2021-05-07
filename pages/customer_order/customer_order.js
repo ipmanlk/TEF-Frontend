@@ -748,9 +748,17 @@ const showNewEntryModal = () => {
 	$("#requiredDate").attr("min", new Date().addDays(1).formatForInput());
 	// show modal
 	$("#modalMainForm").modal("show");
+
+	// hide panels
+	$("#lowProductPkgPanel").hide();
+	$("#okProductPkgPanel").hide();
+
+	FormUtil.selectDropdownOptionByValue("customerOrderStatusId", 1);
+	$("#customerOrderStatusId").attr("disabled", true);
 };
 
 const showEditEntryModal = (id, readOnly = false) => {
+	$("#customerOrderStatusId").attr("disabled", false);
 	loadEntry(id).then(() => {
 		$("#modalMainForm").modal("show");
 
