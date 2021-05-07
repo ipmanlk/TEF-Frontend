@@ -1,206 +1,305 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>TwoElephantFireworks - Purchase Order</title>
+		<link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css" />
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="../../lib/datatable/datatable.css"
+		/>
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="../../lib/bootstrap-select/css/bootstrap-select.min.css"
+		/>
+		<link rel="stylesheet" type="text/css" href="../../css/pages/common.css" />
+		<style>
+			.input-read-only {
+				outline: none;
+				border: none;
+				background-color: white;
+				pointer-events: none;
+				box-shadow: none;
+			}
+		</style>
+	</head>
 
-<head>
-  <meta charset="UTF-8" />
-  <title>TwoElephantFireworks - Purchase Order</title>
-  <link rel="stylesheet" href="../../lib/bootstrap/css/bootstrap.min.css" />
-  <link rel="stylesheet" type="text/css" href="../../lib/datatable/datatable.css" />
-  <link rel="stylesheet" type="text/css" href="../../lib/bootstrap-select/css/bootstrap-select.min.css" />
-  <link rel="stylesheet" type="text/css" href="../../css/pages/common.css" />
-  <style>
-    .input-read-only {
-      outline: none;
-      border: none;
-      background-color: white;
-      pointer-events: none;
-      box-shadow: none;
-    }
-  </style>
-</head>
+	<body>
+		<div class="container-fluid" style="margin-top: 20px; margin-bottom: 100px">
+			<div
+				id="actionButtonHolder"
+				class="row"
+				style="margin-bottom: 20px; padding-left: 35px"
+			>
+				<div class="col-md-12">
+					<button id="btnTopAddEntry" class="btn btn-primary">
+						<i class="glyphicon glyphicon-plus-sign" aria-hidden="true"></i>
+						Create New Order
+					</button>
+				</div>
+			</div>
 
-<body>
-  <div class="container-fluid" style="margin-top: 20px; margin-bottom: 100px">
+			<!-- load table with previous quotations -->
+			<div
+				id="mainTableHolder"
+				class="container-fluid"
+				style="margin-top: 30px"
+			></div>
 
-    <div id="actionButtonHolder" class="row" style="margin-bottom: 20px; padding-left: 35px;">
-      <div class="col-md-12">
-        <button id="btnTopAddEntry" class="btn btn-primary">
-          <i class="glyphicon glyphicon-plus-sign" aria-hidden="true"></i>
-          Create New Order
-        </button>
-      </div>
-    </div>
+			<!-- modal with main form -->
+			<div class="modal fade" id="modalMainForm" role="dialog">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content" style="margin-bottom: 100px">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">
+								&times;
+							</button>
+							<h4 class="modal-title" id="modalMainFormTitle">Modal Header</h4>
+						</div>
+						<div class="modal-body">
+							<form id="mainForm">
+								<div class="row">
+									<div class="col-md-12">
+										<div style="float: right">
+											<b><span class="required">*</span> Required field</b>
+										</div>
+									</div>
+								</div>
 
-    <!-- load table with previous quotations -->
-    <div id="mainTableHolder" class="container-fluid" style="margin-top:30px">
+								<div class="form-group has-feedback">
+									<label for="code"
+										>Order Code: <span class="required">*</span></label
+									>
+									<input
+										type="text"
+										class="form-control"
+										id="code"
+										name="code"
+										disabled
+									/>
+								</div>
 
-    </div>
+								<div class="panel panel-default">
+									<div class="panel-heading">Product Packages</div>
+									<div class="panel-body">
+										<div class="row">
+											<div class="col-md-6">
+												<div class="form-group has-feedback">
+													<label for="productPackageId"
+														>Product Package:
+														<span class="required">*</span></label
+													>
+													<select
+														name="productPackageId"
+														id="productPackageId"
+														class="form-control"
+														data-editable="true"
+														data-live-search="true"
+														title="Please select a product package"
+													></select>
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="form-group has-feedback">
+													<label for="requestedQty"
+														>Requested Qty:
+														<span class="required">*</span></label
+													>
+													<input
+														type="text"
+														class="form-control"
+														id="requestedQty"
+														placeholder="10"
+														name="requestedQty"
+													/>
+												</div>
+											</div>
+										</div>
 
+										<div class="form-group">
+											<button
+												type="button"
+												id="btnAddToproductPackageTable"
+												class="btn btn-primary btn-block"
+											>
+												Add To List
+											</button>
+										</div>
 
-    <!-- modal with main form -->
-    <div class="modal fade" id="modalMainForm" role="dialog">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="margin-bottom: 100px;">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title" id="modalMainFormTitle">Modal Header</h4>
-          </div>
-          <div class="modal-body">
+										<div class="form-group">
+											<table
+												id="productPackageTable"
+												class="table table-bordered"
+											>
+												<thead>
+													<tr>
+														<th>Index</th>
+														<th>Name</th>
+														<th>Requested Qty</th>
+														<th>Action</th>
+													</tr>
+												</thead>
+												<tbody></tbody>
+											</table>
+										</div>
+									</div>
+								</div>
 
-            <form id="mainForm">
-              <div class="row">
-                <div class="col-md-12">
-                  <div style="float: right;">
-                    <b><span class="required">*</span> Required field</b>
-                  </div>
-                </div>
-              </div>
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group has-feedback">
+											<label for="requiredDate"
+												>Required Date: <span class="required">*</span></label
+											>
+											<input
+												type="date"
+												class="form-control"
+												id="requiredDate"
+												name="requiredDate"
+											/>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group has-feedback">
+											<label
+												for="addedDate"
+												onclick="$('#addedDate').val(new Date().today())"
+												>Added Date: <span class="required">*</span></label
+											>
+											<input
+												type="date"
+												class="form-control"
+												id="addedDate"
+												name="addedDate"
+												disabled
+											/>
+										</div>
+									</div>
+								</div>
 
-              <div class="form-group has-feedback">
-                <label for="code">Order Code: <span class="required">*</span></label>
-                <input type="text" class="form-control" id="code" name="code" disabled>
-              </div>
+								<div class="form-group has-feedback">
+									<label for="description">Description: </label>
+									<textarea
+										class="form-control"
+										name="description"
+										id="description"
+										cols="30"
+										rows="3"
+										data-editable="true"
+										placeholder="We need more information about your items."
+									></textarea>
+								</div>
 
-              <div class="panel panel-default">
-                <div class="panel-heading">Product Packages</div>
-                <div class="panel-body">
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group has-feedback">
+											<label for="createdEmployee"
+												>Added By: <span class="required">*</span></label
+											>
+											<input
+												type="text"
+												class="form-control"
+												id="createdEmployee"
+												name="createdEmployee"
+												disabled
+											/>
+										</div>
+									</div>
 
-                  <div class="row">
-                    <div class="col-md-6">
-                      <div class="form-group has-feedback">
-                        <label for="productPackageId">Product Package: <span class="required">*</span></label>
-                        <select name="productPackageId" id="productPackageId" class="form-control" data-editable="true"
-                          data-live-search="true" title="Please select a product package">
+									<div class="col-md-6">
+										<div class="form-group has-feedback">
+											<label for="productionOrderStatusId"
+												>Order Status: <span class="required">*</span></label
+											>
+											<select
+												name="productionOrderStatusId"
+												id="productionOrderStatusId"
+												class="form-control"
+											></select>
+										</div>
+									</div>
+								</div>
 
-                        </select>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-group has-feedback">
-                        <label for="requestedQty">Requested Qty: <span class="required">*</span></label>
-                        <input type="text" class="form-control" id="requestedQty" placeholder="10" name="requestedQty">
-                      </div>
-                    </div>
-                  </div>
+								<div class="row" id="confirmedInfo">
+									<div class="col-md-6">
+										<div class="form-group has-feedback">
+											<label for="confirmedBy">Confirmed By:</label>
+											<input
+												type="text"
+												class="form-control"
+												id="confirmedBy"
+												name="confirmedBy"
+												disabled
+											/>
+										</div>
+									</div>
 
-                  <div class="form-group">
-                    <button type="button" id="btnAddToproductPackageTable" class="btn btn-primary btn-block">Add To
-                      List</button>
-                  </div>
+									<div class="col-md-6">
+										<div class="form-group has-feedback">
+											<label for="confirmedDate">Confirmed Date:</label>
+											<input
+												type="date"
+												class="form-control"
+												id="confirmedDate"
+												name="confirmedDate"
+												disabled
+											/>
+										</div>
+									</div>
+								</div>
 
-                  <div class="form-group">
-                    <table id="productPackageTable" class="table table-bordered">
-                      <thead>
-                        <tr>
-                          <th>Index</th>
-                          <th>Name</th>
-                          <th>Requested Qty</th>
-                          <th>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-
-                      </tbody>
-                    </table>
-                  </div>
-
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="form-group has-feedback">
-                    <label for="requiredDate">Required Date: <span class="required">*</span></label>
-                    <input type="date" class="form-control" id="requiredDate" name="requiredDate" />
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-group has-feedback">
-                    <label for="addedDate" onclick="$('#addedDate').val(new Date().today())">Added Date: <span
-                        class="required">*</span></label>
-                    <input type="date" class="form-control" id="addedDate" name="addedDate" disabled />
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-group has-feedback">
-                <label for="description">Description: </label>
-                <textarea class="form-control" name="description" id="description" cols="30" rows="3"
-                  data-editable="true" placeholder="We need more information about your items."></textarea>
-              </div>
-
-
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="form-group has-feedback">
-                    <label for="createdEmployee">Added By: <span class="required">*</span></label>
-                    <input type="text" class="form-control" id="createdEmployee" name="createdEmployee" disabled>
-                  </div>
-                </div>
-
-                <div class="col-md-6">
-                  <div class="form-group has-feedback">
-                    <label for="productionOrderStatusId">Order Status: <span class="required">*</span></label>
-                    <select name="productionOrderStatusId" id="productionOrderStatusId" class="form-control">
-
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <div class="row" id="confirmedInfo">
-                <div class="col-md-6">
-                  <div class="form-group has-feedback">
-                    <label for="confirmedBy">Confirmed By:</label>
-                    <input type="text" class="form-control" id="confirmedBy" name="confirmedBy" disabled>
-                  </div>
-                </div>
-
-                <div class="col-md-6">
-                  <div class="form-group has-feedback">
-                    <label for="confirmedDate">Confirmed Date:</label>
-                    <input type="date" class="form-control" id="confirmedDate" name="confirmedDate" disabled />
-                  </div>
-                </div>
-              </div>
-
-
-              <div id="fmButtons">
-                <button type="button" class="btnFmPrint btn btn-info">Print</button>
-                <button type="button" class="btnFmAdd btn btn-success">Add</button>
-                <button type="button" class="btnFmUpdate btn btn-warning">Update</button>
-                <button type="button" class="btnFmReset btn btn-primary"
-                  style="float: right; margin-left: 10px;">Reset</button>
-                <button type="button" class="btnFmDelete btn btn-danger" style="float: right;">Delete</button>
-              </div>
-            </form>
-
-          </div>
-          <div class="modal-footer">
-            <!-- <button id="btnModalYes" type="button" class="btn btn-danger" style="float:left">Yes</button>
+								<div id="fmButtons">
+									<button type="button" class="btnFmPrint btn btn-info">
+										Print
+									</button>
+									<button type="button" class="btnFmAdd btn btn-success">
+										Add
+									</button>
+									<button type="button" class="btnFmUpdate btn btn-warning">
+										Update
+									</button>
+									<button
+										type="button"
+										class="btnFmReset btn btn-primary"
+										style="float: right; margin-left: 10px"
+									>
+										Reset
+									</button>
+									<button
+										type="button"
+										class="btnFmDelete btn btn-danger"
+										style="float: right"
+									>
+										Delete
+									</button>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<!-- <button id="btnModalYes" type="button" class="btn btn-danger" style="float:left">Yes</button>
     <button id="btnModalNo" type="button" class="btn btn-default" data-dismiss="modal">No</button> -->
-          </div>
-        </div>
-      </div>
-    </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
-  </div>
+		<!-- libs -->
+		<script src="../../lib/jquery/jquery.min.js"></script>
+		<script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
+		<script src="../../lib/bootstrap-select/js/bootstrap-select.min.js"></script>
+		<script src="../../lib/datatable/datatable.v2.js"></script>
 
-  <!-- libs -->
-  <script src="../../lib/jquery/jquery.min.js"></script>
-  <script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
-  <script src="../../lib/bootstrap-select/js/bootstrap-select.min.js"></script>
-  <script src="../../lib/datatable/datatable.v2.js"></script>
+		<!-- common stuff -->
+		<script src="../../js/Request.js"></script>
+		<script src="../../js/Form.js"></script>
+		<script src="../../js/FormUtil.js"></script>
+		<script src="../../js/MiscUtil.js"></script>
 
-  <!-- common stuff -->
-  <script src="../../js/Request.js"></script>
-  <script src="../../js/Form.js"></script>
-  <script src="../../js/FormUtil.js"></script>
-  <script src="../../js/MiscUtil.js"></script>
-
-  <!-- main js -->
-  <script src="./production_order.js"></script>
-  <script src="./print_template/production_order_print.js"></script>
-</body>
-
+		<!-- main js -->
+		<script src="./production_order.js"></script>
+		<script src="./print_template/production_order_print.js"></script>
+	</body>
 </html>

@@ -525,9 +525,14 @@ const showNewEntryModal = () => {
 
 	// show modal
 	$("#modalMainForm").modal("show");
+
+	FormUtil.selectDropdownOptionByValue("productionOrderStatusId", 1);
+	$("#productionOrderStatusId").attr("disabled", true);
 };
 
 const showEditEntryModal = (id, readOnly = false) => {
+	$("#productionOrderStatusId").attr("disabled", false);
+
 	loadEntry(id).then(() => {
 		$("#modalMainForm").modal("show");
 
